@@ -289,6 +289,14 @@ func _run_smoke_checks() -> void:
         var ember_zone: Dictionary = Data.zone("Zone_EmberRidge")
         print("SMOKE: EmberRidge wildlife=", ember_zone.get("wildlife", []).size(), " has_solaris=", str(ember_zone.get("wildlife", [])).find("Echo_Solaris") >= 0)
         print("SMOKE: cheat console ", get_tree().get_nodes_in_group("hud").size() > 0, " console=", game_layer.has_node("CheatConsole"))
+        # mod manager screen: open, verify cards for each loaded mod, close
+        screens.open("mods")
+        await get_tree().process_frame
+        var mods_panel_visible: bool = screens.panels["mods"].visible
+        var mod_card_count: int = screens._mods_list.get_children().size()
+        print("SMOKE: mod manager panel visible=", mods_panel_visible, " cards=", mod_card_count, " expected=", Mods.mods.size())
+        screens.close()
+        print("SMOKE: mod manager closed current=", screens.current)
         for i in 6:
                 await get_tree().create_timer(0.5).timeout
                 print("SMOKE: t", i, " player y=", player.global_position.y, " floor=", player.is_on_floor(), " terr=", world.tile_height(player.global_position.x, player.global_position.z))

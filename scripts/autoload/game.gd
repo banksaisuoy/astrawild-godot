@@ -122,6 +122,7 @@ func _setup_input_actions() -> void:
                 "interact": [KEY_E], "capture": [KEY_F], "feed": [KEY_G],
                 "inventory": [KEY_I], "crafting": [KEY_C], "research": [KEY_R],
                 "journal": [KEY_J], "build": [KEY_B], "map": [KEY_M], "pause": [KEY_ESCAPE],
+                "mods": [KEY_F7],
                 "party_follow": [KEY_1], "party_stay": [KEY_2], "party_attack": [KEY_3],
                 "rotate_left": [KEY_COMMA], "rotate_right": [KEY_PERIOD],
                 "ui_up": [KEY_UP], "ui_down": [KEY_DOWN], "ui_left": [KEY_LEFT], "ui_right": [KEY_RIGHT],

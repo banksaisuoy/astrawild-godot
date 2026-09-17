@@ -393,7 +393,7 @@ func _actions(delta: float) -> void:
         if Input.is_action_just_pressed("party_attack"):
                 Game.set_party_command("Attack")
         # screens
-        for pair in [["inventory", "inventory"], ["crafting", "crafting"], ["research", "research"], ["journal", "journal"], ["map", "map"], ["pause", "pause"]]:
+        for pair in [["inventory", "inventory"], ["crafting", "crafting"], ["research", "research"], ["journal", "journal"], ["map", "map"], ["pause", "pause"], ["mods", "mods"]]:
                 if Input.is_action_just_pressed(pair[0]):
                         Game.screen_requested.emit(pair[1])
         if Input.is_action_just_pressed("build"):
