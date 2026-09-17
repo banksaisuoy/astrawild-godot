@@ -498,16 +498,18 @@ func _spawn_projectile(def: Dictionary) -> void:
 # ----------------------------------------------------------- interaction ---
 func _interaction_candidates() -> Array:
         var out := []
-        for group in ["interactables"]:
-                pass
-        # scan npc root children + resource nodes + buildings via world
+        # interactables group: markers, NPCs, skiffs, dungeon portals, work sites
+        for c in get_tree().get_nodes_in_group("interactables"):
+                if c is Node3D and c.has_method("prompt") and not c.is_queued_for_deletion():
+                        out.append(c)
+        # resource nodes + player-placed buildings live under the world roots
         var world := get_tree().get_first_node_in_group("world")
         if world:
                 for arr_name in ["npcs_root", "nodes_root", "buildings_root"]:
                         var root: Node = world.get(arr_name)
                         if root:
                                 for c in root.get_children():
-                                        if c is Node3D and c.has_method("prompt"):
+                                        if c is Node3D and c.has_method("prompt") and not c.is_queued_for_deletion() and not out.has(c):
                                                 out.append(c)
         return out
 
