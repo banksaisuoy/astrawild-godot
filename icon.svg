@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="35%" r="80%">
+      <stop offset="0%" stop-color="#2a2140"/>
+      <stop offset="100%" stop-color="#120d20"/>
+    </radialGradient>
+    <linearGradient id="dawn" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f2a65a"/>
+      <stop offset="55%" stop-color="#e5654f"/>
+      <stop offset="100%" stop-color="#7a3b8f"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3f6d4a"/>
+      <stop offset="100%" stop-color="#1d3a2b"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="20" fill="url(#sky)"/>
+  <circle cx="64" cy="66" r="30" fill="url(#dawn)"/>
+  <circle cx="64" cy="66" r="34" fill="none" stroke="#ffd9a0" stroke-opacity="0.5" stroke-width="2"/>
+  <path d="M0 96 Q 24 78 48 94 T 96 92 T 128 98 L128 128 L0 128 Z" fill="url(#hill)"/>
+  <path d="M18 108 l6-14 6 14 z" fill="#8fd6ff" opacity="0.9"/>
+  <path d="M98 104 l7-18 7 18 z" fill="#c9a3ff" opacity="0.9"/>
+  <path d="M56 102 l5-11 5 11 z" fill="#ffd98f" opacity="0.9"/>
+  <text x="64" y="30" font-family="serif" font-size="20" font-weight="bold" fill="#ffe9c9" text-anchor="middle">✦</text>
+</svg>

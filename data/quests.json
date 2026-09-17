@@ -1,0 +1,305 @@
+[
+ {
+  "id": "Quest_FirstLight",
+  "title": "First Light",
+  "summary": "Gather materials from Dawn Fields to prepare for the journey ahead.",
+  "objectives": [
+   {
+    "type": "CollectItem",
+    "target": "Item_Wood",
+    "count": 10,
+    "text": "Collect 10 Dawnwood"
+   },
+   {
+    "type": "CollectItem",
+    "target": "Item_Stone",
+    "count": 5,
+    "text": "Collect 5 Fieldstone"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_Resonator",
+    "qty": 2
+   }
+  ],
+  "research_points": 5,
+  "next": "Quest_FirstEcho"
+ },
+ {
+  "id": "Quest_FirstEcho",
+  "title": "A Friend in the Fields",
+  "summary": "Observe a wild Lumewisp, gain its trust, and welcome your first Echo.",
+  "objectives": [
+   {
+    "type": "ObserveEcho",
+    "target": "Echo_Lumewisp",
+    "count": 1,
+    "text": "Observe a Lumewisp"
+   },
+   {
+    "type": "CaptureEcho",
+    "target": "Echo_Lumewisp",
+    "count": 1,
+    "text": "Capture a Lumewisp"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_Berry",
+    "qty": 10
+   }
+  ],
+  "research_points": 10,
+  "next": "Quest_Homeground"
+ },
+ {
+  "id": "Quest_Homeground",
+  "title": "Homeground",
+  "summary": "Raise the first foundations of your camp.",
+  "objectives": [
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_Foundation",
+    "count": 1,
+    "text": "Place a Foundation"
+   },
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_Workbench",
+    "count": 1,
+    "text": "Place a Workbench"
+   }
+  ],
+  "rewards": [],
+  "research_points": 10,
+  "next": "Quest_Spark"
+ },
+ {
+  "id": "Quest_Spark",
+  "title": "The Spark",
+  "summary": "Research Electrical Foundations and bring light to your camp.",
+  "objectives": [
+   {
+    "type": "UnlockTechnology",
+    "target": "Tech_Electrical",
+    "count": 1,
+    "text": "Unlock Electrical Foundations"
+   },
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_Generator",
+    "count": 1,
+    "text": "Build an Echo Dynamo"
+   }
+  ],
+  "rewards": [],
+  "research_points": 15,
+  "next": "Quest_DawnGuard"
+ },
+ {
+  "id": "Quest_DawnGuard",
+  "title": "Dawn Guard",
+  "summary": "Gloomfangs stalk the fields at night. Protect the dawn.",
+  "objectives": [
+   {
+    "type": "DefeatCreature",
+    "target": "Echo_Gloomfang",
+    "count": 3,
+    "text": "Defeat 3 Gloomfangs"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 5
+   }
+  ],
+  "research_points": 20,
+  "next": "Quest_ShepherdsDawn"
+ },
+ {
+  "id": "Quest_ShepherdsDawn",
+  "title": "Shepherd's Dawn",
+  "summary": "Sprigling herds graze the meadows. Learn the ways of Echo husbandry.",
+  "objectives": [
+   {
+    "type": "UnlockTechnology",
+    "target": "Tech_Husbandry",
+    "count": 1,
+    "text": "Unlock Echo Husbandry"
+   },
+   {
+    "type": "CaptureEcho",
+    "target": "Echo_Sprigling",
+    "count": 1,
+    "text": "Capture a Sprigling"
+   },
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_FeedTrough",
+    "count": 1,
+    "text": "Place an Echo Feed Trough"
+   },
+   {
+    "type": "CollectItem",
+    "target": "Item_FeedMix",
+    "count": 3,
+    "text": "Craft 3 Echo Feed Mix"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_FeedMix",
+    "qty": 5
+   },
+   {
+    "item": "Item_HerbalSalve",
+    "qty": 2
+   }
+  ],
+  "research_points": 20,
+  "next": "Quest_HollowUnderlight"
+ },
+ {
+  "id": "Quest_HollowUnderlight",
+  "title": "The Hollow Underlight",
+  "summary": "A sealed resonance gate hums beyond the eastern wilds. Whatever wards it has been waiting since the First Dawn.",
+  "objectives": [
+   {
+    "type": "ReachLocation",
+    "target": "Location_HollowUnderlight",
+    "count": 1,
+    "text": "Enter the Hollow Underlight"
+   },
+   {
+    "type": "DefeatCreature",
+    "target": "Creature_UnderlightWarden",
+    "count": 1,
+    "text": "Defeat the Underlight Warden"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_HerbalSalve",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 5
+   }
+  ],
+  "research_points": 15,
+  "next": "Quest_ValeBeyond"
+ },
+ {
+  "id": "Quest_ValeBeyond",
+  "title": "The Vale Beyond",
+  "summary": "The warden's fall resonates across the Vale. Prove the resonance technology in Ember Ridge's heat \u2014 and live there for three minutes.",
+  "objectives": [
+   {
+    "type": "VisitZone",
+    "target": "Zone_EmberRidge",
+    "count": 1,
+    "text": "Travel to Ember Ridge"
+   },
+   {
+    "type": "CraftRecipe",
+    "target": "Recipe_PulseLance",
+    "count": 1,
+    "text": "Craft the Pulse Lance"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_EnergyCell",
+    "qty": 8
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 8
+   }
+  ],
+  "research_points": 20,
+  "next": "Quest_WingsOverTheVale"
+ },
+ {
+  "id": "Quest_WingsOverTheVale",
+  "title": "Wings over the Vale",
+  "summary": "Elder Rowan speaks of fisherfolk on the Tidebreaker Isles \u2014 and of the Dawn Skiff that can carry you there. Board it, cross the sea, and chart their landing.",
+  "objectives": [
+   {
+    "type": "VisitZone",
+    "target": "Zone_TidebreakerIsles",
+    "count": 1,
+    "text": "Reach the Tidebreaker Isles"
+   },
+   {
+    "type": "ReachLocation",
+    "target": "Location_DriftwoodLanding",
+    "count": 1,
+    "text": "Chart Driftwood Landing"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 6
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 2
+   }
+  ],
+  "research_points": 20,
+  "next": "Quest_SunkenVault"
+ },
+ {
+  "id": "Quest_SunkenVault",
+  "title": "The Sunken Vault",
+  "summary": "Beneath the isles sleeps a vault the tide never forgot \u2014 and the Dawnfang coils at its heart. Skiff Warden Kael asks you to end its long watch.",
+  "objectives": [
+   {
+    "type": "ReachLocation",
+    "target": "Location_SunkenVault",
+    "count": 1,
+    "text": "Descend into the Sunken Vault"
+   },
+   {
+    "type": "DefeatCreature",
+    "target": "Creature_VaultColossus",
+    "count": 1,
+    "text": "Defeat the Dawnfang"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 3
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 4
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 8
+   }
+  ],
+  "research_points": 25,
+  "next": null
+ },
+ {
+  "id": "Quest_VanguardProtocol",
+  "title": "The Vanguard Protocol",
+  "summary": "Plate up, field the machines, and hold the line through a night raid.",
+  "objectives": [],
+  "rewards": [],
+  "research_points": 25,
+  "next": null
+ }
+]

@@ -1,0 +1,10690 @@
+[
+ {
+  "id": "Echo_Mosspaw",
+  "name": "Mosspaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 70.0,
+   "atk": 10.0,
+   "def": 6.0,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dawnhorn",
+  "name": "Dawnhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 110.0,
+   "atk": 16.0,
+   "def": 10.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Duskhide",
+  "name": "Duskhide",
+  "family": "Beast",
+  "body_plan": "Biped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 110.0,
+   "atk": 16.0,
+   "def": 10.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.74,
+    0.54,
+    0.44
+   ],
+   "secondary": [
+    0.507,
+    0.347,
+    0.442
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Emberrunner",
+  "name": "Emberrunner",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Social",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 170.0,
+   "atk": 24.0,
+   "def": 15.0,
+   "spd": 360.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.46,
+    0.42,
+    0.32
+   ],
+   "secondary": [
+    0.353,
+    0.281,
+    0.376
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Galewing",
+  "name": "Galewing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Explorer",
+  "home_zone": "DawnFields",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 32.0,
+   "atk": 5.4,
+   "def": 2.4,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Plumeplume",
+  "name": "Plumeplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Explorer",
+  "home_zone": "DawnFields",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 56.0,
+   "atk": 9.0,
+   "def": 4.8,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Skysong",
+  "name": "Skysong",
+  "family": "Avian",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Explorer",
+  "home_zone": "DawnFields",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.0,
+   "atk": 14.4,
+   "def": 8.0,
+   "spd": 525.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.94,
+    0.56,
+    0.52
+   ],
+   "secondary": [
+    0.617,
+    0.358,
+    0.486
+   ]
+  },
+  "foods": [
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Fernbloom",
+  "name": "Fernbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 77.0,
+   "atk": 8.5,
+   "def": 6.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Boughsprout",
+  "name": "Boughsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 121.0,
+   "atk": 13.6,
+   "def": 11.5,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Bramblethorn",
+  "name": "Bramblethorn",
+  "family": "Flora",
+  "body_plan": "Biped",
+  "size_class": "Large",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 187.0,
+   "atk": 20.4,
+   "def": 17.2,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.34,
+    0.51,
+    0.32
+   ],
+   "secondary": [
+    0.287,
+    0.331,
+    0.376
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Chitinmite",
+  "name": "Chitinmite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 34.0,
+   "atk": 5.7,
+   "def": 3.3,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dustweevil",
+  "name": "Dustweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 59.5,
+   "atk": 9.5,
+   "def": 6.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Irongolem",
+  "name": "Irongolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DawnFields",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 9.0,
+   "def": 7.5,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Hollowshade",
+  "name": "Hollowshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "DawnFields",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 32.0,
+   "atk": 5.1,
+   "def": 2.2,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Cinderblaze",
+  "name": "Cinderblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "DawnFields",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 70.0,
+   "atk": 11.5,
+   "def": 5.7,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Emberwing",
+  "name": "Emberwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Combat",
+  "home_zone": "DawnFields",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 137.5,
+   "atk": 19.2,
+   "def": 11.0,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.22,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Boughbloom",
+  "name": "Boughbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.6,
+   "atk": 9.8,
+   "def": 7.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Bramblesprout",
+  "name": "Bramblesprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 139.2,
+   "atk": 15.6,
+   "def": 13.2,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Petalthorn",
+  "name": "Petalthorn",
+  "family": "Flora",
+  "body_plan": "Biped",
+  "size_class": "Large",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 215.0,
+   "atk": 23.5,
+   "def": 19.8,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.32,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.34,
+    0.51,
+    0.32
+   ],
+   "secondary": [
+    0.287,
+    0.331,
+    0.376
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dawnpaw",
+  "name": "Dawnpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 11.5,
+   "def": 6.9,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Duskhorn",
+  "name": "Duskhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 18.4,
+   "def": 11.5,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dustmite",
+  "name": "Dustmite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 39.1,
+   "atk": 6.6,
+   "def": 3.8,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Thornweevil",
+  "name": "Thornweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 68.4,
+   "atk": 10.9,
+   "def": 7.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Gildedhornet",
+  "name": "Gildedhornet",
+  "family": "Insectoid",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "DuskMarsh",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 107.5,
+   "atk": 17.5,
+   "def": 12.7,
+   "spd": 483.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.69,
+    0.51,
+    0.27
+   ],
+   "secondary": [
+    0.48,
+    0.331,
+    0.349
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Duskshade",
+  "name": "Duskshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "DuskMarsh",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 5.9,
+   "def": 2.6,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Whisperveil",
+  "name": "Whisperveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Support",
+  "home_zone": "DuskMarsh",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 64.4,
+   "atk": 9.8,
+   "def": 5.2,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Coralfin",
+  "name": "Coralfin",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "DuskMarsh",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 10.3,
+   "def": 7.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.26,
+    0.69,
+    0.78
+   ],
+   "secondary": [
+    0.243,
+    0.429,
+    0.629
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Pearlgill",
+  "name": "Pearlgill",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "DuskMarsh",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 126.5,
+   "atk": 16.6,
+   "def": 12.1,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.8,
+    0.75
+   ],
+   "secondary": [
+    0.348,
+    0.49,
+    0.613
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Frostwing",
+  "name": "Frostwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Combat",
+  "home_zone": "DuskMarsh",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 158.1,
+   "atk": 22.1,
+   "def": 12.7,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Glacierblaze",
+  "name": "Glacierblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "DuskMarsh",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 13.2,
+   "def": 6.6,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.22,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Voltshard",
+  "name": "Voltshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "DuskMarsh",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 21.2,
+   "def": 10.9,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Plumewing",
+  "name": "Plumewing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Explorer",
+  "home_zone": "DuskMarsh",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 6.2,
+   "def": 2.8,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Skyplume",
+  "name": "Skyplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Explorer",
+  "home_zone": "DuskMarsh",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 64.4,
+   "atk": 10.3,
+   "def": 5.5,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Stormwing",
+  "name": "Stormwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 178.7,
+   "atk": 25.0,
+   "def": 14.3,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Ashfang",
+  "name": "Ashfang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Glimmerdrake",
+  "name": "Glimmerdrake",
+  "family": "Dragon",
+  "body_plan": "Avian",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.59,
+    0.26,
+    0.77
+   ],
+   "secondary": [
+    0.424,
+    0.193,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Tidewyrm",
+  "name": "Tidewyrm",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Huge",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Protective",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 422.5,
+   "atk": 53.0,
+   "def": 30.0,
+   "spd": 285.0
+  },
+  "capture_difficulty": 0.62,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.88,
+    0.57,
+    0.19
+   ],
+   "secondary": [
+    0.584,
+    0.363,
+    0.304
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat",
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 2400.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Voltblaze",
+  "name": "Voltblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 14.9,
+   "def": 7.4,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Bloomshard",
+  "name": "Bloomshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 23.9,
+   "def": 12.3,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Zephyrsurge",
+  "name": "Zephyrsurge",
+  "family": "Elemental",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "EmberRidge",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 221.0,
+   "atk": 35.9,
+   "def": 18.5,
+   "spd": 360.0
+  },
+  "capture_difficulty": 0.49,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.59,
+    0.86,
+    0.47
+   ],
+   "secondary": [
+    0.424,
+    0.523,
+    0.459
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Duskpaw",
+  "name": "Duskpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 13.0,
+   "def": 7.8,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Emberhorn",
+  "name": "Emberhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Runedgolem",
+  "name": "Runedgolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 104.6,
+   "atk": 11.7,
+   "def": 9.7,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Clockworksentinel",
+  "name": "Clockworksentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 164.4,
+   "atk": 18.7,
+   "def": 16.2,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Thornmite",
+  "name": "Thornmite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 44.2,
+   "atk": 7.4,
+   "def": 4.3,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Whispershade",
+  "name": "Whispershade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Support",
+  "home_zone": "EmberRidge",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 6.6,
+   "def": 2.9,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Paleveil",
+  "name": "Paleveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "EmberRidge",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.0,
+   "def": 5.8,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Bramblebloom",
+  "name": "Bramblebloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "EmberRidge",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 100.1,
+   "atk": 11.0,
+   "def": 9.0,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Skywing",
+  "name": "Skywing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Explorer",
+  "home_zone": "EmberRidge",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 7.0,
+   "def": 3.1,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Dawnplume",
+  "name": "Dawnplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Explorer",
+  "home_zone": "EmberRidge",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.7,
+   "def": 6.2,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Emberpaw",
+  "name": "Emberpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 13.0,
+   "def": 7.8,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Rimehorn",
+  "name": "Rimehorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Galehide",
+  "name": "Galehide",
+  "family": "Beast",
+  "body_plan": "Biped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.74,
+    0.54,
+    0.44
+   ],
+   "secondary": [
+    0.507,
+    0.347,
+    0.442
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Ashwing",
+  "name": "Ashwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "Frostveil",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 178.7,
+   "atk": 25.0,
+   "def": 14.3,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Glimmerfang",
+  "name": "Glimmerfang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Frostveil",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Bloomblaze",
+  "name": "Bloomblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Frostveil",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 14.9,
+   "def": 7.4,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Zephyrshard",
+  "name": "Zephyrshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "Frostveil",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 23.9,
+   "def": 12.3,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Magmasurge",
+  "name": "Magmasurge",
+  "family": "Elemental",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Frostveil",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 221.0,
+   "atk": 35.9,
+   "def": 18.5,
+   "spd": 360.0
+  },
+  "capture_difficulty": 0.49,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.59,
+    0.86,
+    0.47
+   ],
+   "secondary": [
+    0.424,
+    0.523,
+    0.459
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Dawnwing",
+  "name": "Dawnwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Explorer",
+  "home_zone": "Frostveil",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 7.0,
+   "def": 3.1,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Stormplume",
+  "name": "Stormplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Explorer",
+  "home_zone": "Frostveil",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.7,
+   "def": 6.2,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Clockworkgolem",
+  "name": "Clockworkgolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 104.6,
+   "atk": 11.7,
+   "def": 9.7,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Paleshade",
+  "name": "Paleshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "Frostveil",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 6.6,
+   "def": 2.9,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Abyssfin",
+  "name": "Abyssfin",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "Frostveil",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 11.7,
+   "def": 8.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.26,
+    0.69,
+    0.78
+   ],
+   "secondary": [
+    0.243,
+    0.429,
+    0.629
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Reefgill",
+  "name": "Reefgill",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "Frostveil",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 143.0,
+   "atk": 18.7,
+   "def": 13.6,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.8,
+    0.75
+   ],
+   "secondary": [
+    0.348,
+    0.49,
+    0.613
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Petalbloom",
+  "name": "Petalbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 100.1,
+   "atk": 11.0,
+   "def": 9.0,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Rootsprout",
+  "name": "Rootsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 157.3,
+   "atk": 17.7,
+   "def": 14.9,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pollenthorn",
+  "name": "Pollenthorn",
+  "family": "Flora",
+  "body_plan": "Biped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Frostveil",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 243.1,
+   "atk": 26.5,
+   "def": 22.4,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.44,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.34,
+    0.51,
+    0.32
+   ],
+   "secondary": [
+    0.287,
+    0.331,
+    0.376
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Wispshade",
+  "name": "Wispshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "Glimmerwood",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 5.9,
+   "def": 2.6,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Mourningveil",
+  "name": "Mourningveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "Glimmerwood",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 64.4,
+   "atk": 9.8,
+   "def": 5.2,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Silenthaunt",
+  "name": "Silenthaunt",
+  "family": "Spirit",
+  "body_plan": "Serpent",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Support",
+  "home_zone": "Glimmerwood",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 101.2,
+   "atk": 15.6,
+   "def": 8.6,
+   "spd": 462.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.84,
+    0.66,
+    0.95
+   ],
+   "secondary": [
+    0.562,
+    0.413,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   },
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Glassgolem",
+  "name": "Glassgolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 92.6,
+   "atk": 10.3,
+   "def": 8.6,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Stonesentinel",
+  "name": "Stonesentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 145.5,
+   "atk": 16.6,
+   "def": 14.4,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Rootbloom",
+  "name": "Rootbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.6,
+   "atk": 9.8,
+   "def": 7.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Pollensprout",
+  "name": "Pollensprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 139.2,
+   "atk": 15.6,
+   "def": 13.2,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Rimepaw",
+  "name": "Rimepaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 11.5,
+   "def": 6.9,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Galehorn",
+  "name": "Galehorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 18.4,
+   "def": 11.5,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Hivemite",
+  "name": "Hivemite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 39.1,
+   "atk": 6.6,
+   "def": 3.8,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Reedweevil",
+  "name": "Reedweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Glimmerwood",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 68.4,
+   "atk": 10.9,
+   "def": 7.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Mistcry",
+  "name": "Mistcry",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Explorer",
+  "home_zone": "Glimmerwood",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 6.2,
+   "def": 2.8,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Zephyrblaze",
+  "name": "Zephyrblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Glimmerwood",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 13.2,
+   "def": 6.6,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.22,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Magmashard",
+  "name": "Magmashard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Glimmerwood",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 21.2,
+   "def": 10.9,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Glimmerwing",
+  "name": "Glimmerwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Combat",
+  "home_zone": "Glimmerwood",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 158.1,
+   "atk": 22.1,
+   "def": 12.7,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Tidefang",
+  "name": "Tidefang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Glimmerwood",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 244.4,
+   "atk": 33.1,
+   "def": 19.0,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.42,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dunedrake",
+  "name": "Dunedrake",
+  "family": "Dragon",
+  "body_plan": "Avian",
+  "size_class": "Large",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Glimmerwood",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 244.4,
+   "atk": 33.1,
+   "def": 19.0,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.42,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.59,
+    0.26,
+    0.77
+   ],
+   "secondary": [
+    0.424,
+    0.193,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Mourningshade",
+  "name": "Mourningshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "HollowApproach",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 46.4,
+   "atk": 7.4,
+   "def": 3.3,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Silentveil",
+  "name": "Silentveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "HollowApproach",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 81.2,
+   "atk": 12.3,
+   "def": 6.5,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Fadedhaunt",
+  "name": "Fadedhaunt",
+  "family": "Spirit",
+  "body_plan": "Serpent",
+  "size_class": "Medium",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Support",
+  "home_zone": "HollowApproach",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 127.6,
+   "atk": 19.7,
+   "def": 10.9,
+   "spd": 462.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.84,
+    0.66,
+    0.95
+   ],
+   "secondary": [
+    0.562,
+    0.413,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   },
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Lanternmote",
+  "name": "Lanternmote",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "HollowApproach",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 46.4,
+   "atk": 7.4,
+   "def": 3.3,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.63,
+    0.62,
+    0.89
+   ],
+   "secondary": [
+    0.447,
+    0.391,
+    0.69
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Tidewing",
+  "name": "Tidewing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "HollowApproach",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 199.4,
+   "atk": 27.8,
+   "def": 16.0,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.58,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Dunefang",
+  "name": "Dunefang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "HollowApproach",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 308.1,
+   "atk": 41.8,
+   "def": 23.9,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.66,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Galepaw",
+  "name": "Galepaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.5,
+   "atk": 14.5,
+   "def": 8.7,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Thornhorn",
+  "name": "Thornhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 159.5,
+   "atk": 23.2,
+   "def": 14.5,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Stonegolem",
+  "name": "Stonegolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 116.7,
+   "atk": 13.1,
+   "def": 10.9,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Coppersentinel",
+  "name": "Coppersentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 183.4,
+   "atk": 20.9,
+   "def": 18.1,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Magmablaze",
+  "name": "Magmablaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "HollowApproach",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.5,
+   "atk": 16.7,
+   "def": 8.3,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Reliccolossus",
+  "name": "Reliccolossus",
+  "family": "Ancient",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "HollowApproach",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 345.1,
+   "atk": 45.2,
+   "def": 28.3,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.71,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.76,
+    0.69,
+    0.93
+   ],
+   "secondary": [
+    0.518,
+    0.429,
+    0.712
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_CrystalShard",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Vespermonolith",
+  "name": "Vespermonolith",
+  "family": "Ancient",
+  "body_plan": "Biped",
+  "size_class": "Huge",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "HollowApproach",
+  "personality": "Protective",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 527.8,
+   "atk": 64.1,
+   "def": 39.6,
+   "spd": 240.0
+  },
+  "capture_difficulty": 0.79,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.65,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.458,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_AncientCore",
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "ResearchAssist"
+  ],
+  "sight_radius": 2400.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Reedmite",
+  "name": "Reedmite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 49.3,
+   "atk": 8.3,
+   "def": 4.8,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sandweevil",
+  "name": "Sandweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 86.3,
+   "atk": 13.8,
+   "def": 9.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pollenbloom",
+  "name": "Pollenbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 111.7,
+   "atk": 12.3,
+   "def": 10.0,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Thornsprout",
+  "name": "Thornsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "HollowApproach",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 175.5,
+   "atk": 19.7,
+   "def": 16.7,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Brinefin",
+  "name": "Brinefin",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 10.3,
+   "def": 7.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.26,
+    0.69,
+    0.78
+   ],
+   "secondary": [
+    0.243,
+    0.429,
+    0.629
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Lagoongill",
+  "name": "Lagoongill",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 126.5,
+   "atk": 16.6,
+   "def": 12.1,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.8,
+    0.75
+   ],
+   "secondary": [
+    0.348,
+    0.49,
+    0.613
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Undertowray",
+  "name": "Undertowray",
+  "family": "Aquatic",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Timid",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 195.5,
+   "atk": 24.8,
+   "def": 18.1,
+   "spd": 378.0
+  },
+  "capture_difficulty": 0.32,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.29,
+    0.46,
+    0.77
+   ],
+   "secondary": [
+    0.26,
+    0.303,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Saltcrest",
+  "name": "Saltcrest",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 80.5,
+   "atk": 10.3,
+   "def": 7.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.28,
+    0.67,
+    0.79
+   ],
+   "secondary": [
+    0.254,
+    0.419,
+    0.635
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Wavejelly",
+  "name": "Wavejelly",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 16.6,
+   "def": 12.1,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.47,
+    0.78,
+    0.76
+   ],
+   "secondary": [
+    0.359,
+    0.479,
+    0.618
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Driftskimmer",
+  "name": "Driftskimmer",
+  "family": "Aquatic",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 195.5,
+   "atk": 24.8,
+   "def": 18.1,
+   "spd": 378.0
+  },
+  "capture_difficulty": 0.32,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.21,
+    0.54,
+    0.73
+   ],
+   "secondary": [
+    0.216,
+    0.347,
+    0.602
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat",
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Tidenymph",
+  "name": "Tidenymph",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Timid",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 10.3,
+   "def": 7.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.3,
+    0.65,
+    0.8
+   ],
+   "secondary": [
+    0.265,
+    0.408,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Rimeblaze",
+  "name": "Rimeblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "AzureShallows",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 13.2,
+   "def": 6.6,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.22,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Staticshard",
+  "name": "Staticshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "AzureShallows",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 21.2,
+   "def": 10.9,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Thornpaw",
+  "name": "Thornpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 11.5,
+   "def": 6.9,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Sunwing",
+  "name": "Sunwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Explorer",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 6.2,
+   "def": 2.8,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Dunewing",
+  "name": "Dunewing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "AzureShallows",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 158.1,
+   "atk": 22.1,
+   "def": 12.7,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Silentshade",
+  "name": "Silentshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 5.9,
+   "def": 2.6,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Coppergolem",
+  "name": "Coppergolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "AzureShallows",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 92.6,
+   "atk": 10.3,
+   "def": 8.6,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Resonantsentinel",
+  "name": "Resonantsentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "AzureShallows",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 145.5,
+   "atk": 16.6,
+   "def": 14.4,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Thornbloom",
+  "name": "Thornbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "AzureShallows",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.6,
+   "atk": 9.8,
+   "def": 7.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Mycelsprout",
+  "name": "Mycelsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "AzureShallows",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 139.2,
+   "atk": 15.6,
+   "def": 13.2,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Lagoonfin",
+  "name": "Lagoonfin",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 11.7,
+   "def": 8.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.26,
+    0.69,
+    0.78
+   ],
+   "secondary": [
+    0.243,
+    0.429,
+    0.629
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Undertowgill",
+  "name": "Undertowgill",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 143.0,
+   "atk": 18.7,
+   "def": 13.6,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.8,
+    0.75
+   ],
+   "secondary": [
+    0.348,
+    0.49,
+    0.613
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Saltray",
+  "name": "Saltray",
+  "family": "Aquatic",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Timid",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 221.0,
+   "atk": 28.1,
+   "def": 20.5,
+   "spd": 378.0
+  },
+  "capture_difficulty": 0.44,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.29,
+    0.46,
+    0.77
+   ],
+   "secondary": [
+    0.26,
+    0.303,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Wavecrest",
+  "name": "Wavecrest",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 91.0,
+   "atk": 11.7,
+   "def": 8.2,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.28,
+    0.67,
+    0.79
+   ],
+   "secondary": [
+    0.254,
+    0.419,
+    0.635
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Mistwing",
+  "name": "Mistwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Explorer",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 7.0,
+   "def": 3.1,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Cometplume",
+  "name": "Cometplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Explorer",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.7,
+   "def": 6.2,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Downsong",
+  "name": "Downsong",
+  "family": "Avian",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Explorer",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 114.4,
+   "atk": 18.7,
+   "def": 10.4,
+   "spd": 525.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.94,
+    0.56,
+    0.52
+   ],
+   "secondary": [
+    0.617,
+    0.358,
+    0.486
+   ]
+  },
+  "foods": [
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Voidwing",
+  "name": "Voidwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 178.7,
+   "atk": 25.0,
+   "def": 14.3,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Dawnfang",
+  "name": "Dawnfang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Riverpaw",
+  "name": "Riverpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 13.0,
+   "def": 7.8,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Resonantgolem",
+  "name": "Resonantgolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 104.6,
+   "atk": 11.7,
+   "def": 9.7,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Fadedshade",
+  "name": "Fadedshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 6.6,
+   "def": 2.9,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Staticblaze",
+  "name": "Staticblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 14.9,
+   "def": 7.4,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pyreshard",
+  "name": "Pyreshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 23.9,
+   "def": 12.3,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Hallowedcolossus",
+  "name": "Hallowedcolossus",
+  "family": "Ancient",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 309.4,
+   "atk": 40.6,
+   "def": 25.3,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.59,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.76,
+    0.69,
+    0.93
+   ],
+   "secondary": [
+    0.518,
+    0.429,
+    0.712
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Primemonolith",
+  "name": "Primemonolith",
+  "family": "Ancient",
+  "body_plan": "Biped",
+  "size_class": "Huge",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Protective",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 473.2,
+   "atk": 57.5,
+   "def": 35.5,
+   "spd": 240.0
+  },
+  "capture_difficulty": 0.67,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.65,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.458,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_AncientCore",
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "ResearchAssist"
+  ],
+  "sight_radius": 2400.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Monolithprimarch",
+  "name": "Monolithprimarch",
+  "family": "Ancient",
+  "body_plan": "Floating",
+  "size_class": "Large",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "TidebreakerIsles",
+  "personality": "Brave",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 309.4,
+   "atk": 40.6,
+   "def": 25.3,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.59,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.94,
+    0.76,
+    0.57
+   ],
+   "secondary": [
+    0.617,
+    0.468,
+    0.514
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 3
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Stonepaw",
+  "name": "Stonepaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 13.0,
+   "def": 7.8,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Hollowhorn",
+  "name": "Hollowhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sunhide",
+  "name": "Sunhide",
+  "family": "Beast",
+  "body_plan": "Biped",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.74,
+    0.54,
+    0.44
+   ],
+   "secondary": [
+    0.507,
+    0.347,
+    0.442
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Mudmite",
+  "name": "Mudmite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 44.2,
+   "atk": 7.4,
+   "def": 4.3,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sporeweevil",
+  "name": "Sporeweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 77.3,
+   "atk": 12.3,
+   "def": 8.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Glimmerhornet",
+  "name": "Glimmerhornet",
+  "family": "Insectoid",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 121.5,
+   "atk": 19.8,
+   "def": 14.3,
+   "spd": 483.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.69,
+    0.51,
+    0.27
+   ],
+   "secondary": [
+    0.48,
+    0.331,
+    0.349
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pyreblaze",
+  "name": "Pyreblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Combat",
+  "home_zone": "Sunscar",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 14.9,
+   "def": 7.4,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Frostshard",
+  "name": "Frostshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Sunscar",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 23.9,
+   "def": 12.3,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pistongolem",
+  "name": "Pistongolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 104.6,
+   "atk": 11.7,
+   "def": 9.7,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Gearsentinel",
+  "name": "Gearsentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 164.4,
+   "atk": 18.7,
+   "def": 16.2,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Coralcrest",
+  "name": "Coralcrest",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "Sunscar",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 178.7,
+   "atk": 25.0,
+   "def": 14.3,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Lanternshade",
+  "name": "Lanternshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "Sunscar",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 6.6,
+   "def": 2.9,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Veilveil",
+  "name": "Veilveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Support",
+  "home_zone": "Sunscar",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.0,
+   "def": 5.8,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Cometwing",
+  "name": "Cometwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Explorer",
+  "home_zone": "Sunscar",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 7.0,
+   "def": 3.1,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Downplume",
+  "name": "Downplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Explorer",
+  "home_zone": "Sunscar",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.7,
+   "def": 6.2,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Bloombloom",
+  "name": "Bloombloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Ember",
+  "weakness": "Flora",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 100.1,
+   "atk": 11.0,
+   "def": 9.0,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sapsprout",
+  "name": "Sapsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "Sunscar",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 157.3,
+   "atk": 17.7,
+   "def": 14.9,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Hollowpaw",
+  "name": "Hollowpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 13.0,
+   "def": 7.8,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sunhorn",
+  "name": "Sunhorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Tidehide",
+  "name": "Tidehide",
+  "family": "Beast",
+  "body_plan": "Biped",
+  "size_class": "Medium",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 143.0,
+   "atk": 20.8,
+   "def": 13.0,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.74,
+    0.54,
+    0.44
+   ],
+   "secondary": [
+    0.507,
+    0.347,
+    0.442
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Magmawing",
+  "name": "Magmawing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 178.7,
+   "atk": 25.0,
+   "def": 14.3,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Abyssfang",
+  "name": "Abyssfang",
+  "family": "Dragon",
+  "body_plan": "Serpent",
+  "size_class": "Large",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Aggressive",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.3,
+    0.45,
+    0.85
+   ],
+   "secondary": [
+    0.265,
+    0.298,
+    0.667
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Coraldrake",
+  "name": "Coraldrake",
+  "family": "Dragon",
+  "body_plan": "Avian",
+  "size_class": "Large",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 276.2,
+   "atk": 37.4,
+   "def": 21.4,
+   "spd": 342.0
+  },
+  "capture_difficulty": 0.54,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.59,
+    0.26,
+    0.77
+   ],
+   "secondary": [
+    0.424,
+    0.193,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Geargolem",
+  "name": "Geargolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 104.6,
+   "atk": 11.7,
+   "def": 9.7,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Chimesentinel",
+  "name": "Chimesentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 164.4,
+   "atk": 18.7,
+   "def": 16.2,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Frostblaze",
+  "name": "Frostblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 91.0,
+   "atk": 14.9,
+   "def": 7.4,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Galeshard",
+  "name": "Galeshard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 143.0,
+   "atk": 23.9,
+   "def": 12.3,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Downwing",
+  "name": "Downwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Explorer",
+  "home_zone": "Stormcrest",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 7.0,
+   "def": 3.1,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Monolithcolossus",
+  "name": "Monolithcolossus",
+  "family": "Ancient",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 309.4,
+   "atk": 40.6,
+   "def": 25.3,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.59,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.76,
+    0.69,
+    0.93
+   ],
+   "secondary": [
+    0.518,
+    0.429,
+    0.712
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Astralmonolith",
+  "name": "Astralmonolith",
+  "family": "Ancient",
+  "body_plan": "Biped",
+  "size_class": "Huge",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "Stormcrest",
+  "personality": "Protective",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 473.2,
+   "atk": 57.5,
+   "def": 35.5,
+   "spd": 240.0
+  },
+  "capture_difficulty": 0.67,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.65,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.458,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_AncientCore",
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "ResearchAssist"
+  ],
+  "sight_radius": 2400.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Veilshade",
+  "name": "Veilshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "Stormcrest",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 41.6,
+   "atk": 6.6,
+   "def": 2.9,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Ghostveil",
+  "name": "Ghostveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Ash",
+  "weakness": "Light",
+  "role": "Support",
+  "home_zone": "Stormcrest",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 72.8,
+   "atk": 11.0,
+   "def": 5.8,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Sporemite",
+  "name": "Sporemite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 44.2,
+   "atk": 7.4,
+   "def": 4.3,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_StormSilver",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Glimmerweevil",
+  "name": "Glimmerweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "Stormcrest",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 77.3,
+   "atk": 12.3,
+   "def": 8.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Verdantbloom",
+  "name": "Verdantbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.6,
+   "atk": 9.8,
+   "def": 7.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Orchidsprout",
+  "name": "Orchidsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 139.2,
+   "atk": 15.6,
+   "def": 13.2,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Fernthorn",
+  "name": "Fernthorn",
+  "family": "Flora",
+  "body_plan": "Biped",
+  "size_class": "Large",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 215.0,
+   "atk": 23.5,
+   "def": 19.8,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.32,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.34,
+    0.51,
+    0.32
+   ],
+   "secondary": [
+    0.287,
+    0.331,
+    0.376
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Boughbough",
+  "name": "Boughbough",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Social",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 88.6,
+   "atk": 9.8,
+   "def": 7.9,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.33,
+    0.67,
+    0.34
+   ],
+   "secondary": [
+    0.282,
+    0.419,
+    0.387
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Glimmermite",
+  "name": "Glimmermite",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Energetic",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 39.1,
+   "atk": 6.6,
+   "def": 3.8,
+   "spd": 598.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.51,
+    0.54,
+    0.28
+   ],
+   "secondary": [
+    0.381,
+    0.347,
+    0.354
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Wireweevil",
+  "name": "Wireweevil",
+  "family": "Insectoid",
+  "body_plan": "Insectoid",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 68.4,
+   "atk": 10.9,
+   "def": 7.6,
+   "spd": 552.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.4,
+    0.55,
+    0.3
+   ],
+   "secondary": [
+    0.32,
+    0.353,
+    0.365
+   ]
+  },
+  "foods": [
+   "Item_FeedMix",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Chitinhornet",
+  "name": "Chitinhornet",
+  "family": "Insectoid",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 107.5,
+   "atk": 17.5,
+   "def": 12.7,
+   "spd": 483.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.69,
+    0.51,
+    0.27
+   ],
+   "secondary": [
+    0.48,
+    0.331,
+    0.349
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_ChitinPlate",
+    "qty": 2
+   },
+   {
+    "item": "Item_Fertilizer",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Sunpaw",
+  "name": "Sunpaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 11.5,
+   "def": 6.9,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_Wood",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Tidehorn",
+  "name": "Tidehorn",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 18.4,
+   "def": 11.5,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.45,
+    0.35
+   ],
+   "secondary": [
+    0.403,
+    0.298,
+    0.393
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_Stone",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Ghostshade",
+  "name": "Ghostshade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Support",
+  "home_zone": "VerdantReach",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 5.9,
+   "def": 2.6,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Abysswing",
+  "name": "Abysswing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "VerdantReach",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 158.1,
+   "atk": 22.1,
+   "def": 12.7,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.34,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Chimegolem",
+  "name": "Chimegolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "VerdantReach",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 92.6,
+   "atk": 10.3,
+   "def": 8.6,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_Resonator",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Thermalwing",
+  "name": "Thermalwing",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Tiny",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Explorer",
+  "home_zone": "VerdantReach",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 36.8,
+   "atk": 6.2,
+   "def": 2.8,
+   "spd": 650.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.79,
+    0.43
+   ],
+   "secondary": [
+    0.546,
+    0.485,
+    0.436
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Crestplume",
+  "name": "Crestplume",
+  "family": "Avian",
+  "body_plan": "Avian",
+  "size_class": "Small",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Explorer",
+  "home_zone": "VerdantReach",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 64.4,
+   "atk": 10.3,
+   "def": 5.5,
+   "spd": 600.0
+  },
+  "capture_difficulty": 0.2,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.65,
+    0.95
+   ],
+   "secondary": [
+    0.403,
+    0.408,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   },
+   {
+    "item": "Item_Fiber",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Galesong",
+  "name": "Galesong",
+  "family": "Avian",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Explorer",
+  "home_zone": "VerdantReach",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.2,
+   "atk": 16.6,
+   "def": 9.2,
+   "spd": 525.0
+  },
+  "capture_difficulty": 0.24,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.94,
+    0.56,
+    0.52
+   ],
+   "secondary": [
+    0.617,
+    0.358,
+    0.486
+   ]
+  },
+  "foods": [
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Galeblaze",
+  "name": "Galeblaze",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Flora",
+  "weakness": "Ember",
+  "role": "Combat",
+  "home_zone": "VerdantReach",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 80.5,
+   "atk": 13.2,
+   "def": 6.6,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.22,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_Frostbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Voltcore",
+  "name": "Voltcore",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "VerdantReach",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 126.5,
+   "atk": 21.2,
+   "def": 10.9,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.29,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.2
+ },
+ {
+  "id": "Echo_Driftfin",
+  "name": "Driftfin",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.5,
+   "atk": 13.1,
+   "def": 9.1,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.26,
+    0.69,
+    0.78
+   ],
+   "secondary": [
+    0.243,
+    0.429,
+    0.629
+   ]
+  },
+  "foods": [
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Tidegill",
+  "name": "Tidegill",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 159.5,
+   "atk": 20.9,
+   "def": 15.2,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.45,
+    0.8,
+    0.75
+   ],
+   "secondary": [
+    0.348,
+    0.49,
+    0.613
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Coralray",
+  "name": "Coralray",
+  "family": "Aquatic",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Timid",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 246.5,
+   "atk": 31.3,
+   "def": 22.8,
+   "spd": 378.0
+  },
+  "capture_difficulty": 0.56,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.29,
+    0.46,
+    0.77
+   ],
+   "secondary": [
+    0.26,
+    0.303,
+    0.624
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Pearlcrest",
+  "name": "Pearlcrest",
+  "family": "Aquatic",
+  "body_plan": "Serpent",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Energetic",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 101.5,
+   "atk": 13.1,
+   "def": 9.1,
+   "spd": 504.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.28,
+    0.67,
+    0.79
+   ],
+   "secondary": [
+    0.254,
+    0.419,
+    0.635
+   ]
+  },
+  "foods": [
+   "Item_RawMeat",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_SeaPearl",
+    "qty": 1
+   },
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Abyssjelly",
+  "name": "Abyssjelly",
+  "family": "Aquatic",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 159.5,
+   "atk": 20.9,
+   "def": 15.2,
+   "spd": 441.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.47,
+    0.78,
+    0.76
+   ],
+   "secondary": [
+    0.359,
+    0.479,
+    0.618
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Reefskimmer",
+  "name": "Reefskimmer",
+  "family": "Aquatic",
+  "body_plan": "Quadruped",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Social",
+  "activity": "Crepuscular",
+  "stats": {
+   "hp": 246.5,
+   "atk": 31.3,
+   "def": 22.8,
+   "spd": 378.0
+  },
+  "capture_difficulty": 0.56,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.21,
+    0.54,
+    0.73
+   ],
+   "secondary": [
+    0.216,
+    0.347,
+    0.602
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat",
+   "Item_RawMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Transport",
+   "Gathering"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Voltheart",
+  "name": "Voltheart",
+  "family": "Elemental",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "PearlseaReef",
+  "personality": "Aggressive",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.5,
+   "atk": 16.7,
+   "def": 8.3,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.46,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.86,
+    0.49,
+    0.23
+   ],
+   "secondary": [
+    0.573,
+    0.32,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_EmberAsh",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "Defense"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Cindershard",
+  "name": "Cindershard",
+  "family": "Elemental",
+  "body_plan": "Floating",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "PearlseaReef",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 159.5,
+   "atk": 26.7,
+   "def": 13.8,
+   "spd": 420.0
+  },
+  "capture_difficulty": 0.53,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.45,
+    0.75,
+    0.95
+   ],
+   "secondary": [
+    0.348,
+    0.463,
+    0.722
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell",
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_VoltCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_EnergyCell",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Embershade",
+  "name": "Embershade",
+  "family": "Spirit",
+  "body_plan": "Floating",
+  "size_class": "Tiny",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Curious",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 46.4,
+   "atk": 7.4,
+   "def": 3.3,
+   "spd": 572.0
+  },
+  "capture_difficulty": 0.36,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.61,
+    0.64,
+    0.88
+   ],
+   "secondary": [
+    0.435,
+    0.402,
+    0.684
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "Cooking"
+  ],
+  "sight_radius": 900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Hollowveil",
+  "name": "Hollowveil",
+  "family": "Spirit",
+  "body_plan": "Amorphous",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Support",
+  "home_zone": "PearlseaReef",
+  "personality": "Timid",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 81.2,
+   "atk": 12.3,
+   "def": 6.5,
+   "spd": 528.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.55,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.403,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_Dawnbloom",
+   "Item_WarmBroth"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 1
+   },
+   {
+    "item": "Item_DawnShard",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Cooking",
+   "ResearchAssist"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Coralwing",
+  "name": "Coralwing",
+  "family": "Dragon",
+  "body_plan": "Quadruped",
+  "size_class": "Medium",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Combat",
+  "home_zone": "PearlseaReef",
+  "personality": "Brave",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 199.4,
+   "atk": 27.8,
+   "def": 16.0,
+   "spd": 399.0
+  },
+  "capture_difficulty": 0.58,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.81,
+    0.39,
+    0.23
+   ],
+   "secondary": [
+    0.546,
+    0.265,
+    0.327
+   ]
+  },
+  "foods": [
+   "Item_CookedMeat"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Defense",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Forgottencolossus",
+  "name": "Forgottencolossus",
+  "family": "Ancient",
+  "body_plan": "Crystalline",
+  "size_class": "Large",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Combat",
+  "home_zone": "PearlseaReef",
+  "personality": "Independent",
+  "activity": "Nocturnal",
+  "stats": {
+   "hp": 345.1,
+   "atk": 45.2,
+   "def": 28.3,
+   "spd": 288.0
+  },
+  "capture_difficulty": 0.71,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.76,
+    0.69,
+    0.93
+   ],
+   "secondary": [
+    0.518,
+    0.429,
+    0.712
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "ResearchAssist",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1900.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Eldermonolith",
+  "name": "Eldermonolith",
+  "family": "Ancient",
+  "body_plan": "Biped",
+  "size_class": "Huge",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Combat",
+  "home_zone": "PearlseaReef",
+  "personality": "Protective",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 527.8,
+   "atk": 64.1,
+   "def": 39.6,
+   "spd": 240.0
+  },
+  "capture_difficulty": 0.79,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.65,
+    0.85,
+    0.8
+   ],
+   "secondary": [
+    0.458,
+    0.518,
+    0.64
+   ]
+  },
+  "foods": [
+   "Item_AncientCore",
+   "Item_CrystalShard"
+  ],
+  "loot": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_AncientCore",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "PowerGeneration",
+   "ResearchAssist"
+  ],
+  "sight_radius": 2400.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Latticegolem",
+  "name": "Latticegolem",
+  "family": "Construct",
+  "body_plan": "Biped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "PearlseaReef",
+  "personality": "Loyal",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 116.7,
+   "atk": 13.1,
+   "def": 10.9,
+   "spd": 408.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.56,
+    0.64,
+    0.63
+   ],
+   "secondary": [
+    0.408,
+    0.402,
+    0.546
+   ]
+  },
+  "foods": [
+   "Item_EnergyCell"
+  ],
+  "loot": [
+   {
+    "item": "Item_Stone",
+    "qty": 3
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Mining",
+   "Crafting"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Ironsentinel",
+  "name": "Ironsentinel",
+  "family": "Construct",
+  "body_plan": "Crystalline",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "PearlseaReef",
+  "personality": "Independent",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 183.4,
+   "atk": 20.9,
+   "def": 18.1,
+   "spd": 357.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.72,
+    0.62,
+    0.42
+   ],
+   "secondary": [
+    0.496,
+    0.391,
+    0.431
+   ]
+  },
+  "foods": [
+   "Item_CrystalShard",
+   "Item_FeedMix"
+  ],
+  "loot": [
+   {
+    "item": "Item_CrystalShard",
+    "qty": 2
+   },
+   {
+    "item": "Item_DuneGlass",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Crafting",
+   "PowerGeneration"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Tidepaw",
+  "name": "Tidepaw",
+  "family": "Beast",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Frost",
+  "weakness": "Pulse",
+  "role": "Base",
+  "home_zone": "PearlseaReef",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 101.5,
+   "atk": 14.5,
+   "def": 8.7,
+   "spd": 480.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": true,
+  "colors": {
+   "primary": [
+    0.58,
+    0.54,
+    0.36
+   ],
+   "secondary": [
+    0.419,
+    0.347,
+    0.398
+   ]
+  },
+  "foods": [
+   "Item_Berry"
+  ],
+  "loot": [
+   {
+    "item": "Item_RawMeat",
+    "qty": 2
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Transport"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Orchidbloom",
+  "name": "Orchidbloom",
+  "family": "Flora",
+  "body_plan": "Quadruped",
+  "size_class": "Small",
+  "element": "Pulse",
+  "weakness": "Frost",
+  "role": "Base",
+  "home_zone": "PearlseaReef",
+  "personality": "Lazy",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 111.7,
+   "atk": 12.3,
+   "def": 10.0,
+   "spd": 384.0
+  },
+  "capture_difficulty": 0.41,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.31,
+    0.69,
+    0.33
+   ],
+   "secondary": [
+    0.271,
+    0.429,
+    0.382
+   ]
+  },
+  "foods": [
+   "Item_Fertilizer"
+  ],
+  "loot": [
+   {
+    "item": "Item_Fiber",
+    "qty": 3
+   },
+   {
+    "item": "Item_CoralShard",
+    "qty": 2
+   }
+  ],
+  "work": [
+   "Farming",
+   "Gathering"
+  ],
+  "sight_radius": 1200.0,
+  "work_affinity": 1.4
+ },
+ {
+  "id": "Echo_Fernsprout",
+  "name": "Fernsprout",
+  "family": "Flora",
+  "body_plan": "Amorphous",
+  "size_class": "Medium",
+  "element": "Light",
+  "weakness": "Ash",
+  "role": "Base",
+  "home_zone": "PearlseaReef",
+  "personality": "Curious",
+  "activity": "Diurnal",
+  "stats": {
+   "hp": 175.5,
+   "atk": 19.7,
+   "def": 16.7,
+   "spd": 336.0
+  },
+  "capture_difficulty": 0.48,
+  "hostile": false,
+  "colors": {
+   "primary": [
+    0.55,
+    0.75,
+    0.4
+   ],
+   "secondary": [
+    0.403,
+    0.463,
+    0.42
+   ]
+  },
+  "foods": [
+   "Item_Berry",
+   "Item_Dawnbloom"
+  ],
+  "loot": [
+   {
+    "item": "Item_Berry",
+    "qty": 3
+   },
+   {
+    "item": "Item_Dawnbloom",
+    "qty": 1
+   }
+  ],
+  "work": [
+   "Gathering",
+   "Farming"
+  ],
+  "sight_radius": 1500.0,
+  "work_affinity": 1.4
+ }
+]

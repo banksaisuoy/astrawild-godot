@@ -1,0 +1,55 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+
+config_version=5
+
+[application]
+
+config/name="ASTRAWILD — Echoes of the First Dawn"
+config/description="Godot 4 port of the ASTRAWILD survival adventure prototype (originally Unreal Engine 5). Third-person survival adventure with Echo creature companionship, crafting, base building and a 12-zone procedural world."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Data="*res://scripts/autoload/data.gd"
+Game="*res://scripts/autoload/game.gd"
+Saves="*res://scripts/autoload/saves.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
+
+[physics]
+
+3d/physics_layer_names/layer_1="world"
+3d/physics_layer_names/layer_2="player"
+3d/physics_layer_names/layer_3="creatures"
+3d/physics_layer_names/layer_4="resources"
+3d/physics_layer_names/layer_5="buildings"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.63, 0.77, 0.92, 1)
+anti_aliasing/quality/screen_space_aa=1
+
+[debug]
+
+gdscript/warnings/inference_on_variant=0
+gdscript/warnings/untyped_declaration=0
+gdscript/warnings/unsafe_property_access=0
+gdscript/warnings/unsafe_method_access=0
+gdscript/warnings/unsafe_cast=0
+gdscript/warnings/unsafe_call_argument=0

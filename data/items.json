@@ -1,0 +1,60 @@
+{
+  "items": [
+    {"id": "Item_Wood", "name": "Dawnwood", "category": "material", "weight": 0.5, "stack": 200, "desc": "Pale timber from dawnwood groves."},
+    {"id": "Item_Stone", "name": "Fieldstone", "category": "material", "weight": 0.8, "stack": 200, "desc": "Sturdy stone pried from the vale."},
+    {"id": "Item_Fiber", "name": "Sunfiber", "category": "material", "weight": 0.1, "stack": 200, "desc": "Golden fiber cut from thickets."},
+    {"id": "Item_WoodPlank", "name": "Dawnwood Plank", "category": "material", "weight": 1.0, "stack": 100, "desc": "Milled plank for real construction."},
+    {"id": "Item_CrystalShard", "name": "Dawn Crystal Shard", "category": "material", "weight": 0.3, "stack": 100, "desc": "A splinter that still hums with the First Dawn."},
+    {"id": "Item_Dawnbloom", "name": "Dawnbloom", "category": "material", "weight": 0.1, "stack": 100, "desc": "Petal that opens only at first light."},
+    {"id": "Item_EmberAsh", "name": "Ember Ash", "category": "material", "weight": 0.2, "stack": 50, "desc": "Warm ash from the ridge caldera."},
+    {"id": "Item_DawnShard", "name": "Dawn Shard", "category": "currency", "weight": 0.1, "stack": 200, "desc": "Trade shard accepted across the vale."},
+    {"id": "Item_Frostbloom", "name": "Frostbloom", "category": "material", "weight": 0.2, "stack": 50, "desc": "Cold blossom of the snowfields."},
+    {"id": "Item_VoltCore", "name": "Volt Core", "category": "material", "weight": 0.4, "stack": 30, "desc": "Crackling heart of a Pulse Echo."},
+    {"id": "Item_Fertilizer", "name": "Fertilizer", "category": "material", "weight": 0.3, "stack": 50, "desc": "Rich compost for farm plots."},
+    {"id": "Item_SeaPearl", "name": "Sea Pearl", "category": "material", "weight": 0.2, "stack": 100, "desc": "The sea's patient treasure."},
+    {"id": "Item_CoralShard", "name": "Coral Shard", "category": "material", "weight": 0.4, "stack": 100, "desc": "Sung coral from the reef cathedrals."},
+    {"id": "Item_DuneGlass", "name": "Dune Glass", "category": "material", "weight": 0.3, "stack": 100, "desc": "Fused sand that remembers the buried sun."},
+    {"id": "Item_StormSilver", "name": "Storm Silver", "category": "material", "weight": 0.6, "stack": 100, "desc": "Ore born where thunder grazes."},
+    {"id": "Item_ChitinPlate", "name": "Chitin Plate", "category": "material", "weight": 0.5, "stack": 100, "desc": "Shed shell of insectoid Echoes."},
+    {"id": "Item_EnergyCell", "name": "Pulse Cell", "category": "material", "weight": 0.15, "stack": 60, "desc": "Standard energy cell for pulse weapons."},
+    {"id": "Item_AncientAlloy", "name": "Ancient Alloy", "category": "material", "weight": 0.9, "stack": 50, "desc": "Metal older than the fracture."},
+
+    {"id": "Item_Berry", "name": "Glimmer Berry", "category": "consumable", "weight": 0.2, "stack": 50, "food": 15, "water": 5, "feed_value": 6, "desc": "Sweet berry favored by almost every Echo."},
+    {"id": "Item_RawMeat", "name": "Raw Meat", "category": "consumable", "weight": 0.7, "stack": 30, "food": 8, "feed_value": 5, "desc": "Better cooked. Echoes do not mind."},
+    {"id": "Item_CookedMeat", "name": "Cooked Meat", "category": "consumable", "weight": 0.6, "stack": 30, "food": 30, "desc": "Campfire roast, hearty and safe."},
+    {"id": "Item_WaterFlask", "name": "Water Flask", "category": "consumable", "weight": 0.9, "stack": 20, "water": 40, "desc": "Filtered vale water."},
+    {"id": "Item_Bandage", "name": "Bandage", "category": "consumable", "weight": 0.2, "stack": 30, "heal": 40, "desc": "Field dressing for wounds."},
+    {"id": "Item_FeedMix", "name": "Feed Mix", "category": "consumable", "weight": 0.3, "stack": 40, "food": 5, "feed_value": 14, "desc": "Hearty mix every Echo enjoys."},
+    {"id": "Item_HerbalSalve", "name": "Herbal Salve", "category": "consumable", "weight": 0.25, "stack": 20, "heal": 70, "desc": "Dawnbloom salve, mends deep hurts."},
+    {"id": "Item_WarmBroth", "name": "Warm Broth", "category": "consumable", "weight": 0.6, "stack": 20, "food": 18, "water": 12, "heal": 10, "desc": "Frostbloom broth that warms the bones."},
+
+    {"id": "Item_Resonator", "name": "Echo Resonator", "category": "creature", "weight": 0.4, "stack": 20, "desc": "Attunes to a weakened Echo and invites it to join you."},
+    {"id": "Item_AncientCore", "name": "Ancient Core", "category": "quest", "weight": 1.0, "stack": 10, "desc": "A dormant machine heart from the Underlight."},
+
+    {"id": "Item_DawnwoodClub", "name": "Dawnwood Club", "category": "weapon", "weight": 2.0, "stack": 1, "atk": 6, "element": "None", "desc": "Honest wood, honest swings."},
+    {"id": "Item_StonehideShield", "name": "Stonehide Shield", "category": "offhand", "weight": 4.0, "stack": 1, "block": 0.65, "desc": "Stone plate that turns claws aside."},
+    {"id": "Item_CrystalBlade", "name": "Crystal Blade", "category": "weapon", "weight": 2.5, "stack": 1, "atk": 14, "element": "Pulse", "desc": "Humming edge of dawn crystal."},
+    {"id": "Item_AncientResonator", "name": "Ancient Resonator", "category": "weapon", "weight": 3.0, "stack": 1, "atk": 18, "element": "Light", "desc": "Old-world resonance weapon, gently furious."},
+    {"id": "Item_PulseLance", "name": "Pulse Lance", "category": "weapon", "weight": 3.5, "stack": 1, "atk": 16, "element": "Pulse", "ranged": true, "ammo": "Item_EnergyCell", "fire_interval": 0.35, "desc": "Standard-issue expedition lance. Feed it Pulse Cells."},
+    {"id": "Item_Scrapshot", "name": "Scrapshot", "category": "weapon", "weight": 4.0, "stack": 1, "atk": 14, "element": "Ash", "ranged": true, "ammo": "Item_Stone", "fire_interval": 0.5, "desc": "Improvised kinetic carbine. Eats fieldstone."},
+    {"id": "Item_PlasmaCharger", "name": "Plasma Charger", "category": "weapon", "weight": 5.0, "stack": 1, "atk": 38, "element": "Ember", "ranged": true, "ammo": "Item_EnergyCell", "fire_interval": 0.8, "desc": "Slow, bright, and final."},
+    {"id": "Item_LumenBeam", "name": "Lumen Beam", "category": "weapon", "weight": 4.5, "stack": 1, "atk": 18, "element": "Light", "ranged": true, "ammo": "Item_EnergyCell", "fire_interval": 0.22, "desc": "A thread of daylight on demand."},
+    {"id": "Item_ArcCaster", "name": "Arc Caster", "category": "weapon", "weight": 5.0, "stack": 1, "atk": 26, "element": "Pulse", "ranged": true, "ammo": "Item_EnergyCell", "fire_interval": 0.6, "desc": "Chain lightning, politely harnessed."},
+    {"id": "Item_MagrailDriver", "name": "Magrail Driver", "category": "weapon", "weight": 7.0, "stack": 1, "atk": 85, "element": "Ash", "ranged": true, "ammo": "Item_RailSlug", "fire_interval": 1.8, "desc": "It does not so much fire as insist."},
+    {"id": "Item_StarlancePrototype", "name": "Starlance Prototype", "category": "weapon", "weight": 8.0, "stack": 1, "atk": 140, "element": "Light", "ranged": true, "ammo": "Item_NovaCell", "fire_interval": 2.5, "desc": "Experimental starlight lance. Handle with respect."},
+
+    {"id": "Item_FiberWeaveVest", "name": "Fiber Weave Vest", "category": "armor", "weight": 3.0, "stack": 1, "armor": 20, "slot": "body", "desc": "Sunfiber weave, light and dependable."},
+    {"id": "Item_EmberhideJacket", "name": "Emberhide Jacket", "category": "armor", "weight": 5.0, "stack": 1, "armor": 45, "slot": "body", "desc": "Warm hide jacket from the ridge."},
+    {"id": "Item_CrystalplateCuirass", "name": "Crystalplate Cuirass", "category": "armor", "weight": 8.0, "stack": 1, "armor": 80, "slot": "body", "desc": "Laminated crystal plate."},
+    {"id": "Item_ResonanceHelm", "name": "Resonance Helm", "category": "armor", "weight": 2.0, "stack": 1, "armor": 35, "insulation": 6, "slot": "head", "desc": "Insulating helm of resonance mesh."},
+    {"id": "Item_DawnstriderExosuit", "name": "Dawnstrider Exosuit", "category": "armor", "weight": 9.0, "stack": 1, "armor": 10, "insulation": 8, "stamina_regen": 6, "carry": 40, "speed_mult": 1.15, "slot": "body", "desc": "Expedition exosuit — stride further than fear."},
+
+    {"id": "Item_FieldScanner", "name": "Field Scanner", "category": "tool", "weight": 1.0, "stack": 1, "scan_mult": 3.0, "desc": "Observation accelerator for the field journal."},
+    {"id": "Item_UtilityDrone", "name": "Utility Drone", "category": "tool", "weight": 2.0, "stack": 1, "desc": "Deployable scouting drone."},
+    {"id": "Item_UtilityRobot", "name": "Utility Robot", "category": "tool", "weight": 6.0, "stack": 1, "desc": "Deployable workframe robot."},
+
+    {"id": "Item_RailSlug", "name": "Rail Slug", "category": "material", "weight": 0.2, "stack": 60, "desc": "Sabot slug for magrail weapons."},
+    {"id": "Item_SeekerMissile", "name": "Seeker Missile", "category": "material", "weight": 0.8, "stack": 30, "desc": "Guided missile for the Skysinger."},
+    {"id": "Item_NovaCell", "name": "Nova Cell", "category": "material", "weight": 0.4, "stack": 30, "desc": "Dense charge for the Starlance."}
+  ]
+}
