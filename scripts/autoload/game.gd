@@ -643,6 +643,8 @@ func notify_event(event_type: String, target: String, count: int = 1) -> void:
 
 
 func _check_quest_complete(qid: String) -> void:
+        if completed_quests.has(qid) or not quest_states.has(qid):
+                return
         var q: Dictionary = Data.quests[qid]
         var state: Dictionary = quest_states[qid]
         var all_done := true
@@ -652,12 +654,15 @@ func _check_quest_complete(qid: String) -> void:
                         break
         if not all_done:
                 return
+        # retire the quest BEFORE granting rewards — reward items re-enter
+        # _notify_quest_counters, which must never see this quest as active
+        # again or completion recurs infinitely (stack overflow)
+        completed_quests[qid] = true
+        quest_states.erase(qid)
         # rewards
         for reward in q.get("rewards", []):
                 add_item(reward["item"], reward["qty"])
         add_research_points(int(q.get("research_points", 0)))
-        completed_quests[qid] = true
-        quest_states.erase(qid)
         toast.emit("Quest complete: %s" % q.get("title", qid), Color(0.6, 1.0, 0.7))
         # advance chain
         var nxt = q.get("next")

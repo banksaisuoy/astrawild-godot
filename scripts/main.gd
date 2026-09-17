@@ -254,6 +254,20 @@ func _run_smoke_checks() -> void:
         # quest state
         print("SMOKE: quest=", Game.active_quest, " objectives=", Game.quest_states.get(Game.active_quest, {}).get("objectives", []))
         print("SMOKE: zone=", Game.current_zone_id)
+        # quest chain finale: The Vanguard Protocol end-to-end (data fix v1.0.2)
+        var q10: Dictionary = Data.quests.get("Quest_SunkenVault", {})
+        print("SMOKE: sunken vault next=", q10.get("next"), " (chain to finale)")
+        Game.start_quest("Quest_VanguardProtocol")
+        var q11: Dictionary = Game.active_quest_data()
+        print("SMOKE: finale objectives=", q11.get("objectives", []).size(), " active=", Game.active_quest)
+        Game.add_item("Item_CrystalplateCuirass", 1)
+        Game.notify_event("PlaceBuilding", "Building_Generator")
+        Game.notify_event("PlaceBuilding", "Building_Battery")
+        Game.notify_event("DefeatCreature", "Echo_Gloomfang")
+        Game.notify_event("DefeatCreature", "Echo_Gloomfang")
+        Game.notify_event("DefeatCreature", "Echo_Gloomfang")
+        print("SMOKE: finale complete=", Game.completed_quests.has("Quest_VanguardProtocol"),
+                " novacells=", Game.count_item("Item_NovaCell"), " alloys=", Game.count_item("Item_AncientAlloy"))
         # new systems: skiff board/dismount, worksite assign, power grid resolve
         if world.skiffs.size() > 0:
                 var skiff = world.skiffs[0]

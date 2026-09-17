@@ -291,14 +291,52 @@
    }
   ],
   "research_points": 25,
-  "next": null
+  "next": "Quest_VanguardProtocol"
  },
  {
   "id": "Quest_VanguardProtocol",
   "title": "The Vanguard Protocol",
   "summary": "Plate up, field the machines, and hold the line through a night raid.",
-  "objectives": [],
-  "rewards": [],
+  "objectives": [
+   {
+    "type": "CollectItem",
+    "target": "Item_CrystalplateCuirass",
+    "count": 1,
+    "text": "Plate up — forge a Crystalplate Cuirass"
+   },
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_Generator",
+    "count": 1,
+    "text": "Field the machines — build an Echo Dynamo"
+   },
+   {
+    "type": "PlaceBuilding",
+    "target": "Building_Battery",
+    "count": 1,
+    "text": "Wire up a Charge Cell reserve"
+   },
+   {
+    "type": "DefeatCreature",
+    "target": "Echo_Gloomfang",
+    "count": 3,
+    "text": "Hold the line — drive off 3 Gloomfang raiders"
+   }
+  ],
+  "rewards": [
+   {
+    "item": "Item_DawnShard",
+    "qty": 10
+   },
+   {
+    "item": "Item_NovaCell",
+    "qty": 12
+   },
+   {
+    "item": "Item_AncientAlloy",
+    "qty": 6
+   }
+  ],
   "research_points": 25,
   "next": null
  }
