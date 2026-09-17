@@ -66,6 +66,8 @@ var journal := {}          # species_id -> {progress, milestones}
 var quest_states := {}     # quest_id -> {objectives: [progress]}
 var active_quest := ""
 var completed_quests := {}
+var god_mode := false      # cheat AW.God — damage disabled
+var forced_weather := ""   # world-event / cheat override (Storm Surge etc.)
 
 # ---- party ----
 var party := []            # array of echo state dicts (active field team)
@@ -181,10 +183,19 @@ func _advance_weather(delta: float) -> void:
         weather_timer -= delta * MINUTES_PER_REAL_SECOND
         if weather_timer <= 0.0:
                 weather_timer = 90.0
-                _roll_weather()
+                if forced_weather == "" or forced_weather == weather_id:
+                        _roll_weather()
+                else:
+                        # world-event forced weather holds until the event ends
+                        weather_id = forced_weather
+                        weather_changed.emit(weather_id)
 
 
 func _roll_weather() -> void:
+        if forced_weather != "" and forced_weather != weather_id:
+                weather_id = forced_weather
+                weather_changed.emit(weather_id)
+                return
         var states: Array = Data.weather_states
         var total := 0.0
         for w in states:
@@ -270,7 +281,7 @@ func status_speed_mult() -> float:
 
 
 func take_damage(amount: float, element: String = "None", check_dodge: bool = true) -> float:
-        if dead:
+        if dead or god_mode:
                 return 0.0
         if check_dodge and get_meta("dodging", false):
                 return 0.0
@@ -510,6 +521,21 @@ func unlock_tech(tech_id: String) -> bool:
         research_changed.emit()
         _notify_quest_counters("UnlockTechnology", tech_id)
         return true
+
+
+func is_tech_unlocked(tech_id: String) -> bool:
+        return unlocked_tech.has(tech_id)
+
+
+func force_unlock_tech(tech_id: String) -> void:
+        ## Dungeon-clear unique reward path (UE5 ForceUnlockTech — free, prereq-free, once).
+        if unlocked_tech.has(tech_id):
+                return
+        unlocked_tech[tech_id] = true
+        var t: Dictionary = Data.techs.get(tech_id, {})
+        toast.emit("ANCIENT KNOWLEDGE — %s force-unlocked" % t.get("name", tech_id), Color(1.0, 0.85, 0.4))
+        research_changed.emit()
+        _notify_quest_counters("UnlockTechnology", tech_id)
 
 
 # ------------------------------------------------------------------ journal --

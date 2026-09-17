@@ -1,84 +1,1493 @@
 {
   "nodes": [
-    {"id": "Node_Dawnwood", "name": "Dawnwood Stand", "item": "Item_Wood", "rarity": "Common", "qty": 2, "max": 3, "respawn": 30, "tint": [0.55, 0.4, 0.25], "mesh": "res://assets/meshes/environment/SM_Tree_Broadleaf.glb"},
-    {"id": "Node_Fieldstone", "name": "Fieldstone Outcrop", "item": "Item_Stone", "rarity": "Common", "qty": 2, "max": 3, "respawn": 30, "tint": [0.6, 0.6, 0.58], "mesh": "res://assets/meshes/environment/SM_Rock_Granite_L.glb"},
-    {"id": "Node_Sunfiber", "name": "Sunfiber Thicket", "item": "Item_Fiber", "rarity": "Common", "qty": 2, "max": 3, "respawn": 25, "tint": [0.4, 0.7, 0.35], "mesh": "res://assets/meshes/environment/SM_Fern.glb"},
-    {"id": "Node_DawnCrystal", "name": "Dawn Crystal Cluster", "item": "Item_CrystalShard", "rarity": "Uncommon", "qty": 2, "max": 3, "respawn": 60, "tint": [0.45, 0.75, 1.0], "mesh": "res://assets/meshes/environment/SM_Node_Astraite.glb"},
-    {"id": "Node_EmberAsh", "name": "Ember Ash Vent", "item": "Item_EmberAsh", "rarity": "Uncommon", "qty": 2, "max": 3, "respawn": 55, "tint": [0.9, 0.45, 0.2], "mesh": "res://assets/meshes/environment/SM_Node_Pyronite.glb"},
-    {"id": "Node_SeaPearl", "name": "Sea Pearl Bed", "item": "Item_SeaPearl", "rarity": "Uncommon", "qty": 1, "max": 2, "respawn": 70, "tint": [0.85, 0.9, 1.0], "mesh": "res://assets/meshes/environment/SM_Rock_Granite_S.glb"},
-    {"id": "Node_CoralShard", "name": "Coral Shard Reef", "item": "Item_CoralShard", "rarity": "Uncommon", "qty": 2, "max": 3, "respawn": 60, "tint": [1.0, 0.55, 0.6], "mesh": "res://assets/meshes/environment/SM_Node_Voidstone.glb"},
-    {"id": "Node_DuneGlass", "name": "Dune Glass Seam", "item": "Item_DuneGlass", "rarity": "Rare", "qty": 1, "max": 2, "respawn": 90, "tint": [0.95, 0.85, 0.5], "mesh": "res://assets/meshes/environment/SM_Node_Astraite.glb"},
-    {"id": "Node_StormSilver", "name": "Storm Silver Vein", "item": "Item_StormSilver", "rarity": "Rare", "qty": 1, "max": 2, "respawn": 100, "tint": [0.7, 0.75, 0.95], "mesh": "res://assets/meshes/environment/SM_Node_Voidstone.glb"},
-    {"id": "Node_AncientVein", "name": "Hidden Alloy Vein", "item": "Item_AncientAlloy", "rarity": "Epic", "qty": 1, "max": 1, "respawn": 480, "tint": [0.6, 0.95, 0.9], "hidden": true, "mesh": "res://assets/meshes/environment/SM_Node_AncientVein.glb"}
+    {
+      "id": "Node_Dawnwood",
+      "name": "Dawnwood Stand",
+      "item": "Item_Wood",
+      "rarity": "Common",
+      "qty": 2,
+      "max": 3,
+      "respawn": 30,
+      "tint": [
+        0.55,
+        0.4,
+        0.25
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Tree_Broadleaf.glb"
+    },
+    {
+      "id": "Node_Fieldstone",
+      "name": "Fieldstone Outcrop",
+      "item": "Item_Stone",
+      "rarity": "Common",
+      "qty": 2,
+      "max": 3,
+      "respawn": 30,
+      "tint": [
+        0.6,
+        0.6,
+        0.58
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Rock_Granite_L.glb"
+    },
+    {
+      "id": "Node_Sunfiber",
+      "name": "Sunfiber Thicket",
+      "item": "Item_Fiber",
+      "rarity": "Common",
+      "qty": 2,
+      "max": 3,
+      "respawn": 25,
+      "tint": [
+        0.4,
+        0.7,
+        0.35
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Fern.glb"
+    },
+    {
+      "id": "Node_DawnCrystal",
+      "name": "Dawn Crystal Cluster",
+      "item": "Item_CrystalShard",
+      "rarity": "Uncommon",
+      "qty": 2,
+      "max": 3,
+      "respawn": 60,
+      "tint": [
+        0.45,
+        0.75,
+        1.0
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Node_Astraite.glb"
+    },
+    {
+      "id": "Node_EmberAsh",
+      "name": "Ember Ash Vent",
+      "item": "Item_EmberAsh",
+      "rarity": "Uncommon",
+      "qty": 2,
+      "max": 3,
+      "respawn": 55,
+      "tint": [
+        0.9,
+        0.45,
+        0.2
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Node_Pyronite.glb"
+    },
+    {
+      "id": "Node_SeaPearl",
+      "name": "Sea Pearl Bed",
+      "item": "Item_SeaPearl",
+      "rarity": "Uncommon",
+      "qty": 1,
+      "max": 2,
+      "respawn": 70,
+      "tint": [
+        0.85,
+        0.9,
+        1.0
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Rock_Granite_S.glb"
+    },
+    {
+      "id": "Node_CoralShard",
+      "name": "Coral Shard Reef",
+      "item": "Item_CoralShard",
+      "rarity": "Uncommon",
+      "qty": 2,
+      "max": 3,
+      "respawn": 60,
+      "tint": [
+        1.0,
+        0.55,
+        0.6
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Node_Voidstone.glb"
+    },
+    {
+      "id": "Node_DuneGlass",
+      "name": "Dune Glass Seam",
+      "item": "Item_DuneGlass",
+      "rarity": "Rare",
+      "qty": 1,
+      "max": 2,
+      "respawn": 90,
+      "tint": [
+        0.95,
+        0.85,
+        0.5
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Node_Astraite.glb"
+    },
+    {
+      "id": "Node_StormSilver",
+      "name": "Storm Silver Vein",
+      "item": "Item_StormSilver",
+      "rarity": "Rare",
+      "qty": 1,
+      "max": 2,
+      "respawn": 100,
+      "tint": [
+        0.7,
+        0.75,
+        0.95
+      ],
+      "mesh": "res://assets/meshes/environment/SM_Node_Voidstone.glb"
+    },
+    {
+      "id": "Node_AncientVein",
+      "name": "Hidden Alloy Vein",
+      "item": "Item_AncientAlloy",
+      "rarity": "Epic",
+      "qty": 1,
+      "max": 1,
+      "respawn": 480,
+      "tint": [
+        0.6,
+        0.95,
+        0.9
+      ],
+      "hidden": true,
+      "mesh": "res://assets/meshes/environment/SM_Node_AncientVein.glb"
+    }
   ],
   "recipes": [
-    {"id": "Recipe_Resonator", "name": "Echo Resonator", "inputs": [{"item": "Item_Stone", "qty": 2}, {"item": "Item_Fiber", "qty": 1}], "outputs": [{"item": "Item_Resonator", "qty": 1}], "time": 3.0, "tech": null, "station": null},
-    {"id": "Recipe_Bandage", "name": "Bandage", "inputs": [{"item": "Item_Fiber", "qty": 2}], "outputs": [{"item": "Item_Bandage", "qty": 1}], "time": 2.0, "tech": null, "station": null},
-    {"id": "Recipe_WoodPlank", "name": "Dawnwood Plank", "inputs": [{"item": "Item_Wood", "qty": 2}], "outputs": [{"item": "Item_WoodPlank", "qty": 1}], "time": 2.0, "tech": null, "station": "Station_Workbench"},
-    {"id": "Recipe_CookedMeat", "name": "Cooked Meat", "inputs": [{"item": "Item_RawMeat", "qty": 1}], "outputs": [{"item": "Item_CookedMeat", "qty": 1}], "time": 5.0, "tech": "Tech_Cooking", "station": "Station_Campfire"},
-    {"id": "Recipe_WaterFlask", "name": "Water Flask", "inputs": [{"item": "Item_Fiber", "qty": 2}, {"item": "Item_CrystalShard", "qty": 1}], "outputs": [{"item": "Item_WaterFlask", "qty": 1}], "time": 4.0, "tech": null, "station": "Station_Workbench"},
-    {"id": "Recipe_FeedMix", "name": "Feed Mix", "inputs": [{"item": "Item_Berry", "qty": 2}, {"item": "Item_Fiber", "qty": 1}], "outputs": [{"item": "Item_FeedMix", "qty": 1}], "time": 4.0, "tech": "Tech_Husbandry", "station": "Station_Campfire"},
-    {"id": "Recipe_HerbalSalve", "name": "Herbal Salve", "inputs": [{"item": "Item_Dawnbloom", "qty": 2}, {"item": "Item_Fiber", "qty": 1}], "outputs": [{"item": "Item_HerbalSalve", "qty": 1}], "time": 4.0, "tech": "Tech_Husbandry", "station": "Station_Workbench"},
-    {"id": "Recipe_DawnwoodClub", "name": "Dawnwood Club", "inputs": [{"item": "Item_Wood", "qty": 3}, {"item": "Item_Fiber", "qty": 1}], "outputs": [{"item": "Item_DawnwoodClub", "qty": 1}], "time": 3.0, "tech": null, "station": "Station_Workbench"},
-    {"id": "Recipe_StonehideShield", "name": "Stonehide Shield", "inputs": [{"item": "Item_Stone", "qty": 3}, {"item": "Item_Wood", "qty": 2}, {"item": "Item_Fiber", "qty": 1}], "outputs": [{"item": "Item_StonehideShield", "qty": 1}], "time": 5.0, "tech": "Tech_Armory", "station": "Station_Workbench"},
-    {"id": "Recipe_CrystalBlade", "name": "Crystal Blade", "inputs": [{"item": "Item_CrystalShard", "qty": 2}, {"item": "Item_WoodPlank", "qty": 2}, {"item": "Item_EmberAsh", "qty": 1}], "outputs": [{"item": "Item_CrystalBlade", "qty": 1}], "time": 8.0, "tech": "Tech_Armory", "station": "Station_Workbench"},
-    {"id": "Recipe_FiberWeaveVest", "name": "Fiber Weave Vest", "inputs": [{"item": "Item_Fiber", "qty": 4}, {"item": "Item_Wood", "qty": 1}], "outputs": [{"item": "Item_FiberWeaveVest", "qty": 1}], "time": 4.0, "tech": "Tech_Armory", "station": "Station_Workbench"},
-    {"id": "Recipe_EmberhideJacket", "name": "Emberhide Jacket", "inputs": [{"item": "Item_EmberAsh", "qty": 2}, {"item": "Item_WoodPlank", "qty": 2}, {"item": "Item_Fiber", "qty": 2}], "outputs": [{"item": "Item_EmberhideJacket", "qty": 1}], "time": 6.0, "tech": "Tech_Armory", "station": "Station_Workbench"},
-    {"id": "Recipe_CrystalplateCuirass", "name": "Crystalplate Cuirass", "inputs": [{"item": "Item_CrystalShard", "qty": 3}, {"item": "Item_WoodPlank", "qty": 3}, {"item": "Item_EmberAsh", "qty": 2}], "outputs": [{"item": "Item_CrystalplateCuirass", "qty": 1}], "time": 9.0, "tech": "Tech_Armory", "station": "Station_Workbench"},
-    {"id": "Recipe_PlankBatch", "name": "Plank Batch", "inputs": [{"item": "Item_Wood", "qty": 10}], "outputs": [{"item": "Item_WoodPlank", "qty": 6}], "time": 6.0, "tech": "Tech_Mechanics", "station": "Station_Workbench"},
-    {"id": "Recipe_ResonatorBatch", "name": "Resonator Batch", "inputs": [{"item": "Item_CrystalShard", "qty": 2}, {"item": "Item_VoltCore", "qty": 1}, {"item": "Item_Fiber", "qty": 2}], "outputs": [{"item": "Item_Resonator", "qty": 3}], "time": 8.0, "tech": "Tech_Mechanics", "station": "Station_Workbench"},
-    {"id": "Recipe_WarmBroth", "name": "Warm Broth", "inputs": [{"item": "Item_RawMeat", "qty": 1}, {"item": "Item_Frostbloom", "qty": 1}, {"item": "Item_Berry", "qty": 1}], "outputs": [{"item": "Item_WarmBroth", "qty": 2}], "time": 5.0, "tech": "Tech_Thermal", "station": "Station_Campfire"},
-    {"id": "Recipe_Fertilizer", "name": "Fertilizer", "inputs": [{"item": "Item_Dawnbloom", "qty": 2}, {"item": "Item_Fiber", "qty": 1}, {"item": "Item_RawMeat", "qty": 1}], "outputs": [{"item": "Item_Fertilizer", "qty": 3}], "time": 4.0, "tech": "Tech_Agriculture", "station": "Station_Campfire"},
-    {"id": "Recipe_AncientResonator", "name": "Ancient Resonator", "inputs": [{"item": "Item_AncientCore", "qty": 1}, {"item": "Item_CrystalShard", "qty": 2}, {"item": "Item_Resonator", "qty": 1}], "outputs": [{"item": "Item_AncientResonator", "qty": 1}], "time": 10.0, "tech": "Tech_AncientResonance", "station": "Station_Workbench"},
-    {"id": "Recipe_EnergyCell", "name": "Pulse Cells", "inputs": [{"item": "Item_VoltCore", "qty": 2}, {"item": "Item_CrystalShard", "qty": 1}], "outputs": [{"item": "Item_EnergyCell", "qty": 4}], "time": 4.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_FieldScanner", "name": "Field Scanner", "inputs": [{"item": "Item_CrystalShard", "qty": 2}, {"item": "Item_VoltCore", "qty": 1}, {"item": "Item_Fiber", "qty": 2}], "outputs": [{"item": "Item_FieldScanner", "qty": 1}], "time": 6.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_ResonanceHelm", "name": "Resonance Helm", "inputs": [{"item": "Item_CrystalShard", "qty": 3}, {"item": "Item_EmberAsh", "qty": 2}, {"item": "Item_Fiber", "qty": 2}], "outputs": [{"item": "Item_ResonanceHelm", "qty": 1}], "time": 7.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_DawnstriderExosuit", "name": "Dawnstrider Exosuit", "inputs": [{"item": "Item_VoltCore", "qty": 4}, {"item": "Item_CrystalShard", "qty": 3}, {"item": "Item_EmberAsh", "qty": 4}], "outputs": [{"item": "Item_DawnstriderExosuit", "qty": 1}], "time": 12.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_PulseLance", "name": "Pulse Lance", "inputs": [{"item": "Item_VoltCore", "qty": 3}, {"item": "Item_CrystalShard", "qty": 3}, {"item": "Item_DawnShard", "qty": 3}], "outputs": [{"item": "Item_PulseLance", "qty": 1}], "time": 10.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_UtilityDrone", "name": "Utility Drone", "inputs": [{"item": "Item_VoltCore", "qty": 4}, {"item": "Item_CrystalShard", "qty": 2}, {"item": "Item_DawnShard", "qty": 3}], "outputs": [{"item": "Item_UtilityDrone", "qty": 1}], "time": 12.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_UtilityRobot", "name": "Utility Robot", "inputs": [{"item": "Item_VoltCore", "qty": 6}, {"item": "Item_CrystalShard", "qty": 4}, {"item": "Item_DawnShard", "qty": 5}], "outputs": [{"item": "Item_UtilityRobot", "qty": 1}], "time": 15.0, "tech": "Tech_AdvancedEnergy", "station": "Station_Workbench"},
-    {"id": "Recipe_Scrapshot", "name": "Scrapshot", "inputs": [{"item": "Item_Stone", "qty": 4}, {"item": "Item_WoodPlank", "qty": 2}, {"item": "Item_VoltCore", "qty": 1}], "outputs": [{"item": "Item_Scrapshot", "qty": 1}], "time": 8.0, "tech": "Tech_WeaponSystems", "station": "Station_Workbench"},
-    {"id": "Recipe_PlasmaCharger", "name": "Plasma Charger", "inputs": [{"item": "Item_VoltCore", "qty": 4}, {"item": "Item_CrystalShard", "qty": 4}, {"item": "Item_EmberAsh", "qty": 2}], "outputs": [{"item": "Item_PlasmaCharger", "qty": 1}], "time": 12.0, "tech": "Tech_WeaponSystems", "station": "Station_Workbench"},
-    {"id": "Recipe_LumenBeam", "name": "Lumen Beam", "inputs": [{"item": "Item_CrystalShard", "qty": 5}, {"item": "Item_VoltCore", "qty": 2}, {"item": "Item_DawnShard", "qty": 4}], "outputs": [{"item": "Item_LumenBeam", "qty": 1}], "time": 11.0, "tech": "Tech_WeaponSystems", "station": "Station_Workbench"},
-    {"id": "Recipe_ArcCaster", "name": "Arc Caster", "inputs": [{"item": "Item_VoltCore", "qty": 5}, {"item": "Item_CrystalShard", "qty": 3}, {"item": "Item_DawnShard", "qty": 3}], "outputs": [{"item": "Item_ArcCaster", "qty": 1}], "time": 12.0, "tech": "Tech_WeaponSystems", "station": "Station_Workbench"},
-    {"id": "Recipe_RailSlug", "name": "Rail Slugs", "inputs": [{"item": "Item_StormSilver", "qty": 1}, {"item": "Item_Stone", "qty": 2}], "outputs": [{"item": "Item_RailSlug", "qty": 6}], "time": 6.0, "tech": "Tech_AdvancedBallistics", "station": "Station_Workbench"},
-    {"id": "Recipe_MagrailDriver", "name": "Magrail Driver", "inputs": [{"item": "Item_StormSilver", "qty": 4}, {"item": "Item_CrystalShard", "qty": 4}, {"item": "Item_VoltCore", "qty": 2}], "outputs": [{"item": "Item_MagrailDriver", "qty": 1}], "time": 16.0, "tech": "Tech_AdvancedBallistics", "station": "Station_Workbench"},
-    {"id": "Recipe_SeekerMissile", "name": "Seeker Missiles", "inputs": [{"item": "Item_VoltCore", "qty": 1}, {"item": "Item_DuneGlass", "qty": 2}], "outputs": [{"item": "Item_SeekerMissile", "qty": 3}], "time": 8.0, "tech": "Tech_AdvancedBallistics", "station": "Station_Workbench"},
-    {"id": "Recipe_SkysingerLauncher", "name": "Skysinger Launcher", "inputs": [{"item": "Item_StormSilver", "qty": 3}, {"item": "Item_VoltCore", "qty": 3}, {"item": "Item_DawnShard", "qty": 6}], "outputs": [{"item": "Item_SeekerMissile", "qty": 1}], "time": 18.0, "tech": "Tech_AdvancedBallistics", "station": "Station_Workbench"},
-    {"id": "Recipe_NovaCell", "name": "Nova Cells", "inputs": [{"item": "Item_AncientAlloy", "qty": 1}, {"item": "Item_VoltCore", "qty": 2}, {"item": "Item_CrystalShard", "qty": 2}], "outputs": [{"item": "Item_NovaCell", "qty": 2}], "time": 10.0, "tech": "Tech_ExperimentalArsenal", "station": "Station_Workbench"},
-    {"id": "Recipe_StarlancePrototype", "name": "Starlance Prototype", "inputs": [{"item": "Item_AncientAlloy", "qty": 2}, {"item": "Item_CrystalShard", "qty": 6}, {"item": "Item_DawnShard", "qty": 8}], "outputs": [{"item": "Item_StarlancePrototype", "qty": 1}], "time": 20.0, "tech": "Tech_ExperimentalArsenal", "station": "Station_Workbench"}
+    {
+      "id": "Recipe_Resonator",
+      "name": "Echo Resonator",
+      "inputs": [
+        {
+          "item": "Item_Stone",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_Resonator",
+          "qty": 1
+        }
+      ],
+      "time": 3.0,
+      "tech": null,
+      "station": null
+    },
+    {
+      "id": "Recipe_Bandage",
+      "name": "Bandage",
+      "inputs": [
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_Bandage",
+          "qty": 1
+        }
+      ],
+      "time": 2.0,
+      "tech": null,
+      "station": null
+    },
+    {
+      "id": "Recipe_WoodPlank",
+      "name": "Dawnwood Plank",
+      "inputs": [
+        {
+          "item": "Item_Wood",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_WoodPlank",
+          "qty": 1
+        }
+      ],
+      "time": 2.0,
+      "tech": null,
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_CookedMeat",
+      "name": "Cooked Meat",
+      "inputs": [
+        {
+          "item": "Item_RawMeat",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_CookedMeat",
+          "qty": 1
+        }
+      ],
+      "time": 5.0,
+      "tech": "Tech_Cooking",
+      "station": "Station_Campfire"
+    },
+    {
+      "id": "Recipe_WaterFlask",
+      "name": "Water Flask",
+      "inputs": [
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_WaterFlask",
+          "qty": 1
+        }
+      ],
+      "time": 4.0,
+      "tech": null,
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_FeedMix",
+      "name": "Feed Mix",
+      "inputs": [
+        {
+          "item": "Item_Berry",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_FeedMix",
+          "qty": 1
+        }
+      ],
+      "time": 4.0,
+      "tech": "Tech_Husbandry",
+      "station": "Station_Campfire"
+    },
+    {
+      "id": "Recipe_HerbalSalve",
+      "name": "Herbal Salve",
+      "inputs": [
+        {
+          "item": "Item_Dawnbloom",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_HerbalSalve",
+          "qty": 1
+        }
+      ],
+      "time": 4.0,
+      "tech": "Tech_Husbandry",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_DawnwoodClub",
+      "name": "Dawnwood Club",
+      "inputs": [
+        {
+          "item": "Item_Wood",
+          "qty": 3
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_DawnwoodClub",
+          "qty": 1
+        }
+      ],
+      "time": 3.0,
+      "tech": null,
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_StonehideShield",
+      "name": "Stonehide Shield",
+      "inputs": [
+        {
+          "item": "Item_Stone",
+          "qty": 3
+        },
+        {
+          "item": "Item_Wood",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_StonehideShield",
+          "qty": 1
+        }
+      ],
+      "time": 5.0,
+      "tech": "Tech_Armory",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_CrystalBlade",
+      "name": "Crystal Blade",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        },
+        {
+          "item": "Item_WoodPlank",
+          "qty": 2
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_CrystalBlade",
+          "qty": 1
+        }
+      ],
+      "time": 8.0,
+      "tech": "Tech_Armory",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_FiberWeaveVest",
+      "name": "Fiber Weave Vest",
+      "inputs": [
+        {
+          "item": "Item_Fiber",
+          "qty": 4
+        },
+        {
+          "item": "Item_Wood",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_FiberWeaveVest",
+          "qty": 1
+        }
+      ],
+      "time": 4.0,
+      "tech": "Tech_Armory",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_EmberhideJacket",
+      "name": "Emberhide Jacket",
+      "inputs": [
+        {
+          "item": "Item_EmberAsh",
+          "qty": 2
+        },
+        {
+          "item": "Item_WoodPlank",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_EmberhideJacket",
+          "qty": 1
+        }
+      ],
+      "time": 6.0,
+      "tech": "Tech_Armory",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_CrystalplateCuirass",
+      "name": "Crystalplate Cuirass",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_WoodPlank",
+          "qty": 3
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_CrystalplateCuirass",
+          "qty": 1
+        }
+      ],
+      "time": 9.0,
+      "tech": "Tech_Armory",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_PlankBatch",
+      "name": "Plank Batch",
+      "inputs": [
+        {
+          "item": "Item_Wood",
+          "qty": 10
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_WoodPlank",
+          "qty": 6
+        }
+      ],
+      "time": 6.0,
+      "tech": "Tech_Mechanics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_ResonatorBatch",
+      "name": "Resonator Batch",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 1
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_Resonator",
+          "qty": 3
+        }
+      ],
+      "time": 8.0,
+      "tech": "Tech_Mechanics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_WarmBroth",
+      "name": "Warm Broth",
+      "inputs": [
+        {
+          "item": "Item_RawMeat",
+          "qty": 1
+        },
+        {
+          "item": "Item_Frostbloom",
+          "qty": 1
+        },
+        {
+          "item": "Item_Berry",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_WarmBroth",
+          "qty": 2
+        }
+      ],
+      "time": 5.0,
+      "tech": "Tech_Thermal",
+      "station": "Station_Campfire"
+    },
+    {
+      "id": "Recipe_Fertilizer",
+      "name": "Fertilizer",
+      "inputs": [
+        {
+          "item": "Item_Dawnbloom",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 1
+        },
+        {
+          "item": "Item_RawMeat",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_Fertilizer",
+          "qty": 3
+        }
+      ],
+      "time": 4.0,
+      "tech": "Tech_Agriculture",
+      "station": "Station_Campfire"
+    },
+    {
+      "id": "Recipe_AncientResonator",
+      "name": "Ancient Resonator",
+      "inputs": [
+        {
+          "item": "Item_AncientCore",
+          "qty": 1
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        },
+        {
+          "item": "Item_Resonator",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_AncientResonator",
+          "qty": 1
+        }
+      ],
+      "time": 10.0,
+      "tech": "Tech_AncientResonance",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_EnergyCell",
+      "name": "Pulse Cells",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 2
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_EnergyCell",
+          "qty": 4
+        }
+      ],
+      "time": 4.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_FieldScanner",
+      "name": "Field Scanner",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 1
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_FieldScanner",
+          "qty": 1
+        }
+      ],
+      "time": 6.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_ResonanceHelm",
+      "name": "Resonance Helm",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 2
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_ResonanceHelm",
+          "qty": 1
+        }
+      ],
+      "time": 7.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_DawnstriderExosuit",
+      "name": "Dawnstrider Exosuit",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 4
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 4
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_DawnstriderExosuit",
+          "qty": 1
+        }
+      ],
+      "time": 12.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_PulseLance",
+      "name": "Pulse Lance",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 3
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_PulseLance",
+          "qty": 1
+        }
+      ],
+      "time": 10.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_UtilityDrone",
+      "name": "Utility Drone",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 4
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_UtilityDrone",
+          "qty": 1
+        }
+      ],
+      "time": 12.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_UtilityRobot",
+      "name": "Utility Robot",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 6
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 4
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 5
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_UtilityRobot",
+          "qty": 1
+        }
+      ],
+      "time": 15.0,
+      "tech": "Tech_AdvancedEnergy",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_Scrapshot",
+      "name": "Scrapshot",
+      "inputs": [
+        {
+          "item": "Item_Stone",
+          "qty": 4
+        },
+        {
+          "item": "Item_WoodPlank",
+          "qty": 2
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 1
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_Scrapshot",
+          "qty": 1
+        }
+      ],
+      "time": 8.0,
+      "tech": "Tech_WeaponSystems",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_PlasmaCharger",
+      "name": "Plasma Charger",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 4
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 4
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_PlasmaCharger",
+          "qty": 1
+        }
+      ],
+      "time": 12.0,
+      "tech": "Tech_WeaponSystems",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_LumenBeam",
+      "name": "Lumen Beam",
+      "inputs": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 5
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 2
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 4
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_LumenBeam",
+          "qty": 1
+        }
+      ],
+      "time": 11.0,
+      "tech": "Tech_WeaponSystems",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_ArcCaster",
+      "name": "Arc Caster",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 5
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 3
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_ArcCaster",
+          "qty": 1
+        }
+      ],
+      "time": 12.0,
+      "tech": "Tech_WeaponSystems",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_RailSlug",
+      "name": "Rail Slugs",
+      "inputs": [
+        {
+          "item": "Item_StormSilver",
+          "qty": 1
+        },
+        {
+          "item": "Item_Stone",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_RailSlug",
+          "qty": 6
+        }
+      ],
+      "time": 6.0,
+      "tech": "Tech_AdvancedBallistics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_MagrailDriver",
+      "name": "Magrail Driver",
+      "inputs": [
+        {
+          "item": "Item_StormSilver",
+          "qty": 4
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 4
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_MagrailDriver",
+          "qty": 1
+        }
+      ],
+      "time": 16.0,
+      "tech": "Tech_AdvancedBallistics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_SeekerMissile",
+      "name": "Seeker Missiles",
+      "inputs": [
+        {
+          "item": "Item_VoltCore",
+          "qty": 1
+        },
+        {
+          "item": "Item_DuneGlass",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_SeekerMissile",
+          "qty": 3
+        }
+      ],
+      "time": 8.0,
+      "tech": "Tech_AdvancedBallistics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_SkysingerLauncher",
+      "name": "Skysinger Launcher",
+      "inputs": [
+        {
+          "item": "Item_StormSilver",
+          "qty": 3
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 3
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 6
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_SeekerMissile",
+          "qty": 1
+        }
+      ],
+      "time": 18.0,
+      "tech": "Tech_AdvancedBallistics",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_NovaCell",
+      "name": "Nova Cells",
+      "inputs": [
+        {
+          "item": "Item_AncientAlloy",
+          "qty": 1
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 2
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 2
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_NovaCell",
+          "qty": 2
+        }
+      ],
+      "time": 10.0,
+      "tech": "Tech_ExperimentalArsenal",
+      "station": "Station_Workbench"
+    },
+    {
+      "id": "Recipe_StarlancePrototype",
+      "name": "Starlance Prototype",
+      "inputs": [
+        {
+          "item": "Item_AncientAlloy",
+          "qty": 2
+        },
+        {
+          "item": "Item_CrystalShard",
+          "qty": 6
+        },
+        {
+          "item": "Item_DawnShard",
+          "qty": 8
+        }
+      ],
+      "outputs": [
+        {
+          "item": "Item_StarlancePrototype",
+          "qty": 1
+        }
+      ],
+      "time": 20.0,
+      "tech": "Tech_ExperimentalArsenal",
+      "station": "Station_Workbench"
+    }
   ],
   "tech": [
-    {"id": "Tech_BasicCrafting", "name": "Basic Crafting", "era": "Primitive", "cost": 0, "prereqs": [], "desc": "Hands, fiber, and intent."},
-    {"id": "Tech_Cooking", "name": "Cooking", "era": "Primitive", "cost": 5, "prereqs": ["Tech_BasicCrafting"], "desc": "Fire transforms meat into meals."},
-    {"id": "Tech_Armory", "name": "Armory", "era": "Primitive", "cost": 8, "prereqs": ["Tech_BasicCrafting"], "desc": "Weapons and armor of the vale."},
-    {"id": "Tech_Husbandry", "name": "Echo Husbandry", "era": "Primitive", "cost": 10, "prereqs": ["Tech_Cooking"], "desc": "Feed mixes, salves, and troughs."},
-    {"id": "Tech_Electrical", "name": "Electrical Foundations", "era": "Electrical", "cost": 15, "prereqs": ["Tech_BasicCrafting"], "desc": "Dynamo, charge cells, and dawn lamps."},
-    {"id": "Tech_Mechanics", "name": "Mechanics", "era": "Mechanical", "cost": 12, "prereqs": ["Tech_BasicCrafting"], "desc": "Batch production and sawmills."},
-    {"id": "Tech_Thermal", "name": "Thermal Engineering", "era": "Electrical", "cost": 18, "prereqs": ["Tech_Electrical"], "desc": "Warm broth and hearth coils."},
-    {"id": "Tech_Agriculture", "name": "Agriculture", "era": "Eco", "cost": 20, "prereqs": ["Tech_Husbandry"], "desc": "Fertilizer and composters."},
-    {"id": "Tech_AdvancedEnergy", "name": "Advanced Energy", "era": "AdvancedEnergy", "cost": 30, "prereqs": ["Tech_Electrical"], "desc": "Pulse cells, scanners, and the exosuit."},
-    {"id": "Tech_AncientResonance", "name": "Ancient Resonance", "era": "Ancient", "cost": 25, "prereqs": ["Tech_AdvancedEnergy"], "desc": "The Underlight's quieter weapons."},
-    {"id": "Tech_WeaponSystems", "name": "Weapon Systems", "era": "Electrical", "cost": 20, "prereqs": ["Tech_Armory", "Tech_Electrical"], "desc": "Field-grade energy weapons."},
-    {"id": "Tech_ScannerArray", "name": "Scanner Array", "era": "AdvancedEnergy", "cost": 18, "prereqs": ["Tech_AdvancedEnergy"], "desc": "Array and Oracle scanners."},
-    {"id": "Tech_AutomationII", "name": "Automation II", "era": "AdvancedEnergy", "cost": 22, "prereqs": ["Tech_Mechanics", "Tech_AdvancedEnergy"], "desc": "Drone and robot workframes."},
-    {"id": "Tech_ExosuitEngineering", "name": "Exosuit Engineering", "era": "AdvancedEnergy", "cost": 25, "prereqs": ["Tech_AdvancedEnergy"], "desc": "Second-skin expedition frames."},
-    {"id": "Tech_AdvancedBallistics", "name": "Advanced Ballistics", "era": "AdvancedEnergy", "cost": 30, "prereqs": ["Tech_WeaponSystems"], "desc": "Magrail and missile systems."},
-    {"id": "Tech_ExperimentalArsenal", "name": "Experimental Arsenal", "era": "Ancient", "cost": 40, "prereqs": ["Tech_AdvancedBallistics", "Tech_AncientResonance"], "desc": "Starlance prototypes."}
+    {
+      "id": "Tech_BasicCrafting",
+      "name": "Basic Crafting",
+      "era": "Primitive",
+      "cost": 0,
+      "prereqs": [],
+      "desc": "Hands, fiber, and intent."
+    },
+    {
+      "id": "Tech_Cooking",
+      "name": "Cooking",
+      "era": "Primitive",
+      "cost": 5,
+      "prereqs": [
+        "Tech_BasicCrafting"
+      ],
+      "desc": "Fire transforms meat into meals."
+    },
+    {
+      "id": "Tech_Armory",
+      "name": "Armory",
+      "era": "Primitive",
+      "cost": 8,
+      "prereqs": [
+        "Tech_BasicCrafting"
+      ],
+      "desc": "Weapons and armor of the vale."
+    },
+    {
+      "id": "Tech_Husbandry",
+      "name": "Echo Husbandry",
+      "era": "Primitive",
+      "cost": 10,
+      "prereqs": [
+        "Tech_Cooking"
+      ],
+      "desc": "Feed mixes, salves, and troughs."
+    },
+    {
+      "id": "Tech_Electrical",
+      "name": "Electrical Foundations",
+      "era": "Electrical",
+      "cost": 15,
+      "prereqs": [
+        "Tech_BasicCrafting"
+      ],
+      "desc": "Dynamo, charge cells, and dawn lamps."
+    },
+    {
+      "id": "Tech_Mechanics",
+      "name": "Mechanics",
+      "era": "Mechanical",
+      "cost": 12,
+      "prereqs": [
+        "Tech_BasicCrafting"
+      ],
+      "desc": "Batch production and sawmills."
+    },
+    {
+      "id": "Tech_Thermal",
+      "name": "Thermal Engineering",
+      "era": "Electrical",
+      "cost": 18,
+      "prereqs": [
+        "Tech_Electrical"
+      ],
+      "desc": "Warm broth and hearth coils."
+    },
+    {
+      "id": "Tech_Agriculture",
+      "name": "Agriculture",
+      "era": "Eco",
+      "cost": 20,
+      "prereqs": [
+        "Tech_Husbandry"
+      ],
+      "desc": "Fertilizer and composters."
+    },
+    {
+      "id": "Tech_AdvancedEnergy",
+      "name": "Advanced Energy",
+      "era": "AdvancedEnergy",
+      "cost": 30,
+      "prereqs": [
+        "Tech_Electrical"
+      ],
+      "desc": "Pulse cells, scanners, and the exosuit."
+    },
+    {
+      "id": "Tech_AncientResonance",
+      "name": "Ancient Resonance",
+      "era": "Ancient",
+      "cost": 25,
+      "prereqs": [
+        "Tech_AdvancedEnergy"
+      ],
+      "desc": "The Underlight's quieter weapons."
+    },
+    {
+      "id": "Tech_WeaponSystems",
+      "name": "Weapon Systems",
+      "era": "Electrical",
+      "cost": 20,
+      "prereqs": [
+        "Tech_Armory",
+        "Tech_Electrical"
+      ],
+      "desc": "Field-grade energy weapons."
+    },
+    {
+      "id": "Tech_ScannerArray",
+      "name": "Scanner Array",
+      "era": "AdvancedEnergy",
+      "cost": 18,
+      "prereqs": [
+        "Tech_AdvancedEnergy"
+      ],
+      "desc": "Array and Oracle scanners."
+    },
+    {
+      "id": "Tech_AutomationII",
+      "name": "Automation II",
+      "era": "AdvancedEnergy",
+      "cost": 22,
+      "prereqs": [
+        "Tech_Mechanics",
+        "Tech_AdvancedEnergy"
+      ],
+      "desc": "Drone and robot workframes."
+    },
+    {
+      "id": "Tech_ExosuitEngineering",
+      "name": "Exosuit Engineering",
+      "era": "AdvancedEnergy",
+      "cost": 25,
+      "prereqs": [
+        "Tech_AdvancedEnergy"
+      ],
+      "desc": "Second-skin expedition frames."
+    },
+    {
+      "id": "Tech_AdvancedBallistics",
+      "name": "Advanced Ballistics",
+      "era": "AdvancedEnergy",
+      "cost": 30,
+      "prereqs": [
+        "Tech_WeaponSystems"
+      ],
+      "desc": "Magrail and missile systems."
+    },
+    {
+      "id": "Tech_ExperimentalArsenal",
+      "name": "Experimental Arsenal",
+      "era": "Ancient",
+      "cost": 40,
+      "prereqs": [
+        "Tech_AdvancedBallistics",
+        "Tech_AncientResonance"
+      ],
+      "desc": "Starlance prototypes."
+    }
   ],
   "buildings": [
-    {"id": "Building_Foundation", "name": "Foundation", "cost": [{"item": "Item_Wood", "qty": 4}], "hp": 800, "tech": null, "power": "consumer", "desc": "A flat start for anything."},
-    {"id": "Building_Wall", "name": "Wall", "cost": [{"item": "Item_Wood", "qty": 2}], "hp": 500, "tech": null, "power": "consumer", "desc": "Keeps the wind (and fangs) honest."},
-    {"id": "Building_Workbench", "name": "Workbench", "cost": [{"item": "Item_Wood", "qty": 8}], "hp": 400, "tech": null, "power": "consumer", "station": "Station_Workbench", "work": "Crafting", "desc": "Proper tools for proper work."},
-    {"id": "Building_Campfire", "name": "Campfire", "cost": [{"item": "Item_Wood", "qty": 5}], "hp": 300, "tech": null, "power": "consumer", "station": "Station_Campfire", "work": "Cooking", "desc": "Warmth, light, and cooked meals."},
-    {"id": "Building_Generator", "name": "Echo Dynamo", "cost": [{"item": "Item_Stone", "qty": 10}], "hp": 600, "tech": "Tech_Electrical", "power": "generator", "output": 8.0, "work": "PowerGeneration", "desc": "Echoes wheel inside, making light."},
-    {"id": "Building_Battery", "name": "Charge Cell", "cost": [{"item": "Item_Stone", "qty": 8}], "hp": 400, "tech": "Tech_Electrical", "power": "battery", "capacity": 600, "desc": "Stores the dynamo's labor."},
-    {"id": "Building_LampPost", "name": "Dawn Lamp", "cost": [{"item": "Item_Wood", "qty": 3}], "hp": 200, "tech": "Tech_Electrical", "power": "consumer", "draw": 2.0, "desc": "A polite argument against the night."},
-    {"id": "Building_FarmPlot", "name": "Farm Plot", "cost": [{"item": "Item_Wood", "qty": 6}], "hp": 250, "tech": null, "power": "consumer", "work": "Farming", "desc": "Tilled soil for dawnbloom and berry."},
-    {"id": "Building_ResearchDesk", "name": "Research Desk", "cost": [{"item": "Item_Wood", "qty": 6}], "hp": 350, "tech": null, "power": "consumer", "draw": 1.0, "work": "ResearchAssist", "desc": "Where observations become knowledge."},
-    {"id": "Building_FeedTrough", "name": "Echo Feed Trough", "cost": [{"item": "Item_Wood", "qty": 5}], "hp": 260, "tech": "Tech_Husbandry", "power": "consumer", "work": "Farming", "desc": "Keeps party Echoes fed and happy."},
-    {"id": "Building_Sawmill", "name": "Sawmill", "cost": [{"item": "Item_Wood", "qty": 10}], "hp": 500, "tech": "Tech_Mechanics", "power": "consumer", "draw": 2.0, "work": "Crafting", "desc": "Turns stands into planks."},
-    {"id": "Building_Heater", "name": "Hearth Coil", "cost": [{"item": "Item_Stone", "qty": 6}], "hp": 300, "tech": "Tech_Thermal", "power": "consumer", "draw": 3.0, "desc": "Radiates stubborn warmth."},
-    {"id": "Building_Composter", "name": "Composter", "cost": [{"item": "Item_Wood", "qty": 4}], "hp": 220, "tech": "Tech_Agriculture", "power": "consumer", "work": "Farming", "desc": "Patient chemistry for the farm."}
+    {
+      "id": "Building_Foundation",
+      "name": "Foundation",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 4
+        }
+      ],
+      "hp": 800,
+      "tech": null,
+      "power": "consumer",
+      "desc": "A flat start for anything.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Wall",
+      "name": "Wall",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 2
+        }
+      ],
+      "hp": 500,
+      "tech": null,
+      "power": "consumer",
+      "desc": "Keeps the wind (and fangs) honest.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Workbench",
+      "name": "Workbench",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 8
+        }
+      ],
+      "hp": 400,
+      "tech": null,
+      "power": "consumer",
+      "station": "Station_Workbench",
+      "work": "Crafting",
+      "desc": "Proper tools for proper work.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Campfire",
+      "name": "Campfire",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 5
+        }
+      ],
+      "hp": 300,
+      "tech": null,
+      "power": "consumer",
+      "station": "Station_Campfire",
+      "work": "Cooking",
+      "desc": "Warmth, light, and cooked meals.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Generator",
+      "name": "Echo Dynamo",
+      "cost": [
+        {
+          "item": "Item_Stone",
+          "qty": 10
+        }
+      ],
+      "hp": 600,
+      "tech": "Tech_Electrical",
+      "power": "generator",
+      "output": 8.0,
+      "work": "PowerGeneration",
+      "desc": "Echoes wheel inside, making light.",
+      "power_role": "Generator",
+      "power_generation": 8.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Battery",
+      "name": "Charge Cell",
+      "cost": [
+        {
+          "item": "Item_Stone",
+          "qty": 8
+        }
+      ],
+      "hp": 400,
+      "tech": "Tech_Electrical",
+      "power": "battery",
+      "capacity": 600,
+      "desc": "Stores the dynamo's labor.",
+      "power_role": "Battery",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 600.0
+    },
+    {
+      "id": "Building_LampPost",
+      "name": "Dawn Lamp",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 3
+        }
+      ],
+      "hp": 200,
+      "tech": "Tech_Electrical",
+      "power": "consumer",
+      "draw": 2.0,
+      "desc": "A polite argument against the night.",
+      "power_role": "Consumer",
+      "power_generation": 0.0,
+      "power_draw": 2.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_FarmPlot",
+      "name": "Farm Plot",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 6
+        }
+      ],
+      "hp": 250,
+      "tech": null,
+      "power": "consumer",
+      "work": "Farming",
+      "desc": "Tilled soil for dawnbloom and berry.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_ResearchDesk",
+      "name": "Research Desk",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 6
+        }
+      ],
+      "hp": 350,
+      "tech": null,
+      "power": "consumer",
+      "draw": 1.0,
+      "work": "ResearchAssist",
+      "desc": "Where observations become knowledge.",
+      "power_role": "Consumer",
+      "power_generation": 0.0,
+      "power_draw": 1.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_FeedTrough",
+      "name": "Echo Feed Trough",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 5
+        }
+      ],
+      "hp": 260,
+      "tech": "Tech_Husbandry",
+      "power": "consumer",
+      "work": "Farming",
+      "desc": "Keeps party Echoes fed and happy.",
+      "power_role": "Consumer",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Sawmill",
+      "name": "Sawmill",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 10
+        }
+      ],
+      "hp": 500,
+      "tech": "Tech_Mechanics",
+      "power": "consumer",
+      "draw": 2.0,
+      "work": "Crafting",
+      "desc": "Turns stands into planks.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Heater",
+      "name": "Hearth Coil",
+      "cost": [
+        {
+          "item": "Item_Stone",
+          "qty": 6
+        }
+      ],
+      "hp": 300,
+      "tech": "Tech_Thermal",
+      "power": "consumer",
+      "draw": 3.0,
+      "desc": "Radiates stubborn warmth.",
+      "power_role": "Consumer",
+      "power_generation": 0.0,
+      "power_draw": 3.0,
+      "battery_capacity": 0.0
+    },
+    {
+      "id": "Building_Composter",
+      "name": "Composter",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 4
+        }
+      ],
+      "hp": 220,
+      "tech": "Tech_Agriculture",
+      "power": "consumer",
+      "work": "Farming",
+      "desc": "Patient chemistry for the farm.",
+      "power_role": "None",
+      "power_generation": 0.0,
+      "power_draw": 0.0,
+      "battery_capacity": 0.0
+    }
+  ],
+  "worksites": [
+    {
+      "id": "Site_CampGathering",
+      "name": "Camp Gathering Post",
+      "work_type": "Gathering",
+      "output": "Item_Fiber",
+      "output_qty": 1,
+      "seconds": 10.0,
+      "requires_power": false,
+      "inputs": {}
+    },
+    {
+      "id": "Site_CampFarm",
+      "name": "Camp Berry Plot",
+      "work_type": "Farming",
+      "output": "Item_Berry",
+      "output_qty": 1,
+      "seconds": 14.0,
+      "requires_power": false,
+      "inputs": {}
+    },
+    {
+      "id": "Site_RidgeMining",
+      "name": "Ridge Breaker Rig",
+      "work_type": "Mining",
+      "output": "Item_Stone",
+      "output_qty": 2,
+      "seconds": 18.0,
+      "requires_power": true,
+      "inputs": {}
+    },
+    {
+      "id": "Site_CampKitchen",
+      "name": "Camp Kitchen",
+      "work_type": "Cooking",
+      "output": "Item_CookedMeat",
+      "output_qty": 1,
+      "seconds": 8.0,
+      "requires_power": false,
+      "inputs": {
+        "Item_RawMeat": 1
+      }
+    }
   ]
 }

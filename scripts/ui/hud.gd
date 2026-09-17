@@ -278,7 +278,18 @@ func _refresh_party() -> void:
 	for c in party_box.get_children():
 		c.queue_free()
 	for entry in Game.party:
-		var card := _panel(Vector2.ZERO, Vector2(150, 64))
+		var card := PanelContainer.new()
+		var card_style := StyleBoxFlat.new()
+		card_style.bg_color = Color(0.06, 0.08, 0.12, 0.82)
+		card_style.set_border_width_all(1)
+		card_style.set_border_color(Color(0.25, 0.32, 0.42, 0.9))
+		card_style.set_corner_radius_all(6)
+		card_style.content_margin_left = 4
+		card_style.content_margin_right = 4
+		card_style.content_margin_top = 4
+		card_style.content_margin_bottom = 4
+		card.add_theme_stylebox_override("panel", card_style)
+		card.custom_minimum_size = Vector2(150, 64)
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var vb := VBoxContainer.new()
 		vb.set_anchors_preset(Control.PRESET_FULL_RECT)
