@@ -101,6 +101,7 @@ All three content arrays are optional — ship only what your mod needs.
 |---|---|
 | **Mythic Echoes** | 4 legendary Huge Echoes: Solaris the Radiant (Ember Ridge), Umbrarch (Hollow Approach), Terravore (Glimmerwood), Chronoweave (Frostveil) |
 | **Chef's Toolkit** | 3 items (Vale Spice Mix, Crystal-Cured Jerky, Traveler's Feast) + 3 campfire recipes |
+| **Glimmer Garden** | 2 gentle Echoes (Petalume — gather helper in Glimmerwood; Corallume — support companion in Pearlsea Reef) + Glimmer Tonic item + 2 recipes |
 
 ## In-game commands
 
@@ -110,6 +111,13 @@ Open the console with `` ` `` (backquote):
 - `AW.SpawnEcho Echo_Solaris` — spawn any modded Echo
 - `AW.GiveItem Item_TravelerFeast 3` — get modded items
 - `AW.ListSpecies` — species count includes modded ones
+
+## Legendary species (v1.0.3 balance pass)
+
+Species with `"legendary": true` — or any hostile species with `capture_difficulty >= 0.85` — are treated as **legendaries**:
+
+- They spawn **dormant** (☾ nameplate, golden pulsing ground ring, quarter movement speed) and **never aggro on sight** — the player always chooses the fight.
+- Damaging a dormant legendary **wakes** it ("Solaris the Radiant awakens!" toast) and it fights to the end — legendaries never flee at low HP.
 
 ## Save compatibility
 

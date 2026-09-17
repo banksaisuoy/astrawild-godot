@@ -302,6 +302,34 @@ func _run_smoke_checks() -> void:
         print("SMOKE: modded creatures spawned=", modded_spawns)
         var ember_zone: Dictionary = Data.zone("Zone_EmberRidge")
         print("SMOKE: EmberRidge wildlife=", ember_zone.get("wildlife", []).size(), " has_solaris=", str(ember_zone.get("wildlife", [])).find("Echo_Solaris") >= 0)
+        # glimmer_garden: gentle species + tonic registered and spawned
+        print("SMOKE: glimmer species Petalume=", not Data.species_def("Echo_Petalume").is_empty(), " Corallume=", not Data.species_def("Echo_Corallume").is_empty())
+        print("SMOKE: glimmer item Tonic=", Data.items.has("Item_GlimmerTonic"))
+        var glimmer_recipe_count := 0
+        for r in Data.recipes:
+                if r["id"].begins_with("Recipe_Glimmer"):
+                        glimmer_recipe_count += 1
+        print("SMOKE: glimmer recipes registered=", glimmer_recipe_count)
+        # dormant legendary: Solaris must spawn dormant (no ambush), then wake on hit
+        var solaris: Echo = null
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and c.def.get("id", "") == "Echo_Solaris" and not c.defeated:
+                        solaris = c
+                        break
+        if solaris:
+                print("SMOKE: solaris legendary=", solaris.legendary, " dormant=", solaris.dormant, " aura=", solaris._aura != null and is_instance_valid(solaris._aura))
+                var solaris_ai_dormant: String = solaris.ai_state
+                solaris.take_hit(10.0, "Ash")
+                print("SMOKE: solaris after hit dormant=", solaris.dormant, " ai=", solaris.ai_state, " ai_before=", solaris_ai_dormant, " hp=", solaris.hp)
+        else:
+                print("SMOKE: solaris not found (FAIL)")
+        # gentle species must never be flagged legendary/dormant
+        var petalume: Echo = null
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and c.def.get("id", "") == "Echo_Petalume" and not c.defeated:
+                        petalume = c
+                        break
+        print("SMOKE: petalume legendary=", petalume.legendary if petalume else "n/a", " dormant=", petalume.dormant if petalume else "n/a")
         print("SMOKE: cheat console ", get_tree().get_nodes_in_group("hud").size() > 0, " console=", game_layer.has_node("CheatConsole"))
         # mod manager screen: open, verify cards for each loaded mod, close
         screens.open("mods")

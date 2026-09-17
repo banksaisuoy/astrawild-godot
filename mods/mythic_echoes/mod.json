@@ -17,19 +17,47 @@
       "home_zone": "EmberRidge",
       "personality": "Territorial",
       "activity": "Diurnal",
-      "stats": { "hp": 520.0, "atk": 48.0, "def": 30.0, "spd": 300.0 },
+      "stats": {
+        "hp": 520.0,
+        "atk": 48.0,
+        "def": 30.0,
+        "spd": 300.0
+      },
       "capture_difficulty": 0.85,
       "hostile": true,
-      "colors": { "primary": [1.0, 0.82, 0.45], "secondary": [0.72, 0.35, 0.12] },
-      "foods": ["Item_CookedMeat", "Item_TravelerFeast"],
-      "loot": [
-        { "item": "Item_CrystalShard", "qty": 3 },
-        { "item": "Item_EmberAsh", "qty": 2 }
+      "colors": {
+        "primary": [
+          1.0,
+          0.82,
+          0.45
+        ],
+        "secondary": [
+          0.72,
+          0.35,
+          0.12
+        ]
+      },
+      "foods": [
+        "Item_CookedMeat",
+        "Item_TravelerFeast"
       ],
-      "work": ["Combat"],
+      "loot": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_EmberAsh",
+          "qty": 2
+        }
+      ],
+      "work": [
+        "Combat"
+      ],
       "sight_radius": 1600.0,
       "work_affinity": 1.4,
-      "spawn_count": 1
+      "spawn_count": 1,
+      "legendary": true
     },
     {
       "id": "Echo_Umbrarch",
@@ -43,19 +71,47 @@
       "home_zone": "HollowApproach",
       "personality": "Solitary",
       "activity": "Nocturnal",
-      "stats": { "hp": 560.0, "atk": 44.0, "def": 34.0, "spd": 280.0 },
+      "stats": {
+        "hp": 560.0,
+        "atk": 44.0,
+        "def": 34.0,
+        "spd": 280.0
+      },
       "capture_difficulty": 0.9,
       "hostile": true,
-      "colors": { "primary": [0.28, 0.22, 0.38], "secondary": [0.55, 0.45, 0.72] },
-      "foods": ["Item_CookedMeat"],
-      "loot": [
-        { "item": "Item_CrystalShard", "qty": 3 },
-        { "item": "Item_AncientAlloy", "qty": 2 }
+      "colors": {
+        "primary": [
+          0.28,
+          0.22,
+          0.38
+        ],
+        "secondary": [
+          0.55,
+          0.45,
+          0.72
+        ]
+      },
+      "foods": [
+        "Item_CookedMeat"
       ],
-      "work": ["Combat", "Guard"],
+      "loot": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 3
+        },
+        {
+          "item": "Item_AncientAlloy",
+          "qty": 2
+        }
+      ],
+      "work": [
+        "Combat",
+        "Guard"
+      ],
       "sight_radius": 1700.0,
       "work_affinity": 1.3,
-      "spawn_count": 1
+      "spawn_count": 1,
+      "legendary": true
     },
     {
       "id": "Echo_Terravore",
@@ -69,19 +125,48 @@
       "home_zone": "Glimmerwood",
       "personality": "Docile",
       "activity": "Crepuscular",
-      "stats": { "hp": 640.0, "atk": 40.0, "def": 42.0, "spd": 240.0 },
+      "stats": {
+        "hp": 640.0,
+        "atk": 40.0,
+        "def": 42.0,
+        "spd": 240.0
+      },
       "capture_difficulty": 0.8,
       "hostile": true,
-      "colors": { "primary": [0.36, 0.52, 0.3], "secondary": [0.55, 0.42, 0.25] },
-      "foods": ["Item_Berry", "Item_FeedMix"],
-      "loot": [
-        { "item": "Item_Fiber", "qty": 6 },
-        { "item": "Item_Stone", "qty": 6 }
+      "colors": {
+        "primary": [
+          0.36,
+          0.52,
+          0.3
+        ],
+        "secondary": [
+          0.55,
+          0.42,
+          0.25
+        ]
+      },
+      "foods": [
+        "Item_Berry",
+        "Item_FeedMix"
       ],
-      "work": ["Gathering", "Transport"],
+      "loot": [
+        {
+          "item": "Item_Fiber",
+          "qty": 6
+        },
+        {
+          "item": "Item_Stone",
+          "qty": 6
+        }
+      ],
+      "work": [
+        "Gathering",
+        "Transport"
+      ],
       "sight_radius": 1400.0,
       "work_affinity": 1.6,
-      "spawn_count": 1
+      "spawn_count": 1,
+      "legendary": true
     },
     {
       "id": "Echo_Chronoweave",
@@ -95,19 +180,46 @@
       "home_zone": "Frostveil",
       "personality": "Enigmatic",
       "activity": "Nocturnal",
-      "stats": { "hp": 480.0, "atk": 36.0, "def": 28.0, "spd": 340.0 },
+      "stats": {
+        "hp": 480.0,
+        "atk": 36.0,
+        "def": 28.0,
+        "spd": 340.0
+      },
       "capture_difficulty": 0.95,
       "hostile": true,
-      "colors": { "primary": [0.45, 0.6, 0.95], "secondary": [0.75, 0.85, 1.0] },
-      "foods": ["Item_EnergyCell"],
-      "loot": [
-        { "item": "Item_CrystalShard", "qty": 4 },
-        { "item": "Item_VoltCore", "qty": 2 }
+      "colors": {
+        "primary": [
+          0.45,
+          0.6,
+          0.95
+        ],
+        "secondary": [
+          0.75,
+          0.85,
+          1.0
+        ]
+      },
+      "foods": [
+        "Item_EnergyCell"
       ],
-      "work": ["Support"],
+      "loot": [
+        {
+          "item": "Item_CrystalShard",
+          "qty": 4
+        },
+        {
+          "item": "Item_VoltCore",
+          "qty": 2
+        }
+      ],
+      "work": [
+        "Support"
+      ],
       "sight_radius": 1800.0,
       "work_affinity": 1.5,
-      "spawn_count": 1
+      "spawn_count": 1,
+      "legendary": true
     }
   ]
 }

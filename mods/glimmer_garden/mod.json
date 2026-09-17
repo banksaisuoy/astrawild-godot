@@ -1,0 +1,104 @@
+{
+  "id": "glimmer_garden",
+  "name": "Glimmer Garden",
+  "version": "1.0.0",
+  "author": "ASTRAWILD Team",
+  "description": "A pocket of tame wonder: two gentle Echoes that ask for nothing but berries, plus the tonics and feed mixes to keep a captured party thriving.",
+  "species": [
+    {
+      "id": "Echo_Petalume",
+      "name": "Petalume",
+      "family": "Flora",
+      "body_plan": "Floating",
+      "size_class": "Small",
+      "element": "Flora",
+      "weakness": "Frost",
+      "role": "Gather",
+      "home_zone": "Glimmerwood",
+      "personality": "Social",
+      "activity": "Diurnal",
+      "stats": { "hp": 90.0, "atk": 8.0, "def": 18.0, "spd": 120.0 },
+      "capture_difficulty": 0.2,
+      "hostile": false,
+      "colors": { "primary": [0.72, 0.95, 0.7], "secondary": [0.95, 0.85, 0.45] },
+      "foods": ["Item_Berry", "Item_FeedMix"],
+      "loot": [
+        { "item": "Item_Dawnbloom", "qty": 2 },
+        { "item": "Item_Fiber", "qty": 3 }
+      ],
+      "work": ["Gather", "Farm"],
+      "sight_radius": 900.0,
+      "work_affinity": 1.6,
+      "spawn_count": 3
+    },
+    {
+      "id": "Echo_Corallume",
+      "name": "Corallume",
+      "family": "Aquatic",
+      "body_plan": "Floating",
+      "size_class": "Small",
+      "element": "Frost",
+      "weakness": "Flame",
+      "role": "Support",
+      "home_zone": "PearlseaReef",
+      "personality": "Curious",
+      "activity": "Diurnal",
+      "stats": { "hp": 110.0, "atk": 10.0, "def": 22.0, "spd": 140.0 },
+      "capture_difficulty": 0.25,
+      "hostile": false,
+      "colors": { "primary": [0.55, 0.9, 0.95], "secondary": [0.95, 0.75, 0.85] },
+      "foods": ["Item_Berry", "Item_CookedMeat"],
+      "loot": [
+        { "item": "Item_SeaPearl", "qty": 1 },
+        { "item": "Item_CoralShard", "qty": 2 }
+      ],
+      "work": ["Support"],
+      "sight_radius": 900.0,
+      "work_affinity": 1.5,
+      "spawn_count": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "Item_GlimmerTonic",
+      "name": "Glimmer Tonic",
+      "category": "consumable",
+      "weight": 0.4,
+      "stack": 20,
+      "food": 15,
+      "water": 35,
+      "feed_value": 18,
+      "desc": "Cool luminescent draught pressed from glimmer blossoms. Restores body and spirit."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "Recipe_GlimmerTonic",
+      "name": "Glimmer Tonic",
+      "station": "Any",
+      "tech": null,
+      "time": 3.0,
+      "inputs": [
+        { "item": "Item_Berry", "qty": 2 },
+        { "item": "Item_Dawnbloom", "qty": 2 }
+      ],
+      "outputs": [
+        { "item": "Item_GlimmerTonic", "qty": 2 }
+      ]
+    },
+    {
+      "id": "Recipe_GlimmerFeedMix",
+      "name": "Glimmer Feed Mix",
+      "station": "Campfire",
+      "tech": "Cooking",
+      "time": 4.0,
+      "inputs": [
+        { "item": "Item_GlimmerTonic", "qty": 1 },
+        { "item": "Item_Fiber", "qty": 2 }
+      ],
+      "outputs": [
+        { "item": "Item_FeedMix", "qty": 3 }
+      ]
+    }
+  ]
+}
