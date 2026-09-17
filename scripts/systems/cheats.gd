@@ -101,6 +101,9 @@ func _run(text: String) -> void:
                         _log("SellItem <item> [qty] | EquipItem <item> | SetTime <h> [m] | SetWeather <name>")
                         _log("God | HealAll | ResearchPoints <n> | UnlockTech <tech> | SaveNow | LoadNow")
                         _log("CaptureAll | TeleportForward <m> | ListSpecies | ListItems | ListTech")
+                        _log("Mods — list loaded Echo mods")
+                "mods":
+                        _log(Mods.summary_bbcode())
                 "spawnecho":
                         _cmd_spawn_echo(args)
                 "giveitem":
@@ -161,7 +164,11 @@ func _run(text: String) -> void:
                         var ids := []
                         for s in Data.species.keys():
                                 ids.append(s)
-                        _log("%d species — try: AW.SpawnEcho Echo_Gloomfang | Echo_Sprigling | Echo_Auroraling ..." % ids.size())
+                        var modded := 0
+                        for id in ids:
+                                if Data.species[id].has("spawn_count"):
+                                        modded += 1
+                        _log("%d species (%d modded) — try: AW.SpawnEcho Echo_Gloomfang | Echo_Solaris | Echo_Auroraling ..." % [ids.size(), modded])
                 "listitems":
                         var names := []
                         for k in Game.inventory.keys():

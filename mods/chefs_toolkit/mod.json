@@ -1,0 +1,84 @@
+{
+  "id": "chefs_toolkit",
+  "name": "Chef's Toolkit",
+  "version": "1.0.0",
+  "author": "ASTRAWILD Team",
+  "description": "Three field-cooking recipes for the Campfire: grind Glimmer Berries into Vale Spice Mix, cure Ember Ash jerky, and plate a Traveler's Feast worthy of the First Dawn.",
+  "items": [
+    {
+      "id": "Item_SpiceMix",
+      "name": "Vale Spice Mix",
+      "category": "material",
+      "weight": 0.3,
+      "stack": 100,
+      "desc": "Fragrant blend of crushed berries and wild herbs. The base of every camp feast."
+    },
+    {
+      "id": "Item_CrystalJerky",
+      "name": "Crystal-Cured Jerky",
+      "category": "consumable",
+      "weight": 0.3,
+      "stack": 30,
+      "food": 30,
+      "water": 0,
+      "feed_value": 12,
+      "desc": "Ember-ash cured meat with a crystalline crunch. Keeps for weeks."
+    },
+    {
+      "id": "Item_TravelerFeast",
+      "name": "Traveler's Feast",
+      "category": "consumable",
+      "weight": 1.2,
+      "stack": 10,
+      "food": 60,
+      "water": 15,
+      "feed_value": 30,
+      "desc": "A hearty plated meal that restores body and spirit. Even legendary Echoes accept a bite."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "Recipe_SpiceMix",
+      "name": "Vale Spice Mix",
+      "inputs": [
+        { "item": "Item_Berry", "qty": 2 },
+        { "item": "Item_Dawnbloom", "qty": 1 }
+      ],
+      "outputs": [
+        { "item": "Item_SpiceMix", "qty": 2 }
+      ],
+      "time": 4.0,
+      "tech": null,
+      "station": null
+    },
+    {
+      "id": "Recipe_CrystalJerky",
+      "name": "Crystal-Cured Jerky",
+      "inputs": [
+        { "item": "Item_RawMeat", "qty": 1 },
+        { "item": "Item_EmberAsh", "qty": 1 }
+      ],
+      "outputs": [
+        { "item": "Item_CrystalJerky", "qty": 2 }
+      ],
+      "time": 8.0,
+      "tech": null,
+      "station": "Station_Campfire"
+    },
+    {
+      "id": "Recipe_TravelerFeast",
+      "name": "Traveler's Feast",
+      "inputs": [
+        { "item": "Item_CookedMeat", "qty": 1 },
+        { "item": "Item_SpiceMix", "qty": 1 },
+        { "item": "Item_Berry", "qty": 1 }
+      ],
+      "outputs": [
+        { "item": "Item_TravelerFeast", "qty": 1 }
+      ],
+      "time": 12.0,
+      "tech": "Tech_Cooking",
+      "station": "Station_Campfire"
+    }
+  ]
+}

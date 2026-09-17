@@ -269,6 +269,25 @@ func _run_smoke_checks() -> void:
         if world.power_grid:
                 world.power_grid.resolve_grid_now()
                 print("SMOKE: power grid ", world.power_grid.grid_summary())
+        # mods: loader active, injected content present, modded creatures spawned
+        print("SMOKE: mods loaded=", Mods.mods.size(), " ids=", Mods.mods.keys())
+        var mod_species := ["Echo_Solaris", "Echo_Umbrarch", "Echo_Terravore", "Echo_Chronoweave"]
+        for sid in mod_species:
+                var def := Data.species_def(sid)
+                print("SMOKE: mod species ", sid, " registered=", not def.is_empty(), " zone=", def.get("home_zone", ""))
+        print("SMOKE: mod item TravelerFeast=", Data.items.has("Item_TravelerFeast"), " SpiceMix=", Data.items.has("Item_SpiceMix"))
+        var mod_recipe_count := 0
+        for r in Data.recipes:
+                if r["id"].begins_with("Recipe_SpiceMix") or r["id"].begins_with("Recipe_CrystalJerky") or r["id"].begins_with("Recipe_TravelerFeast"):
+                        mod_recipe_count += 1
+        print("SMOKE: mod recipes registered=", mod_recipe_count)
+        var modded_spawns := 0
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and c.def.has("spawn_count"):
+                        modded_spawns += 1
+        print("SMOKE: modded creatures spawned=", modded_spawns)
+        var ember_zone: Dictionary = Data.zone("Zone_EmberRidge")
+        print("SMOKE: EmberRidge wildlife=", ember_zone.get("wildlife", []).size(), " has_solaris=", str(ember_zone.get("wildlife", [])).find("Echo_Solaris") >= 0)
         print("SMOKE: cheat console ", get_tree().get_nodes_in_group("hud").size() > 0, " console=", game_layer.has_node("CheatConsole"))
         for i in 6:
                 await get_tree().create_timer(0.5).timeout
