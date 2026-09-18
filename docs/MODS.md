@@ -112,9 +112,13 @@ Open the console with `` ` `` (backquote):
 - `AW.GiveItem Item_TravelerFeast 3` — get modded items
 - `AW.ListSpecies` — species count includes modded ones
 
-## Legendary species (v1.0.3 balance pass)
+## Legendary species (v1.0.3 balance pass, rule fixed in v1.0.4)
 
-Species with `"legendary": true` — or any hostile species with `capture_difficulty >= 0.85` — are treated as **legendaries**:
+Species with `"legendary": true` are treated as **legendaries** (the v1.0.3
+heuristic `hostile && capture_difficulty >= 0.85` wrongly classified the four
+night predators as dormant and stripped Night Raids of all threat — removed).
+The `legendary` flag is forwarded by the mod loader since v1.0.4, so modded
+legendaries now actually spawn dormant in exports:
 
 - They spawn **dormant** (☾ nameplate, golden pulsing ground ring, quarter movement speed) and **never aggro on sight** — the player always chooses the fight.
 - Damaging a dormant legendary **wakes** it ("Solaris the Radiant awakens!" toast) and it fights to the end — legendaries never flee at low HP.

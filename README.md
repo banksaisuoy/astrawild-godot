@@ -50,7 +50,15 @@ all data is JSON-driven and every asset is in-repo.
 | I / C / R / J | Inventory / Crafting / Research / Journal & Bestiary |
 | B | Build mode (, . rotate, / cycle piece, E place) |
 | M | Map |
-| 1 / 2 / 3 | Party command: follow / stay / attack |
+| 1 / 2 / 3 / 4 / 5 | Party command: follow / stay / attack / **defend** / **work** |
+| V | Cycle party commands (follow → stay → attack → defend → work) |
+| X | **Equip best** — auto-equips the best item per slot from the backpack |
+| Z | **Dismantle** — reclaim the building under the crosshair (full refund) |
+| T | **Smart consume** — eat/drink the best item for the most-depleted vital |
+| H | **Utility Drone** — deploy/recall (auto-scan + auto-harvest, 600 s battery) |
+| U | **Utility Robot** — deploy/recall (mans an unmanned work site at ×0.8) |
+| F5 / F9 | **Quick save / quick load** (autosave also runs every 5 minutes) |
+| N | Rotate build piece (alias for `,`) |
 | Esc | Pause menu (save / load / restart) |
 | **Dawn Skiff** | [E] near the hull to board · W/S thrust · A/D yaw · SPACE/CTRL climb/descend · SHIFT resonance boost (14→26 m/s) · [E] in flight to dismount |
 | ` (backquote) | Debug console — the 15 `AW.*` cheat commands (SpawnEcho, GiveItem, SetTime, SetWeather, God, …) |

@@ -1,0 +1,93 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  validate:
+    name: Import + headless smoke (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.2 editor
+        run: |
+          mkdir -p ~/.local/bin
+          curl -sL -o godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          ln -s /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
+
+      - name: Import project (class cache + assets)
+        run: godot --headless --import
+
+      - name: Clean boot gate (no warnings/errors)
+        run: |
+          godot --headless --quit 2>&1 | tee boot.log
+          ! grep -iE "warning|error" boot.log
+
+      - name: Headless smoke suite
+        run: |
+          godot --headless -- --smoke 2>&1 | tee smoke.log
+          grep -q "SMOKE COMPLETE" smoke.log
+          ! grep -qE "SCRIPT ERROR|Parse Error" smoke.log
+
+  export:
+    name: Export ${{ matrix.preset }}
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - preset: "Linux"
+            artifact: Astrawild-Linux-x64
+            path: build/linux
+          - preset: "Windows Desktop"
+            artifact: Astrawild-Windows-x64
+            path: build/windows
+          - preset: "macOS"
+            artifact: Astrawild-macOS-universal
+            path: build/macos
+          - preset: "Web"
+            artifact: Astrawild-Web
+            path: build/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.2 + export templates
+        run: |
+          mkdir -p ~/.local/bin ~/.local/share/godot/export_templates
+          curl -sL -o godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          ln -s /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
+          curl -sL -o templates.tpz https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          mkdir -p /tmp/tp && unzip -q templates.tpz -d /tmp/tp
+          mv /tmp/tp/templates ~/.local/share/godot/export_templates/4.7.2.stable
+
+      - name: Import + export
+        run: |
+          godot --headless --import
+          godot --headless --export-release "${{ matrix.preset }}"
+
+      - name: Zip artifact
+        run: |
+          cd ${{ matrix.path }}
+          zip -qr ../${{ matrix.artifact }}.zip .
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.path }}/../${{ matrix.artifact }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}/../${{ matrix.artifact }}.zip
