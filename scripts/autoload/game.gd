@@ -24,6 +24,8 @@ signal game_loaded
 const MINUTES_PER_REAL_SECOND := 1.0
 const MAX_PARTY := 3
 const CAPTURE_COOLDOWN := 1.0
+const AUTOSAVE_INTERVAL := 300.0
+const PARTY_COMMANDS := ["Follow", "Stay", "Attack", "Defend", "Work"]
 const TRUST_STAGES := [
         {"name": "Stranger", "min": 0.0},
         {"name": "Acquainted", "min": 10.0},
@@ -73,6 +75,11 @@ var forced_weather := ""   # world-event / cheat override (Storm Surge etc.)
 var party := []            # array of echo state dicts (active field team)
 var echo_box := []         # benched echoes
 var _capture_cooldown := 0.0
+
+# ---- automation (v1.0.4) ----
+var _autosave_timer := 0.0
+var quick_load_pending := false
+var autosave_enabled := true
 
 # ---- crafting ----
 var craft_queue := []      # {recipe_id, remaining, station_pos}
@@ -124,6 +131,10 @@ func _setup_input_actions() -> void:
                 "journal": [KEY_J], "build": [KEY_B], "map": [KEY_M], "pause": [KEY_ESCAPE],
                 "mods": [KEY_F7],
                 "party_follow": [KEY_1], "party_stay": [KEY_2], "party_attack": [KEY_3],
+                "party_defend": [KEY_4], "party_work": [KEY_5], "party_cycle": [KEY_V],
+                "equip_best": [KEY_X], "dismantle": [KEY_Z], "smart_consume": [KEY_T],
+                "deploy_drone": [KEY_H], "deploy_robot": [KEY_U],
+                "quick_save": [KEY_F5], "quick_load": [KEY_F9],
                 "rotate_left": [KEY_COMMA], "rotate_right": [KEY_PERIOD],
                 "ui_up": [KEY_UP], "ui_down": [KEY_DOWN], "ui_left": [KEY_LEFT], "ui_right": [KEY_RIGHT],
         }
@@ -151,8 +162,112 @@ func _process(delta: float) -> void:
         _tick_survival(delta)
         _tick_status(delta)
         _tick_crafting(delta)
+        _tick_autosave(delta)
         if _capture_cooldown > 0.0:
                 _capture_cooldown -= delta
+
+
+# ------------------------------------------------------------- automation --
+func _tick_autosave(delta: float) -> void:
+        if not autosave_enabled or dead:
+                return
+        # only autosave once an expedition is actually running
+        if get_tree().get_first_node_in_group("player") == null:
+                return
+        _autosave_timer += delta
+        if _autosave_timer >= AUTOSAVE_INTERVAL:
+                _autosave_timer = 0.0
+                _autosave_now()
+
+
+func _autosave_now() -> void:
+        var world := get_tree().get_first_node_in_group("world")
+        var player := get_tree().get_first_node_in_group("player")
+        if Saves.save_game(world, player):
+                Game.toast.emit("Autosaved.", Color(0.75, 0.9, 0.8))
+
+
+# ------------------------------------------------- field quick actions (X/T) --
+func equip_best() -> void:
+        # X — auto-equip the best item per slot from the backpack
+        var best := {"weapon": "", "offhand": "", "body": "", "head": "", "tool": ""}
+        var score := {"weapon": -1.0, "offhand": -1.0, "body": -1.0, "head": -1.0, "tool": -1.0}
+        for id in inventory:
+                if inventory[id] <= 0:
+                        continue
+                var it: Dictionary = Data.item(id)
+                if it.is_empty():
+                        continue
+                var cat: String = str(it.get("category", ""))
+                if cat == "weapon":
+                        var v := float(it.get("atk", 0))
+                        if v > score["weapon"]:
+                                best["weapon"] = id
+                                score["weapon"] = v
+                elif cat == "offhand":
+                        var v2 := float(it.get("block", 0))
+                        if v2 > score["offhand"]:
+                                best["offhand"] = id
+                                score["offhand"] = v2
+                elif cat == "armor":
+                        var slot: String = str(it.get("slot", "body"))
+                        var v3 := float(it.get("armor", 0))
+                        if slot in ["body", "head"] and v3 > score[slot]:
+                                best[slot] = id
+                                score[slot] = v3
+                elif cat == "tool" and id == "Item_FieldScanner":
+                        best["tool"] = id
+                        score["tool"] = 1.0
+        var changed := []
+        for slot in best:
+                if best[slot] != "" and equipment.get(slot, "") != best[slot]:
+                        equip(slot, best[slot])
+                        changed.append("%s: %s" % [slot, Data.item_name(best[slot])])
+        if changed.is_empty():
+                toast.emit("Already wearing your best gear.", Color(0.8, 0.85, 0.9))
+        else:
+                toast.emit("Equipped best — %s" % ", ".join(changed), Color(0.8, 1.0, 0.85))
+                Sfx.play("ui_confirm", -10.0)
+
+
+func smart_consume() -> void:
+        # T — drink/eat the best item for the most-depleted vital (hp urgent)
+        var deficits := {
+                "hp": maxf(0.0, max_hp - hp) * 2.0,
+                "hunger": maxf(0.0, 100.0 - hunger),
+                "thirst": maxf(0.0, 100.0 - thirst),
+        }
+        var worst := "hp"
+        for vital in deficits:
+                if deficits[vital] > deficits[worst]:
+                        worst = vital
+        if deficits[worst] <= 1.0:
+                toast.emit("Vitals look good.", Color(0.8, 0.9, 0.85))
+                return
+        var need_field: String = {"hp": "heal", "hunger": "food", "thirst": "water"}[worst]
+        var best_id := ""
+        var best_val := -1.0
+        for id in inventory:
+                if inventory[id] <= 0:
+                        continue
+                var it: Dictionary = Data.item(id)
+                var val := float(it.get(need_field, 0))
+                if it.get("category", "") == "consumable" and val > best_val:
+                        best_val = val
+                        best_id = id
+        if best_id == "":
+                match worst:
+                        "hp": toast.emit("Nothing to heal with — craft a Bandage.", Color(1.0, 0.7, 0.55))
+                        "hunger": toast.emit("Nothing to eat — forage berries or hunt.", Color(1.0, 0.7, 0.55))
+                        "thirst": toast.emit("Nothing to drink — fill a Water Flask.", Color(1.0, 0.7, 0.55))
+                return
+        consume_item(best_id)
+
+
+func cycle_party_command() -> void:
+        # V — cycle Follow → Stay → Attack → Defend → Work
+        var idx := PARTY_COMMANDS.find(party_command)
+        set_party_command(PARTY_COMMANDS[(idx + 1) % PARTY_COMMANDS.size()])
 
 
 # ------------------------------------------------------------------ clock --
@@ -249,6 +364,8 @@ func _tick_survival(delta: float) -> void:
         # exposure damage
         if temperature <= 4.0 or temperature >= 36.0:
                 take_damage(1.0 * delta, "None", false)
+        # gravely wounded heartbeat (v1.0.4 audio pass)
+        Sfx.tick_heartbeat(hp / max_hp)
         stats_changed.emit()
 
 
@@ -492,6 +609,7 @@ func _tick_crafting(delta: float) -> void:
                 for out in recipe["outputs"]:
                         add_item(out["item"], out["qty"])
                 toast.emit("Crafted %s" % recipe["name"], Color(0.7, 0.95, 1.0))
+                Sfx.play("ui_craft_done", -8.0)
                 notify_event("CraftRecipe", recipe["id"])
                 crafting_done.emit(recipe["id"])
 
@@ -519,6 +637,7 @@ func unlock_tech(tech_id: String) -> bool:
         research_points -= int(Data.techs[tech_id]["cost"])
         unlocked_tech[tech_id] = true
         toast.emit("Research complete: %s" % Data.techs[tech_id]["name"], Color(0.9, 0.8, 1.0))
+        Sfx.play("ui_research_done", -8.0)
         research_changed.emit()
         _notify_quest_counters("UnlockTechnology", tech_id)
         return true
@@ -689,7 +808,22 @@ func set_party_command(cmd: String) -> void:
                 "Follow": toast.emit("Party: follow me", Color(0.7, 0.9, 1.0))
                 "Stay": toast.emit("Party: hold position", Color(0.7, 0.9, 1.0))
                 "Attack": toast.emit("Party: attack!", Color(1.0, 0.7, 0.6))
+                "Defend": toast.emit("Party: defend me", Color(0.9, 0.85, 1.0))
+                "Work": toast.emit("Party: to the work sites", Color(0.85, 1.0, 0.7))
         party_changed.emit()
+        # re-arm work bindings on every command change: clear the followers'
+        # one-shot bind flags and rebuild site rosters from who is actually
+        # still standing inside the assign radius
+        var world := get_tree().get_first_node_in_group("world")
+        if world:
+                var followers: Dictionary = world.get("followers")
+                for idx in followers:
+                        var n: Node = followers[idx]
+                        if n and is_instance_valid(n):
+                                n.set_meta("work_bound", false)
+                for site in get_tree().get_nodes_in_group("worksites"):
+                        if site.has_method("_reassign_workers"):
+                                site._reassign_workers()
 
 
 func feed_party() -> void:
@@ -775,10 +909,12 @@ func try_capture(echo) -> bool:
                         echo_box.append(entry)
                         echo.queue_free()
                 toast.emit("Captured %s! (%d%% chance)" % [echo.def["name"], int(chance * 100)], Color(0.6, 1.0, 0.8))
+                Sfx.play("capture_success", -6.0)
                 party_changed.emit()
                 notify_event("CaptureEcho", echo.def["id"])
         else:
                 toast.emit("%s resisted the resonator... (%d%% chance)" % [echo.def["name"], int(chance * 100)], Color(1, 0.75, 0.5))
+                Sfx.play("ui_cancel", -12.0)
         return success
 
 

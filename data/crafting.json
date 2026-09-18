@@ -173,8 +173,8 @@
         }
       ],
       "time": 3.0,
-      "tech": null,
-      "station": null
+      "tech": "",
+      "station": ""
     },
     {
       "id": "Recipe_Bandage",
@@ -192,8 +192,8 @@
         }
       ],
       "time": 2.0,
-      "tech": null,
-      "station": null
+      "tech": "",
+      "station": ""
     },
     {
       "id": "Recipe_WoodPlank",
@@ -211,7 +211,7 @@
         }
       ],
       "time": 2.0,
-      "tech": null,
+      "tech": "",
       "station": "Station_Workbench"
     },
     {
@@ -253,7 +253,7 @@
         }
       ],
       "time": 4.0,
-      "tech": null,
+      "tech": "",
       "station": "Station_Workbench"
     },
     {
@@ -322,7 +322,7 @@
         }
       ],
       "time": 3.0,
-      "tech": null,
+      "tech": "",
       "station": "Station_Workbench"
     },
     {

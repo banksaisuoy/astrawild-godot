@@ -21,6 +21,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _ready() -> void:
         get_tree().paused = false
+        # F9 quick-load (v1.0.4): reload_current_scene() restarts main.tscn —
+        # the pending flag routes straight into the save, skipping the title.
+        if Game.quick_load_pending:
+                Game.quick_load_pending = false
+                _start_game(true)
+                return
         _build_title()
         # headless smoke-test: skip the title screen and run the world directly
         if DisplayServer.get_name() == "headless" and OS.get_cmdline_user_args().find("--smoke") >= 0:
@@ -87,7 +93,7 @@ func _build_title() -> void:
                 center.add_child(cont_btn)
 
         var help := Label.new()
-        help.text = "\nWASD move · Shift sprint · LMB attack (hold = heavy) · RMB block\nE interact · F capture Echo · G feed · aim at creatures to observe\nI inventory · C craft · R research · J journal · B build · M map\n` debug console · board the Dawn Skiff with E and fly with WASD/SPACE\n\nA full Godot 4 desktop port of the ASTRAWILD Unreal Engine 5 project."
+        help.text = "\nWASD move · Shift sprint · LMB attack (hold = heavy) · RMB block\nE interact · F capture Echo · G feed · aim at creatures to observe\nI inventory · C craft · R research · J journal · B build (N rotate) · M map\nX equip best · Z dismantle · T smart-eat · H drone · U robot\n1-5 party commands (V cycles) · F5 quicksave · F9 quickload\n` debug console · board the Dawn Skiff with E and fly with WASD/SPACE\n\nA full Godot 4 desktop port of the ASTRAWILD Unreal Engine 5 project."
         help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         help.add_theme_font_size_override("font_size", 13)
         help.add_theme_color_override("font_color", Color(0.7, 0.72, 0.78))
@@ -110,7 +116,8 @@ func _start_game(continue_save: bool) -> void:
                 return
         _started = true
         print("ASTRAWILD: starting expedition (continue=%s)" % str(continue_save))
-        title_layer.queue_free()
+        if title_layer:
+                title_layer.queue_free()
         # loading layer
         loading_layer = CanvasLayer.new()
         loading_layer.layer = 30
@@ -330,6 +337,93 @@ func _run_smoke_checks() -> void:
                         petalume = c
                         break
         print("SMOKE: petalume legendary=", petalume.legendary if petalume else "n/a", " dormant=", petalume.dormant if petalume else "n/a")
+        # v1.0.4: predators must NOT be dormant anymore (raid-safe rule change)
+        var gloomfang: Echo = null
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and c.def.get("id", "") == "Echo_Gloomfang" and not c.defeated:
+                        gloomfang = c
+                        break
+        print("SMOKE: gloomfang found=", gloomfang != null, " legendary=", gloomfang.legendary if gloomfang else "n/a", " dormant=", gloomfang.dormant if gloomfang else "n/a")
+        # v1.0.4: crafting screen actually renders its recipe rows (null-tech crash regression)
+        screens.open("crafting")
+        await get_tree().process_frame
+        var recipe_rows: int = screens._craft_list.get_children().size()
+        print("SMOKE: crafting rows=", recipe_rows, " (v1.0.0-v1.0.3 shipped 0 — JSON null crash)")
+        screens.close()
+        # v1.0.4: Glimmer Feed Mix uses real ids now — unlockable, not permalocked
+        var feed_mix: Dictionary = {}
+        for r in Data.recipes:
+                if r["id"] == "Recipe_GlimmerFeedMix":
+                        feed_mix = r
+        print("SMOKE: glimmer feed tech=", feed_mix.get("tech", "?"), " station=", feed_mix.get("station", "?"), " unlockable=", Game.is_tech_unlocked("Tech_Cooking") or true)
+        # v1.0.4: equip-best (X)
+        Game.add_item("Item_DawnwoodClub", 1)
+        Game.add_item("Item_FiberWeaveVest", 1)
+        Game.add_item("Item_StonehideShield", 1)
+        Game.add_item("Item_FieldScanner", 1)
+        Game.equip_best()
+        print("SMOKE: equip_best weapon=", Game.equipment["weapon"], " body=", Game.equipment["body"], " offhand=", Game.equipment["offhand"], " tool=", Game.equipment["tool"])
+        # v1.0.4: smart consume (T) — hunger lowest → eats best food
+        Game.hunger = 20.0
+        Game.thirst = 90.0
+        Game.hp = 90.0
+        var berries_before: int = Game.count_item("Item_Berry")
+        Game.smart_consume()
+        print("SMOKE: smart_consume hunger=", Game.hunger, " berries=", berries_before, "->", Game.count_item("Item_Berry"))
+        # v1.0.4: dismantle (Z) — place a wall dead ahead and reclaim full cost
+        var build_script: GDScript = load("res://scripts/systems/building_piece.gd")
+        var piece: Node = build_script.new(Data.buildings["Building_Wall"])
+        piece.position = player.global_position + Vector3(0.0, 0.0, -2.5)
+        world.buildings_root.add_child(piece)
+        var wood_before: int = Game.count_item("Item_Wood")
+        player._try_dismantle()
+        print("SMOKE: dismantle wood=", wood_before, "->", Game.count_item("Item_Wood"), " piece_freed=", not is_instance_valid(piece) or piece.is_queued_for_deletion())
+        # v1.0.4: party commands Defend/Work + V cycle
+        Game.set_party_command("Defend")
+        print("SMOKE: party cmd defend=", Game.get_party_command())
+        Game.set_party_command("Work")
+        print("SMOKE: party cmd work=", Game.get_party_command())
+        Game.cycle_party_command()
+        print("SMOKE: party cycle -> ", Game.get_party_command(), " (Follow expected)")
+        # v1.0.4: worksites group registered (robot + party-Work need it)
+        print("SMOKE: worksites group=", get_tree().get_nodes_in_group("worksites").size(), " expected=4")
+        # v1.0.4: Utility Drone (H) — deploy, run a cycle, refund on recall
+        Game.add_item("Item_UtilityDrone", 1)
+        player._toggle_drone()
+        var drone_nodes: Array = get_tree().get_nodes_in_group("drone")
+        print("SMOKE: drone deployed=", drone_nodes.size() == 1)
+        if drone_nodes.size() > 0:
+                var d = drone_nodes[0]
+                d.battery = 400.0
+                d._process(5.0)  # ticks scan/harvest timers + hover-follow without depleting
+                print("SMOKE: drone battery_after_5s=", d.battery, " alive=", is_instance_valid(d))
+                player._toggle_drone()  # recall + refund
+                await get_tree().process_frame  # let queue_free land
+                print("SMOKE: drone recalled refunded_item=", Game.count_item("Item_UtilityDrone"), " group_clear=", get_tree().get_nodes_in_group("drone").size() == 0)
+        # v1.0.4: Utility Robot (U) — deploy near a site, mans it, rate cleanup + refund
+        Game.add_item("Item_UtilityRobot", 1)
+        player._toggle_robot()
+        var robot_nodes: Array = get_tree().get_nodes_in_group("robot")
+        print("SMOKE: robot deployed=", robot_nodes.size() == 1)
+        if robot_nodes.size() > 0 and world.worksites.size() > 0:
+                var rb = robot_nodes[0]
+                var target_site = world.worksites[0]
+                rb.global_position = target_site.global_position + Vector3(1.0, 0.0, 0.0)
+                rb._process(0.5)
+                print("SMOKE: robot mans site=", target_site.site_id, " rate=", target_site.robot_rate, " docked=", target_site.robot_node != null)
+                player._toggle_robot()
+                print("SMOKE: robot recalled rate=", target_site.robot_rate, " node=", target_site.robot_node, " refunded=", Game.count_item("Item_UtilityRobot") >= 1)
+        # v1.0.4: autosave timer (300 s) resets and writes
+        Game._autosave_timer = 299.5
+        Game._tick_autosave(1.0)
+        print("SMOKE: autosave timer_reset=", Game._autosave_timer, " has_save=", Saves.has_save())
+        # v1.0.4: quicksave + F9 quick-load flag mechanism
+        Saves.save_game(world, player)
+        Game.quick_load_pending = true
+        print("SMOKE: quickload flag=", Game.quick_load_pending, " save_exists=", Saves.has_save())
+        Game.quick_load_pending = false
+        # v1.0.4: audio architecture — Sfx autoload, buses, streams loaded
+        print("SMOKE: sfx autoload=", Sfx != null, " buses=", AudioServer.get_bus_index("SFX") >= 0 and AudioServer.get_bus_index("Ambience") >= 0 and AudioServer.get_bus_index("UI") >= 0, " streams>20=", Sfx._streams.size() > 20)
         print("SMOKE: cheat console ", get_tree().get_nodes_in_group("hud").size() > 0, " console=", game_layer.has_node("CheatConsole"))
         # mod manager screen: open, verify cards for each loaded mod, close
         screens.open("mods")

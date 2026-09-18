@@ -38,6 +38,10 @@ var _world: Node3D
 var _observed: Echo = null
 var _observe_progress_frame := 0.0
 var _footstep_timer := 0.0
+var _zone_key := ""
+var _was_airborne := false
+var _drone: Node = null
+var _robot: Node = null
 var _build_mode := false
 var _build_ghost: MeshInstance3D
 var _build_def: Dictionary = {}
@@ -197,23 +201,20 @@ func _setup_camera() -> void:
 
 
 func _setup_sfx() -> void:
-        for id in ["A_Footstep_Grass", "A_Echo_Capture_Success", "A_SFX_Hit_Validate", "A_SFX_Attack_Swing"]:
-                var path := "res://assets/audio/%s.wav" % id
-                if ResourceLoader.exists(path):
-                        _sfx[id] = load(path)
-        # attack swing fallback: use footstep if no sfx
-        if not _sfx.has("A_SFX_Attack_Swing") and _sfx.has("A_Footstep_Grass"):
-                _sfx["A_SFX_Attack_Swing"] = _sfx["A_Footstep_Grass"]
+        # v1.0.4: audio moved to the Sfx autoload (buses + event registry +
+        # positional playback). The old loader referenced non-existent ids —
+        # "A_SFX_Hit_Validate" / "A_SFX_Attack_Swing" — so the game was
+        # effectively silent. Kept as a no-op for call-site compatibility.
+        pass
 
 
 func _play_sfx(id: String, vol: float = -12.0) -> void:
-        if _sfx.has(id):
-                var player := AudioStreamPlayer.new()
-                player.stream = _sfx[id]
-                player.volume_db = vol
-                add_child(player)
-                player.play()
-                player.finished.connect(player.queue_free)
+        # delegate to the Sfx autoload (event id or raw wav stem)
+        Sfx.play(id, vol)
+
+
+func _play_weapon_fire(item_id: String) -> void:
+        Sfx.play_weapon(item_id)
 
 
 func _physics_process(delta: float) -> void:
@@ -241,6 +242,10 @@ func _physics_process(delta: float) -> void:
         _observation(delta)
         _build_update(delta)
         move_and_slide()
+        # landing thump
+        if _was_airborne and is_on_floor() and velocity.y > -6.0:
+                Sfx.play("player_land", -16.0)
+        _was_airborne = not is_on_floor()
         _animate(delta)
         _zone_tracking()
 
@@ -318,6 +323,7 @@ func _movement(delta: float) -> void:
                 if Input.is_action_just_pressed("jump"):
                         velocity.y = JUMP_VELOCITY
                         _play_anim("Jump")
+                        Sfx.play("player_jump", -14.0)
         else:
                 var target := wish * speed
                 velocity.x = lerpf(velocity.x, target.x, 12.0 * delta * AIR_CONTROL * 3.0)
@@ -385,13 +391,42 @@ func _actions(delta: float) -> void:
         # feed wild echo
         if Input.is_action_just_pressed("feed"):
                 _try_feed()
-        # party commands
+        # party commands (1-5, V cycles)
         if Input.is_action_just_pressed("party_follow"):
                 Game.set_party_command("Follow")
         if Input.is_action_just_pressed("party_stay"):
                 Game.set_party_command("Stay")
         if Input.is_action_just_pressed("party_attack"):
                 Game.set_party_command("Attack")
+        if Input.is_action_just_pressed("party_defend"):
+                Game.set_party_command("Defend")
+        if Input.is_action_just_pressed("party_work"):
+                Game.set_party_command("Work")
+        if Input.is_action_just_pressed("party_cycle"):
+                Game.cycle_party_command()
+        # field quick actions (v1.0.4)
+        if Input.is_action_just_pressed("equip_best"):
+                Game.equip_best()
+        if Input.is_action_just_pressed("smart_consume"):
+                Game.smart_consume()
+        if Input.is_action_just_pressed("dismantle"):
+                _try_dismantle()
+        if Input.is_action_just_pressed("deploy_drone"):
+                _toggle_drone()
+        if Input.is_action_just_pressed("deploy_robot"):
+                _toggle_robot()
+        # quick save / quick load (F5 / F9)
+        if Input.is_action_just_pressed("quick_save"):
+                var w := get_tree().get_first_node_in_group("world")
+                if Saves.save_game(w, self):
+                        Game.toast.emit("Quicksaved — [F9] reloads.", Color(0.8, 1.0, 0.85))
+        if Input.is_action_just_pressed("quick_load"):
+                if Saves.has_save():
+                        Game.quick_load_pending = true
+                        Game.toast.emit("Reloading last save...", Color(0.85, 0.9, 1.0))
+                        get_tree().reload_current_scene()
+                else:
+                        Game.toast.emit("No save to load yet.", Color(1.0, 0.7, 0.5))
         # screens
         for pair in [["inventory", "inventory"], ["crafting", "crafting"], ["research", "research"], ["journal", "journal"], ["map", "map"], ["pause", "pause"], ["mods", "mods"]]:
                 if Input.is_action_just_pressed(pair[0]):
@@ -411,7 +446,7 @@ func _light_attack() -> void:
         attack_cd = LIGHT_CD
         _do_sweep(LIGHT_DAMAGE + Game.weapon_damage(), 0.9)
         _play_anim("Gather")
-        _play_sfx("A_SFX_Attack_Swing", -16.0)
+        Sfx.play("impact_kinetic", -22.0)  # soft swing whoosh; hit impacts fire in Echo.take_hit
 
 
 func _heavy_attack() -> void:
@@ -420,7 +455,7 @@ func _heavy_attack() -> void:
         attack_cd = HEAVY_CD
         _do_sweep(HEAVY_DAMAGE + Game.weapon_damage(), 1.15)
         _play_anim("Fire")
-        _play_sfx("A_SFX_Attack_Swing", -10.0)
+        Sfx.play("impact_kinetic", -16.0)
 
 
 func _do_sweep(damage: float, radius: float) -> void:
@@ -458,6 +493,7 @@ func _fire_weapon() -> void:
         if ammo != "":
                 Game.remove_item(ammo, 1)
         _play_anim("Fire")
+        Sfx.play_weapon(wid)
         _spawn_projectile(def)
 
 
@@ -663,6 +699,9 @@ func _build_update(_delta: float) -> void:
                 _build_rot += 15.0
         if Input.is_action_just_pressed("rotate_right"):
                 _build_rot -= 15.0
+        # N — rotate-build alias (v1.0.4)
+        if Input.is_key_label_pressed(KEY_N):
+                _build_rot += 15.0
         var facing := -camera.global_basis.z
         facing.y = 0.0
         facing = facing.normalized()
@@ -680,6 +719,119 @@ func _cycle_building() -> void:
         idx = (idx + 1) % ids.size()
         _build_def = Data.buildings[ids[idx]]
         Game.toast.emit("Selected: %s" % _build_def.get("name", ""), Color(0.9, 0.95, 1.0))
+
+
+# --------------------------------------------------- dismantle / automation --
+func _try_dismantle() -> void:
+        # Z — reclaim the building under the crosshair (full cost refund).
+        # Player-placed pieces are visual-only (no physics shapes), so the
+        # pick is a geometric ray-vs-AABB test over the world's building root.
+        var world := get_tree().get_first_node_in_group("world")
+        if world == null:
+                return
+        var root: Node = world.get("buildings_root")
+        if root == null:
+                return
+        var origin := global_position + Vector3(0, 1.4, 0)
+        var dir := -camera.global_basis.z
+        dir = dir.normalized()
+        var best: Node = null
+        var best_t := 5.0
+        for c in root.get_children():
+                if not c.has_method("get_save_data") or c.get("def") == null or c.is_queued_for_deletion():
+                        continue
+                var aabb := _piece_aabb(c)
+                if aabb.size == Vector3.ZERO:
+                        continue
+                var t := _ray_aabb(origin, dir, aabb)
+                if t >= 0.0 and t < best_t:
+                        best_t = t
+                        best = c
+        if best == null:
+                Game.toast.emit("No building in reach to dismantle.", Color(1.0, 0.75, 0.5))
+                return
+        var bdef: Dictionary = best.def
+        for c in bdef.get("cost", []):
+                Game.add_item(str(c["item"]), int(c["qty"]))
+        var name_txt: String = bdef.get("name", "Structure")
+        best.queue_free()
+        Game.toast.emit("Dismantled %s — materials refunded." % name_txt, Color(0.85, 1.0, 0.8))
+        Sfx.play("impact_kinetic", -12.0)
+
+
+func _piece_aabb(piece: Node) -> AABB:
+        # world-space AABB of every box mesh the piece is made of
+        var aabb := AABB()
+        var first := true
+        for c in piece.get_children():
+                if c is MeshInstance3D:
+                        var waabb: AABB = c.global_transform * c.get_aabb()
+                        if first:
+                                aabb = waabb
+                                first = false
+                        else:
+                                aabb = aabb.merge(waabb)
+        return aabb
+
+
+func _ray_aabb(origin: Vector3, dir: Vector3, box: AABB) -> float:
+        # slab method — entry distance along dir, or -1 when missing
+        var tmin := -INF
+        var tmax := INF
+        for i in 3:
+                var o: float = origin[i]
+                var d: float = dir[i]
+                if absf(d) < 0.0001:
+                        if o < box.position[i] or o > box.position[i] + box.size[i]:
+                                return -1.0
+                else:
+                        var t1 := (box.position[i] - o) / d
+                        var t2 := (box.position[i] + box.size[i] - o) / d
+                        if t1 > t2:
+                                var tmp := t1
+                                t1 = t2
+                                t2 = tmp
+                        tmin = maxf(tmin, t1)
+                        tmax = minf(tmax, t2)
+        if tmax < tmin or tmax < 0.0:
+                return -1.0
+        return maxf(tmin, 0.0)
+
+
+func _toggle_drone() -> void:
+        # H — deploy / recall the Utility Drone (auto-scan + auto-harvest)
+        if _drone and is_instance_valid(_drone):
+                _drone.recall()
+                _drone = null
+                return
+        if Game.count_item("Item_UtilityDrone") <= 0:
+                Game.toast.emit("No Utility Drone — craft one (Mechanics tech, workbench).", Color(1.0, 0.75, 0.5))
+                return
+        Game.remove_item("Item_UtilityDrone", 1)
+        var script: GDScript = load("res://scripts/systems/drone.gd")
+        _drone = script.new()
+        _drone.setup(self)
+        get_parent().add_child(_drone)
+        Game.toast.emit("Utility Drone deployed — scans + harvests nearby. [H] recalls.", Color(0.8, 0.95, 1.0))
+        Sfx.play("scan_ping", -8.0)
+
+
+func _toggle_robot() -> void:
+        # U — deploy / recall the Utility Robot (mans an unmanned work site)
+        if _robot and is_instance_valid(_robot):
+                _robot.recall()
+                _robot = null
+                return
+        if Game.count_item("Item_UtilityRobot") <= 0:
+                Game.toast.emit("No Utility Robot — craft one (Automation II tech, workbench).", Color(1.0, 0.75, 0.5))
+                return
+        Game.remove_item("Item_UtilityRobot", 1)
+        var script: GDScript = load("res://scripts/systems/robot.gd")
+        _robot = script.new()
+        _robot.setup(self)
+        get_parent().add_child(_robot)
+        Game.toast.emit("Utility Robot deployed — heading to a work site. [U] recalls.", Color(0.85, 1.0, 0.8))
+        Sfx.play("ui_confirm", -10.0)
 
 
 func _clear_ghost() -> void:
@@ -724,7 +876,13 @@ func respawn_at_camp() -> void:
 func _zone_tracking() -> void:
         var world := get_tree().get_first_node_in_group("world")
         if world and world.has_method("zone_at"):
-                Game.notify_zone(world.zone_at(global_position.x, global_position.z))
+                var zid: String = world.zone_at(global_position.x, global_position.z)
+                Game.notify_zone(zid)
+                # v1.0.4 audio: zone-aware ambience + footsteps
+                var key: String = zid.replace("Zone_", "")
+                if key != _zone_key:
+                        _zone_key = key
+                        Sfx.play_ambience(key)
 
 
 func _animate(delta: float) -> void:
@@ -740,12 +898,12 @@ func _animate(delta: float) -> void:
                 var target_yaw := atan2(look_dir.x, look_dir.z) + PI
                 model_root.rotation.y = lerp_angle(model_root.rotation.y, target_yaw, delta * 10.0)
         _play_anim("Run" if velocity.length() > 5.0 else "Walk" if velocity.length() > 0.5 else "Idle")
-        # footsteps
+        # footsteps (zone-aware surface)
         if is_on_floor() and velocity.length() > 1.0:
                 _footstep_timer -= delta * velocity.length()
                 if _footstep_timer <= 0.0:
                         _footstep_timer = 3.2
-                        _play_sfx("A_Footstep_Grass", -18.0)
+                        Sfx.play_footstep(_zone_key)
 
 
 func _play_anim(kind: String) -> void:

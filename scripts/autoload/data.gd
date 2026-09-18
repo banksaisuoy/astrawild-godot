@@ -49,6 +49,12 @@ func _load_all() -> void:
         var craft: Dictionary = _load_json(_PATHS.crafting)
         recipes = craft.get("recipes", [])
         for r in recipes:
+                # v1.0.4: base data ships "tech": null / "station": null on several
+                # recipes — coerce to "" so typed reads downstream never crash.
+                if not (r.get("tech", "") is String):
+                        r["tech"] = ""
+                if not (r.get("station", "") is String):
+                        r["station"] = ""
                 r["inputs_by_item"] = {}
                 for inp in r["inputs"]:
                         r["inputs_by_item"][inp["item"]] = inp["qty"]

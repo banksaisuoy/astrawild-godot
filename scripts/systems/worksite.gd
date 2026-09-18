@@ -18,6 +18,8 @@ var requires_power := false
 var input_items := {}               # item_id -> qty per cycle
 var workers := []                   # bound party entries (dicts)
 var worker_nodes := []              # Echo follower nodes
+var robot_rate := 0.0               # v1.0.4: Utility Robot flat man-rate
+var robot_node: Node = null         # the robot currently docked here
 var stored_output := 0
 var work_accumulator := 0.0
 var powered := false                # grid-supplied state (required-power sites)
@@ -42,6 +44,7 @@ var def: Dictionary = {}
 
 func _ready() -> void:
         add_to_group("interactables")
+        add_to_group("worksites")
         set_meta("interact_kind", "worksite")
         collision_layer = 4
         collision_mask = 0
@@ -108,12 +111,18 @@ func _update_label() -> void:
         var power_txt := ""
         if requires_power:
                 power_txt = " · ⚡ POWERED ×1.5" if powered else " · ⚠ NO POWER (build a Dynamo within 12 m)"
-        _label.text = "%s\n%s · %s%s" % [display_name, workers_txt, stored_txt, power_txt]
+        var robot_txt := " · ⚙ ROBOT ×%s" % str(robot_rate) if robot_rate > 0.0 else ""
+        _label.text = "%s\n%s · %s%s%s" % [display_name, workers_txt, stored_txt, power_txt, robot_txt]
 
 
 func _process(delta: float) -> void:
         _drop_stale_workers()
-        if workers.is_empty():
+        # v1.0.4: release a docked robot that has been freed externally
+        if robot_node != null and not is_instance_valid(robot_node):
+                robot_node = null
+                robot_rate = 0.0
+                _update_label()
+        if workers.is_empty() and robot_rate <= 0.0:
                 return
         var powered := _power_multiplier()
         if powered <= 0.0:
@@ -180,6 +189,7 @@ func _total_worker_rate() -> float:
         var total := 0.0
         for w in workers:
                 total += _worker_rate(w)
+        total += robot_rate
         return maxf(total, 0.05)
 
 

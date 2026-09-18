@@ -119,6 +119,12 @@ func _apply_mod(mod: Dictionary) -> Dictionary:
                 if not (raw_r is Dictionary) or not raw_r.has("id"):
                         continue
                 var r: Dictionary = raw_r
+                # v1.0.4: null-safety — mods may ship "tech": null / "station": null,
+                # which crashes the crafting screen's typed String reads. Coerce.
+                var tech_v: Variant = r.get("tech", "")
+                r["tech"] = tech_v if tech_v is String else ""
+                var station_v: Variant = r.get("station", "")
+                r["station"] = station_v if station_v is String else ""
                 r["inputs_by_item"] = {}
                 for inp in r.get("inputs", []):
                         r["inputs_by_item"][inp["item"]] = inp["qty"]
@@ -173,6 +179,12 @@ func _normalize_species(raw: Dictionary) -> Dictionary:
                 "sight_radius": float(raw.get("sight_radius", 1200.0)),
                 "work_affinity": float(raw.get("work_affinity", 1.0)),
                 "spawn_count": int(raw.get("spawn_count", 1)),
+                # v1.0.4: forward the flags the Echo runtime actually reads —
+                # previously "legendary" was dropped, so modded legendaries
+                # never spawned dormant in exports despite the flag.
+                "legendary": bool(raw.get("legendary", false)),
+                "passive": bool(raw.get("passive", not bool(raw.get("hostile", false)))),
+                "model": str(raw.get("model", "")),
         }
         return out
 

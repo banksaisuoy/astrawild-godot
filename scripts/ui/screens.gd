@@ -135,6 +135,8 @@ func _btn(text: String, cb: Callable, color: Color = Color(0.95, 0.85, 0.55)) ->
         b.add_theme_font_size_override("font_size", 14)
         b.add_theme_color_override("font_color", color)
         b.add_theme_color_override("font_hover_color", color.lightened(0.2))
+        b.mouse_entered.connect(func _h(): Sfx.play("ui_hover", -16.0))
+        b.pressed.connect(func _c(): Sfx.play("ui_click", -12.0))
         b.pressed.connect(cb)
         return b
 
@@ -394,7 +396,12 @@ func _refresh_crafting() -> void:
                 head.add_theme_color_override("font_color", Color(0.9, 0.9, 0.95) if avail[tab] else Color(0.5, 0.55, 0.6))
                 _craft_list.add_child(head)
                 for r in Data.recipes:
-                        var station: String = r.get("station", "")
+                        # v1.0.4 fix: JSON null values (base recipes and mods ship
+                        # "tech": null / "station": null) crashed the typed String
+                        # conversion below — the recipe list NEVER rendered. Read
+                        # null-safely instead.
+                        var station_v: Variant = r.get("station", "")
+                        var station: String = station_v if station_v is String else ""
                         if station == "":
                                 station = "Field"
                         var tab_key: String = {"Station_Workbench": "Workbench", "Station_Campfire": "Campfire"}.get(station, "Field")
@@ -422,8 +429,9 @@ func _refresh_crafting() -> void:
                         ing.text = "  ".join(parts)
                         ing.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7) if can else Color(0.85, 0.6, 0.55))
                         row.add_child(ing)
-                        var tech: String = r.get("tech", "")
-                        var tech_ok: bool = tech == null or tech == "" or Game.unlocked_tech.has(tech)
+                        var tech_v: Variant = r.get("tech", "")
+                        var tech: String = tech_v if tech_v is String else ""
+                        var tech_ok: bool = tech == "" or Game.unlocked_tech.has(tech)
                         if not avail[tab] or not tech_ok:
                                 var lock := Label.new()
                                 lock.text = "🔒" if not tech_ok else "station"

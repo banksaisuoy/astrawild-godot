@@ -84,10 +84,12 @@ func _ready() -> void:
         _player = get_tree().get_first_node_in_group("player")
         _world = get_tree().get_first_node_in_group("world")
         ai_state = "Explore"
-        # legendary detection: explicit flag, or any hostile species with capture
-        # difficulty >= 0.85 (the four Mythic Echoes qualify)
-        legendary = bool(def.get("legendary", false)) \
-                        or (bool(def.get("hostile", false)) and float(def.get("capture_difficulty", 0.0)) >= 0.85)
+        # legendary: explicit flag ONLY (v1.0.4 fix). The old heuristic
+        # (hostile && capture_difficulty >= 0.85) wrongly flagged the four
+        # night predators as dormant — Night Raids and the hostile respawn
+        # sweep lost all threat. Real legendaries (Solaris & friends) still
+        # spawn dormant and wake on hit.
+        legendary = bool(def.get("legendary", false))
         if legendary and not boss_mode:
                 dormant = true
                 _build_aura()
@@ -503,6 +505,16 @@ func _think_captured() -> void:
                                 set_meta("combat_target", target)
                         else:
                                 ai_state = "Follow"
+                "Defend":
+                        # bodyguard: intercept hostiles closing on the player
+                        var threat := _find_hostile_near(player.global_position, 14.0)
+                        if threat:
+                                ai_state = "Combat"
+                                set_meta("combat_target", threat)
+                        else:
+                                ai_state = "Follow"
+                "Work":
+                        ai_state = "Work"
                 _:
                         ai_state = "Follow"
 
@@ -521,6 +533,18 @@ func _find_hostile_near(pos: Vector3, radius: float) -> Node3D:
                 if d < best_d:
                         best_d = d
                         best = c
+        return best
+
+
+func _nearest_worksite() -> Node3D:
+        var best: Node3D = null
+        var best_d := INF
+        for site in get_tree().get_nodes_in_group("worksites"):
+                if site is Node3D and not site.is_queued_for_deletion():
+                        var d: float = global_position.distance_to(site.global_position)
+                        if d < best_d:
+                                best_d = d
+                                best = site
         return best
 
 
@@ -567,6 +591,20 @@ func _move(delta: float) -> void:
                                 var d: float = global_position.distance_to(player.global_position)
                                 if d > 3.2:
                                         target_velocity = _dir_to(player.global_position) * speed * (1.25 if d > 8.0 else 1.0)
+                "Work":
+                        # walk to the nearest work site and bind as a worker
+                        var site := _nearest_worksite()
+                        if site:
+                                var sd: float = global_position.distance_to(site.global_position)
+                                if sd > site.ASSIGN_RADIUS * 0.6:
+                                        target_velocity = _dir_to(site.global_position) * speed
+                                elif not get_meta("work_bound", false):
+                                        set_meta("work_bound", true)
+                                        site._reassign_workers()
+                        else:
+                                var wplayer := get_tree().get_first_node_in_group("player")
+                                if wplayer and global_position.distance_to(wplayer.global_position) > 4.0:
+                                        target_velocity = _dir_to(wplayer.global_position) * speed * 0.7
                 "Sleep":
                         target_velocity = Vector3.ZERO
                 "Stay":
@@ -607,6 +645,7 @@ func _perform_attack(target: Node3D) -> void:
         if boss_mode:
                 mult = [1.0, 1.15, 1.4][_phase - 1]
         _play_anim("Hit")
+        Sfx.play_species(str(def.get("name", "")), global_position)
         if target == get_tree().get_first_node_in_group("player"):
                 Game.take_damage(atk * mult, def.get("element", "None"), true)
                 _apply_status_to_player(def.get("element", "None"))
@@ -637,6 +676,7 @@ func _wake() -> void:
                 tw.tween_property(_aura, "scale", Vector3(3.0, 3.0, 3.0), 0.5)
                 tw.tween_callback(_aura.hide).set_delay(0.5)
         Game.toast.emit("%s awakens!" % def.get("name", "The legendary Echo"), Color(1.0, 0.55, 0.3))
+        Sfx.play("legendary_wake", -6.0, 0.0)
         if def.get("hostile", false):
                 ai_state = "Combat"
 
@@ -660,6 +700,12 @@ func take_hit(raw: float, element: String = "None") -> void:
         hp -= damage
         _hit_flash = 1.0
         _update_label()
+        if damage > 0.0:
+                # impact feedback: energy weapons for elemental hits, kinetic otherwise
+                var impact_ev := "impact_energy" if element not in ["", "None"] else "impact_kinetic"
+                Sfx.play_at(impact_ev, global_position, -12.0)
+                if rng.randf() < 0.35:
+                        Sfx.play_species(str(def.get("name", "")), global_position)
         if hp <= 0.0:
                 _die()
         elif damage >= 35.0 and not boss_mode:
