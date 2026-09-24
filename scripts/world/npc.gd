@@ -51,14 +51,28 @@ func _ready() -> void:
         add_to_group("interactables")
         set_meta("interact_kind", "npc")
 
-        var scene: PackedScene = load("res://assets/meshes/characters/SK_Survivor_Exosuit.glb")
-        if scene:
-                var visual := scene.instantiate()
-                add_child(visual)
-                _tint(visual)
-                _anim = _find_anim(visual)
-                if _anim and _anim.has_animation("AM_Survivor_Idle"):
-                        _anim.play("AM_Survivor_Idle")
+        # v1.1 Phase V4: role-based model - vendors/herbalists get the distinct
+        # Quaternius Wizard rig (scaled to human height), guards/quest NPCs keep
+        # the survivor exosuit. Fallbacks keep every path safe.
+        var model_path := "res://assets/meshes/characters/SK_Survivor_Exosuit.glb"
+        if role in ["vendor", "herbalist"] and ResourceLoader.exists("res://assets/meshes/quaternius/monsters_blob/Wizard.gltf"):
+                model_path = "res://assets/meshes/quaternius/monsters_blob/Wizard.gltf"
+        if ResourceLoader.exists(model_path):
+                var scene: PackedScene = load(model_path)
+                if scene:
+                        var visual := scene.instantiate()
+                        if model_path.ends_with("Wizard.gltf"):
+                                visual.scale = Vector3.ONE * 0.73
+                        add_child(visual)
+                        _tint(visual)
+                        _anim = _find_anim(visual)
+                        if _anim:
+                                if _anim.has_animation("AM_Survivor_Idle"):
+                                        _anim.play("AM_Survivor_Idle")
+                                else:
+                                        var idle := _generic_anim("Idle")
+                                        if idle != "":
+                                                _anim.play(idle)
 
         _label = Label3D.new()
         _label.text = display_name
@@ -110,6 +124,17 @@ func _find_anim(node: Node) -> AnimationPlayer:
                 if found:
                         return found
         return null
+
+
+func _generic_anim(kind: String) -> String:
+        ## keyword fallback for generic rigs (Quaternius)
+        if _anim == null:
+                return ""
+        for lib in _anim.get_animation_list():
+                if lib.find(kind) >= 0:
+                        return lib
+        return ""
+
 
 
 func _process(delta: float) -> void:

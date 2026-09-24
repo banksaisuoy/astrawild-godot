@@ -518,6 +518,16 @@ func _screenshot_routine() -> void:
                         delay = float(a.trim_prefix("--delay="))
         await get_tree().create_timer(delay).timeout
         var fwd := -player.global_transform.basis.z
+        if shot_name == "village":
+                # teleport near Dawnstead and frame the village from above
+                var vx: float = -120.0
+                var vz: float = 0.0
+                player.global_position = Vector3(vx - 40.0, world.tile_height(vx - 40.0, vz) + 1.5, vz)
+                await get_tree().create_timer(0.8).timeout
+                var cam0: Camera3D = get_viewport().get_camera_3d()
+                if cam0:
+                        cam0.position = Vector3(vx - 26.0, world.tile_height(vx, vz) + 22.0, vz + 26.0)
+                        cam0.look_at(Vector3(vx, world.tile_height(vx, vz) + 2.0, vz), Vector3.UP)
         if shot_name == "gallery":
                 # spawn a showcase line-up of rigged species in front of the player
                 var gallery := [

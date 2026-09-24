@@ -1,10 +1,32 @@
 class_name Village
 extends Node3D
 ## Living village (UE5 AstrawildVillageActor, Batch 8). Builds the hamlet and
-## owns the waypoint circuit its NPCs patrol. Huts (cylinder + conical roof +
-## door glow), palisade ring of stakes, campfire with light, lamp posts, and the
-## full NPC roster linked through village_id / waypoints / campfire_pos metas.
-## Dawnstead: 7 huts + 8 NPCs. Driftwood Landing: 3 huts + dock + 3 NPCs.
+## owns the waypoint circuit its NPCs patrol. v1.1 Phase V4: real Quaternius
+## CC0 buildings (FBX) replace the cylinder huts, with a procedural-hut fallback
+## so a missing file never breaks the village.
+## Dawnstead: 7 buildings + bell tower + 8 NPCs. Driftwood: 3 + dock + 3 NPCs.
+
+const BUILDING_SCALE := 1.6
+const _BUILDINGS := {
+	"House_1": "res://assets/meshes/quaternius/village/House_1.fbx",
+	"House_2": "res://assets/meshes/quaternius/village/House_2.fbx",
+	"House_3": "res://assets/meshes/quaternius/village/House_3.fbx",
+	"House_4": "res://assets/meshes/quaternius/village/House_4.fbx",
+	"Inn": "res://assets/meshes/quaternius/village/Inn.fbx",
+	"Blacksmith": "res://assets/meshes/quaternius/village/Blacksmith.fbx",
+	"Stable": "res://assets/meshes/quaternius/village/Stable.fbx",
+	"Mill": "res://assets/meshes/quaternius/village/Mill.fbx",
+	"Sawmill": "res://assets/meshes/quaternius/village/Sawmill.fbx",
+	"Bell_Tower": "res://assets/meshes/quaternius/village/Bell_Tower.fbx",
+}
+## collision sizes of each building unscaled (measured from the imported FBX)
+const _BUILDING_SIZE := {
+	"House_1": Vector3(2.14, 3.39, 2.66), "House_2": Vector3(2.22, 3.25, 3.42),
+	"House_3": Vector3(1.94, 2.09, 2.12), "House_4": Vector3(1.94, 1.07, 2.12),
+	"Inn": Vector3(4.03, 3.49, 4.02), "Blacksmith": Vector3(3.89, 3.00, 3.28),
+	"Stable": Vector3(4.70, 2.49, 3.33), "Mill": Vector3(3.40, 4.80, 2.73),
+	"Sawmill": Vector3(4.40, 2.86, 3.28), "Bell_Tower": Vector3(1.94, 4.76, 2.23),
+}
 
 var village_id := "Village_Dawnstead"
 var display_name := "Dawnstead"
@@ -30,20 +52,29 @@ func build(parent: Node3D, world: Node) -> void:
 	campfire.y = ground
 
 	var is_dock := village_id == "Village_Driftwood"
-	var hut_count := 7 if not is_dock else 3
+	var building_set: Array = [
+		"House_1", "House_2", "House_3", "House_4", "Blacksmith", "Inn", "Stable",
+	] if not is_dock else ["House_3", "House_4", "Sawmill"]
 	var ring_radius := 26.0 if not is_dock else 15.0
 
 	# --- campfire at the heart (the night gathering point) ---
 	_add_campfire(parent, world)
 
-	# --- huts in a ring ---
-	for i in hut_count:
-		var ang := TAU * float(i) / float(hut_count) + rng.randf() * 0.25
+	# --- real buildings in a ring (v1.1 Phase V4, fallback = procedural hut) ---
+	for i in building_set.size():
+		var ang := TAU * float(i) / float(building_set.size()) + rng.randf() * 0.25
 		var hr := ring_radius * (0.85 + rng.randf() * 0.3)
 		var hx := center.x + cos(ang) * hr
 		var hz := center.z + sin(ang) * hr
 		var hy: float = world.tile_height(hx, hz) if world and world.has_method("tile_height") else ground
-		_add_hut(parent, Vector3(hx, hy, hz), rng)
+		_add_building(parent, Vector3(hx, hy, hz), building_set[i], ang)
+
+	# --- bell tower landmark (Dawnstead only) ---
+	if not is_dock:
+		var tx := center.x + ring_radius * 1.35
+		var tz := center.z + ring_radius * 0.35
+		var ty: float = world.tile_height(tx, tz) if world and world.has_method("tile_height") else ground
+		_add_building(parent, Vector3(tx, ty, tz), "Bell_Tower", rng.randf() * TAU)
 
 	# --- palisade ring (Dawnstead) / dock planks (Driftwood) ---
 	if is_dock:
@@ -83,6 +114,44 @@ func build(parent: Node3D, world: Node) -> void:
 
 
 # ------------------------------------------------------------------ pieces --
+func _add_building(parent: Node3D, pos: Vector3, building_name: String, ang: float) -> void:
+	## Real Quaternius CC0 building with box collision + warm door light.
+	## Falls back to the old procedural hut if the FBX is unavailable for any reason.
+	var path: String = _BUILDINGS.get(building_name, "")
+	if path == "" or not ResourceLoader.exists(path):
+		_add_hut(parent, pos, RandomNumberGenerator.new())
+		return
+	var scene: PackedScene = load(path)
+	if scene == null:
+		_add_hut(parent, pos, RandomNumberGenerator.new())
+		return
+	var b := Node3D.new()
+	b.position = pos
+	# face the village center (door inward)
+	b.rotation.y = -ang + PI * 0.5
+	parent.add_child(b)
+	var visual := scene.instantiate()
+	visual.scale = Vector3.ONE * BUILDING_SCALE
+	b.add_child(visual)
+	# collision box sized from the measured AABB
+	var sz: Vector3 = _BUILDING_SIZE.get(building_name, Vector3(2.5, 3.0, 2.5)) * BUILDING_SCALE
+	var body := StaticBody3D.new()
+	var col := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = sz * 0.92
+	col.shape = shape
+	col.position = Vector3(0, sz.y * 0.5, 0)
+	body.add_child(col)
+	b.add_child(body)
+	# warm door light so buildings glow at night
+	var light := OmniLight3D.new()
+	light.light_color = Color(1.0, 0.78, 0.45)
+	light.light_energy = 1.1
+	light.omni_range = 9.0
+	light.position = Vector3(0, 2.2, sz.z * 0.45)
+	b.add_child(light)
+
+
 func _add_hut(parent: Node3D, pos: Vector3, rng: RandomNumberGenerator) -> void:
 	var hut := Node3D.new()
 	hut.position = pos
