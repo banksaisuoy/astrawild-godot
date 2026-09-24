@@ -109,6 +109,35 @@ func _apply_atmosphere() -> void:
 	sun.light_energy *= (0.45 + 0.55 * vis)
 	fog_col = Color(fog_col.r * 0.55 + 0.05, fog_col.g * 0.55 + 0.05, fog_col.b * 0.55 + 0.06) if vis < 0.9 else fog_col
 
+	# ---- v1.1 Phase V6 zone identity grade ----
+	# blend fog + sky horizon toward the player's zone identity (partition-of-unity
+	# weights over the zone grid, so transitions are smooth and save-safe).
+	var zone_tint: Color = Color.TRANSPARENT
+	var zone_sky: Color = Color.TRANSPARENT
+	var player := get_tree().get_first_node_in_group("player")
+	if player:
+		var weights: Dictionary = ZoneTerrain.zone_weights(player.global_position.x, player.global_position.z)
+		for zid in weights:
+			var zone: Dictionary = Data.zone(zid)
+			var ident: Dictionary = zone.get("identity", {})
+			if ident.is_empty():
+				continue
+			var w: float = weights[zid]
+			var fc: Array = ident.get("fog", [1, 1, 1])
+			var sc: Array = ident.get("sky", [1, 1, 1])
+			var fog_add := Color(fc[0], fc[1], fc[2]) * w
+			var sky_add := Color(sc[0], sc[1], sc[2]) * w
+			if zone_tint == Color.TRANSPARENT:
+				zone_tint = fog_add
+				zone_sky = sky_add
+			else:
+				zone_tint += fog_add
+				zone_sky += sky_add
+	if zone_tint != Color.TRANSPARENT:
+		fog_col = fog_col.lerp(zone_tint, 0.45)
+		sky_horizon = sky_horizon.lerp(zone_sky, 0.4)
+		sky_top = sky_top.lerp(zone_sky, 0.18)
+
 	sun.light_color = sun_col
 	sky_mat.sky_top_color = sky_top
 	sky_mat.sky_horizon_color = sky_horizon

@@ -492,6 +492,20 @@ func _run_smoke_checks() -> void:
                         if n != "":
                                 atk_clips += 1
         print("SMOKE: creatures with real Attack clips=", atk_clips)
+        # ---- Phase V6: world dressing + landmarks + performance guard ----
+        print("SMOKE: landmarks=", world.landmark_count, " expected=15")
+        var mm_count := 0
+        var mm_instances := 0
+        for c in world.props_root.get_children():
+                if c is MultiMeshInstance3D:
+                        mm_count += 1
+                        mm_instances += (c as MultiMeshInstance3D).multimesh.instance_count
+        var node_total := 0
+        for c in world.get_children():
+                node_total += _count_nodes(c)
+        print("SMOKE: perf props_children=", world.props_root.get_child_count(), " multimeshes=", mm_count, " mm_instances=", mm_instances, " total_nodes=", node_total)
+        var perf_ok: bool = world.props_root.get_child_count() < 700 and mm_instances < 22000 and node_total < 9000
+        print("SMOKE: perf budget_ok=", perf_ok)
         # ---- Phase V5: Tier B procedural builder test — every procedural species
         # builds, and no two species produce an identical geometry signature ----
         var tb_built := 0
@@ -569,6 +583,16 @@ func _screenshot_routine() -> void:
                 if cam0:
                         cam0.position = Vector3(vx - 26.0, world.tile_height(vx, vz) + 22.0, vz + 26.0)
                         cam0.look_at(Vector3(vx, world.tile_height(vx, vz) + 2.0, vz), Vector3.UP)
+        if shot_name == "plaza":
+                # close-up of the campfire plaza + stone paths
+                var px: float = -120.0
+                var pz: float = 0.0
+                player.global_position = Vector3(px + 6.0, world.tile_height(px + 6.0, pz) + 1.5, pz)
+                await get_tree().create_timer(0.8).timeout
+                var camp: Camera3D = get_viewport().get_camera_3d()
+                if camp:
+                        camp.position = Vector3(px + 10.0, world.tile_height(px, pz) + 4.5, pz + 12.0)
+                        camp.look_at(Vector3(px, world.tile_height(px, pz) + 1.0, pz), Vector3.UP)
         if shot_name == "tierb":
                 # showcase of procedural Tier B species from different families
                 var gallery := [
@@ -634,3 +658,10 @@ func _screenshot_routine() -> void:
 
 func fwd_dir(p: Node3D) -> Vector3:
         return -p.global_transform.basis.z
+
+
+func _count_nodes(n: Node) -> int:
+        var c := 1
+        for ch in n.get_children():
+                c += _count_nodes(ch)
+        return c

@@ -18,6 +18,7 @@ var skiffs := []                # DawnSkiff aircraft (2 per world)
 var dungeons := []              # DungeonGenerator instances
 var worksites := []             # WorkSite actors
 var villages := []              # Village actors
+var landmark_count := 0        # v1.1 Phase V6 named landmarks placed
 var followers := {}             # party index -> Echo creature node
 var _hostile_sweep := 0.0
 var _rng := RandomNumberGenerator.new()
@@ -77,8 +78,10 @@ func build() -> void:
         _spawn_resource_nodes()
         _build_camp()
         _build_villages()
+        _dress_village_paths()
         _spawn_skiffs()
         _build_locations()
+        _build_landmarks()
         _build_dungeons()
         _build_work_sites()
         _spawn_all_creatures()
@@ -282,6 +285,8 @@ func _dress_all_zones() -> void:
 
                 # zone specials
                 _dress_special(rng, zone)
+                # v1.1 Phase V6: CC0 prop kits (Kenney nature + zone signatures)
+                _dress_prop_kits(rng, zone)
 
 
 func _add_tree_collisions(trs: Array) -> void:
@@ -424,6 +429,205 @@ func _dress_special(rng: RandomNumberGenerator, zone: Dictionary) -> void:
                         _dress_special_ferns(rng, zone)
 
 
+# ------------------------------------------------------ Phase V6 prop kits --
+const KENNEY := "res://assets/meshes/kenney/nature/"
+const QUAT_RUINS := "res://assets/meshes/quaternius/ruins/"
+
+
+func _dress_prop_kits(rng: RandomNumberGenerator, zone: Dictionary) -> void:
+        ## Per-zone CC0 prop dressing (v1.1 Phase V6). Selection derives from the
+        ## existing dressing keys so it stays data-driven + deterministic per seed.
+        var zid: String = zone["id"]
+        var d: Dictionary = zone.get("dressing", {})
+        var trees: String = String(d.get("trees", "none"))
+        var grass_k: float = float(d.get("grass", 0.0))
+        var special: String = String(d.get("special", ""))
+
+        # --- mushrooms: deep forest zones ---
+        if trees == "broadleaf" and grass_k >= 0.6:
+                _kit_multimesh(rng, zone, ["mushroom_redTall", "mushroom_tanTall"], 34, 0.85, 1.5, true)
+        if zid == "Zone_Glimmerwood":
+                _kit_multimesh(rng, zone, ["mushroom_redGroup"], 26, 0.9, 1.8, true, Color(0.9, 0.4, 0.45))
+
+        # --- flowers: meadow zones ---
+        if grass_k >= 0.8:
+                _kit_multimesh(rng, zone, ["flower_redA", "flower_yellowB", "flower_purpleC"], 60, 0.6, 1.2, false)
+        if zid == "Zone_VerdantReach":
+                _kit_multimesh(rng, zone, ["flower_redB", "flower_yellowA", "flower_purpleA"], 90, 0.6, 1.3, false)
+
+        # --- logs & stumps: forest floors ---
+        if trees != "none" and d.get("tree_density", 0.0) >= 0.3:
+                _kit_multimesh(rng, zone, ["log", "stump_round", "stump_old"], 18, 0.8, 1.4, true)
+
+        # --- bushes: anywhere green ---
+        if grass_k >= 0.4:
+                _kit_multimesh(rng, zone, ["plant_bushSmall", "plant_bush", "plant_flatTall"], 40, 0.7, 1.5, false)
+
+        # --- lily pads: marsh + shallows ---
+        if special == "glow_reeds" or zid == "Zone_AzureShallows" or zid == "Zone_PearlseaReef":
+                _kit_multimesh(rng, zone, ["lily_small", "lily_large"], 46, 0.5, 1.4, false)
+
+        # --- cacti: the Sunscar signature ---
+        if zid == "Zone_Sunscar":
+                _kit_multimesh(rng, zone, ["cactus_tall", "cactus_short"], 40, 0.7, 1.4, true)
+
+        # --- palms: isles + reef ---
+        if zid == "Zone_TidebreakerIsles" or zid == "Zone_PearlseaReef":
+                _kit_multimesh(rng, zone, ["tree_palmTall", "tree_palmShort"], 34, 0.35, 0.7, true)
+
+        # --- big cliffs: ember + storm ---
+        if zid == "Zone_EmberRidge":
+                _kit_multimesh(rng, zone, ["cliff_rock", "cliff_large_stone"], 26, 0.55, 1.1, true)
+        if zid == "Zone_Stormcrest":
+                _kit_multimesh(rng, zone, ["rock_tallA", "rock_tallD", "rock_tallG"], 34, 0.5, 1.0, true)
+
+        # --- snow boulders: frostveil ---
+        if d.get("snow", false):
+                _kit_multimesh(rng, zone, ["rock_largeB", "rock_largeE"], 24, 0.5, 1.0, true, Color(0.88, 0.92, 0.98))
+
+        # --- scattered stones: everywhere, light density ---
+        _kit_multimesh(rng, zone, ["rock_smallB", "rock_smallE", "stone_smallC"], 26, 0.5, 1.2, false)
+
+
+const KENNEY_PROP_SCALE := 2.6  # Kenney nature props import at mini scale
+
+func _kit_multimesh(rng: RandomNumberGenerator, zone: Dictionary, names: Array, count: int,
+                s_lo: float, s_hi: float, shadow: bool, tint: Color = Color(1, 1, 1, 0)) -> void:
+        var trs := []
+        for p in _scatter(rng, count, zone, 0.65):
+                var s := rng.randf_range(s_lo, s_hi) * KENNEY_PROP_SCALE
+                trs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
+        if trs.is_empty():
+                return
+        # one MultiMesh per prop name round-robin
+        for ni in names.size():
+                var sub: Array = []
+                for i in trs.size():
+                        if i % names.size() == ni:
+                                sub.append(trs[i])
+                var mat: Material = null
+                if tint.a > 0.0:
+                        mat = StandardMaterial3D.new()
+                        mat.albedo_color = Color(tint.r, tint.g, tint.b)
+                        mat.roughness = 0.9
+                _multimesh(KENNEY + String(names[ni]) + ".glb", sub, mat, shadow)
+
+
+# ------------------------------------------------------ Phase V6 landmarks --
+const LANDMARKS := [
+        {"id": "Location_WaystoneDawn", "name": "Waystone of Dawn", "zone": "Zone_DawnFields",
+                "pos": Vector3(-250, 0, 160), "props": ["Statue_Stag"], "chest": "gold",
+                "lore": "A stag of grey stone watches the fields where the first camp woke."},
+        {"id": "Location_GlimmerGrove", "name": "Glimmer Grove Heart", "zone": "Zone_Glimmerwood",
+                "pos": Vector3(-430, 0, 700), "props": ["Candles_1", "Arch_Gothic"],
+                "chest": "wood", "lore": "Mushroom-light pools around a gothic arch of the old wood."},
+        {"id": "Location_OldBridge", "name": "The Old Bridge", "zone": "Zone_DuskMarsh",
+                "pos": Vector3(-1150, 0, 90), "props": ["Arch_Round", "Support_Tall"],
+                "chest": "wood", "lore": "Whoever raised this span crossed the muck long before the flood."},
+        {"id": "Location_Frostwatch", "name": "Frostwatch Tower", "zone": "Zone_Frostveil",
+                "pos": Vector3(-1050, 0, 860), "props": [], "tower": true,
+                "chest": "gold", "lore": "A survey tower from the first expeditions, glass-frozen ever since."},
+        {"id": "Location_Emberfall", "name": "Emberfall Crater", "zone": "Zone_EmberRidge",
+                "pos": Vector3(520, 0, 880), "props": ["Arch_Gothic_RoundColumn"],
+                "chest": "gold", "lore": "Something fell burning here. The obsidian still hums at dusk."},
+        {"id": "Location_SunscarObelisk", "name": "Sunscar Obelisk", "zone": "Zone_Sunscar",
+                "pos": Vector3(1150, 0, 830), "props": ["Arch_Round_RoundColumn", "Statue_Fox"],
+                "chest": "wood", "lore": "A fox-headed gate marking the burned road to the far dunes."},
+        {"id": "Location_DrownedBell", "name": "The Drowned Bell", "zone": "Zone_AzureShallows",
+                "pos": Vector3(1120, 0, -120), "props": [], "bell": true,
+                "chest": "wood", "lore": "A bell tower sunk to its knees in warm shallows. It still rings in storms."},
+        {"id": "Location_TidebreakerWatch", "name": "Tidebreaker Watch", "zone": "Zone_TidebreakerIsles",
+                "pos": Vector3(-1100, 0, -860), "props": [], "tower": true,
+                "chest": "gold", "lore": "The last hex-tower of the isle wardens, salt-scoured but standing."},
+        {"id": "Location_StormAltar", "name": "Storm Altar", "zone": "Zone_Stormcrest",
+                "pos": Vector3(-390, 0, -880), "props": ["Arch_Gothic", "Candles_2"],
+                "chest": "gold", "lore": "Lightning gathers over this arch like it owes the stone a debt."},
+        {"id": "Location_HollowShrine", "name": "Hollow Shrine", "zone": "Zone_HollowApproach",
+                "pos": Vector3(360, 0, 140), "props": ["Statue_Fox", "Skull", "Candles_1"],
+                "chest": "wood", "lore": "Offerings to whatever sleeps below the approach."},
+        {"id": "Location_MotherTree", "name": "The Verdant Mother", "zone": "Zone_VerdantReach",
+                "pos": Vector3(420, 0, -780), "props": [], "heart": true,
+                "chest": "gold", "lore": "The great heart-tree of the reach — every green thing answers to it."},
+        {"id": "Location_PearlGrotto", "name": "Pearl Grotto", "zone": "Zone_PearlseaReef",
+                "pos": Vector3(1180, 0, -820), "props": ["Arch_Round", "Pot1", "Pot2_Broken"],
+                "chest": "gold", "lore": "A shrine of arch and pearl-bright water at the reef's crown."},
+        {"id": "Location_SkiffWreck", "name": "The Skiff Wreck", "zone": "Zone_DawnFields",
+                "pos": Vector3(-380, 0, -180), "props": ["Barrel", "Crate", "Cart"],
+                "chest": "wood", "lore": "An expedition skiff that never flew again. Its crates remember it."},
+        {"id": "Location_RangersCamp", "name": "Ranger's Last Camp", "zone": "Zone_Glimmerwood",
+                "pos": Vector3(-520, 0, 620), "props": ["Chest", "Bookcase_Full", "Candles_2"],
+                "chest": "wood", "lore": "A field library abandoned mid-page. The candles never burned out."},
+        {"id": "Location_Westgate", "name": "The Westgate Ruin", "zone": "Zone_HollowApproach",
+                "pos": Vector3(430, 0, -60), "props": ["Arch_Round_RoundColumn", "Wall_Broken", "Wall_Hole"],
+                "chest": "wood", "lore": "The western gate of a settlement that the Hollow took whole."},
+]
+
+const LANDMARK_CHEST_LOOT := {
+        "gold": [{"item": "Item_Resonator", "qty": 1}, {"item": "Item_DawnShard", "qty": 40},
+                        {"item": "Item_AncientAlloy", "qty": 2}],
+        "wood": [{"item": "Item_DawnShard", "qty": 15}, {"item": "Item_Berry", "qty": 4},
+                        {"item": "Item_Resonator", "qty": 1}],
+}
+
+
+func _build_landmarks() -> void:
+        var marker_script := load("res://scripts/world/marker.gd")
+        for lm in LANDMARKS:
+                var pos: Vector3 = lm["pos"]
+                pos.y = tile_height(pos.x, pos.z)
+                # --- structures ---
+                if lm.get("tower", false):
+                        _mesh_instance("res://assets/meshes/kenney/castle/tower-hexagon-base.glb", pos, Vector3.ONE * 1.6)
+                        _mesh_instance("res://assets/meshes/kenney/castle/tower-hexagon-mid.glb", pos + Vector3(0, 2.8, 0), Vector3.ONE * 1.6)
+                        _mesh_instance("res://assets/meshes/kenney/castle/tower-hexagon-roof.glb", pos + Vector3(0, 5.6, 0), Vector3.ONE * 1.6)
+                elif lm.get("bell", false):
+                        _mesh_instance("res://assets/meshes/quaternius/village/Bell_Tower.fbx", pos, Vector3.ONE * 1.9)
+                elif lm.get("heart", false):
+                        _mesh_instance("res://assets/meshes/environment/SM_Tree_Broadleaf.glb", pos, Vector3.ONE * 6.0)
+                for prop_name in lm.get("props", []):
+                        var pp: Vector3 = pos + Vector3(randf_range(-3.0, 3.0), 0, randf_range(-3.0, 3.0))
+                        pp.y = tile_height(pp.x, pp.z)
+                        var sc := Vector3.ONE * randf_range(1.2, 1.7)
+                        _mesh_instance(QUAT_RUINS + String(prop_name) + ".fbx", pp, sc)
+                # --- the chest marker (reward) ---
+                var chest_kind: String = String(lm.get("chest", "wood"))
+                var chest_pos: Vector3 = pos + Vector3(2.2, 0, 1.4)
+                chest_pos.y = tile_height(chest_pos.x, chest_pos.z)
+                var chest_mesh_path := QUAT_RUINS + ("Chest_Gold.fbx" if chest_kind == "gold" else "Chest.fbx")
+                var chest_node := _mesh_instance(chest_mesh_path, chest_pos, Vector3.ONE * 1.3)
+                # glow ring so landmarks are findable
+                var ring := _mesh_instance("res://assets/meshes/environment/SM_Rock_Granite_S.glb", chest_pos + Vector3(0, 0.12, 0), Vector3.ONE * 0.45)
+                ring.material_override = _glow_ring_mat()
+                # marker (interactable)
+                var m: Node3D = Node3D.new()
+                m.set_script(marker_script)
+                m.position = chest_pos
+                m.set_meta("interact_kind", "chest")
+                m.set_meta("marker_label", lm["name"])
+                m.set_meta("location_id", lm["id"])
+                m.set_meta("chest_loot", LANDMARK_CHEST_LOOT.get(chest_kind, []))
+                m.set_meta("chest_mesh", chest_node)
+                props_root.add_child(m)
+                # location marker on the structure itself (journal + RP once)
+                var loc: Node3D = Node3D.new()
+                loc.set_script(marker_script)
+                loc.position = pos
+                loc.set_meta("interact_kind", "location")
+                loc.set_meta("marker_label", lm["name"])
+                loc.set_meta("location_id", lm["id"])
+                props_root.add_child(loc)
+                landmark_count += 1
+
+
+func _glow_ring_mat() -> StandardMaterial3D:
+        var mat := StandardMaterial3D.new()
+        mat.albedo_color = Color(0.95, 0.8, 0.4)
+        mat.emission_enabled = true
+        mat.emission = Color(0.9, 0.7, 0.3)
+        mat.emission_energy_multiplier = 1.8
+        return mat
+
+
 func _dress_special_ferns(rng: RandomNumberGenerator, zone: Dictionary) -> void:
         var trs := []
         for p in _scatter(rng, 40, zone, 0.5):
@@ -479,6 +683,40 @@ func _build_camp() -> void:
 
 
 # -------------------------------------------------------------- villages --
+func _dress_village_paths() -> void:
+        ## v1.1 Phase V6: stone paths radiating from each village campfire to its
+        ## ring of buildings + a plaza circle, using Kenney path stones.
+        var path_glb := KENNEY + "path_stone.glb"
+        var circle_glb := KENNEY + "path_stoneCircle.glb"
+        if not ResourceLoader.exists(path_glb):
+                return
+        for v in villages:
+                var rng := RandomNumberGenerator.new()
+                rng.seed = hash("paths-%s-%d" % [v.village_id, Game.world_seed])
+                var trs: Array = []
+                # plaza around the campfire
+                for i in 10:
+                        var ang := TAU * i / 10.0
+                        var px: float = v.campfire.x + cos(ang) * 3.2
+                        var pz: float = v.campfire.z + sin(ang) * 3.2
+                        trs.append(Transform3D(Basis(Vector3.UP, ang).scaled(Vector3.ONE * 2.2), Vector3(px, tile_height(px, pz) + 0.06, pz)))
+                # spokes to the ring radius
+                for i in 8:
+                        var ang := TAU * i / 8.0 + 0.18
+                        for r in range(5, 24, 3):
+                                var px: float = v.center.x + cos(ang) * float(r)
+                                var pz: float = v.center.z + sin(ang) * float(r)
+                                if px == v.campfire.x and pz == v.campfire.z:
+                                        continue
+                                var s := rng.randf_range(1.9, 2.5)
+                                trs.append(Transform3D(Basis(Vector3.UP, ang + PI * 0.5).scaled(Vector3.ONE * s), Vector3(px, tile_height(px, pz) + 0.06, pz)))
+                _multimesh(path_glb, trs, null, false)
+                # plaza centrepiece ring
+                if ResourceLoader.exists(circle_glb):
+                        var ctrs: Array = [Transform3D(Basis().scaled(Vector3.ONE * 2.8), Vector3(v.campfire.x, tile_height(v.campfire.x, v.campfire.z) + 0.05, v.campfire.z))]
+                        _multimesh(circle_glb, ctrs, null, false)
+
+
 func _build_villages() -> void:
         var village_script := load("res://scripts/world/village.gd")
         # Dawnstead — the main village, camp + 280 m (Dawn Fields)
