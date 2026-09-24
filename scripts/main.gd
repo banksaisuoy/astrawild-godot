@@ -518,6 +518,16 @@ func _run_smoke_checks() -> void:
         var screens_node := get_tree().get_first_node_in_group("screens")
         var now_line: String = screens_node._journal_now_line()
         print("SMOKE: journal NOW line non-empty=", now_line.length() > 10, " starts=", now_line.substr(0, 20))
+        # ---- Phase V8: audio & game feel ----
+        print("SMOKE: music tracks=", Sfx._music_streams.size(), " events=", Sfx._streams.size())
+        Sfx.set_bus_volume("Music", 0.5)
+        print("SMOKE: bus volume roundtrip=", is_equal_approx(Sfx.get_bus_volume("Music"), 0.5))
+        Sfx.set_bus_volume("Music", 1.0)
+        Sfx.save_settings()
+        print("SMOKE: settings saved=", FileAccess.file_exists("user://settings.json"))
+        Sfx.play_stinger("quest_complete")
+        Sfx.play_music("calm")
+        print("SMOKE: stinger+music dispatch ok=true")
         # ---- Phase V5: Tier B procedural builder test — every procedural species
         # builds, and no two species produce an identical geometry signature ----
         var tb_built := 0

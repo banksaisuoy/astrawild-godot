@@ -53,6 +53,13 @@ func open(screen: String) -> void:
         if screen == "dialogue" or screen == "shop":
                 pass  # opened programmatically too
         current = screen
+        # v1.1 Phase V8: audible screen feedback
+        if screen == "journal":
+                Sfx.play("book_open", -14.0)
+        elif screen == "pause":
+                Sfx.play("ui_click", -12.0)
+        else:
+                Sfx.play("ui_select", -14.0)
         root.visible = true
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
         for k in panels:
@@ -782,12 +789,39 @@ var _pause_box: VBoxContainer
 
 
 func _build_pause() -> void:
-        var p := _center_panel("pause", Vector2(420, 420))
+        var p := _center_panel("pause", Vector2(440, 520))
         _pause_box = VBoxContainer.new()
         _pause_box.add_theme_constant_override("separation", 12)
         _pause_box.alignment = BoxContainer.ALIGNMENT_CENTER
         p.add_child(_pause_box)
         var t := _title(_pause_box, "ASTRAWILD", "Echoes of the First Dawn")
+        # ---- v1.1 Phase V8: audio volume sliders, live + persisted ----
+        var audio_head := Label.new()
+        audio_head.text = "Audio"
+        audio_head.add_theme_font_size_override("font_size", 14)
+        audio_head.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+        _pause_box.add_child(audio_head)
+        for bus_name in ["Master", "SFX", "Music", "Ambience"]:
+                var row := HBoxContainer.new()
+                row.add_theme_constant_override("separation", 8)
+                var lbl := Label.new()
+                lbl.text = bus_name
+                lbl.custom_minimum_size = Vector2(84, 20)
+                lbl.add_theme_font_size_override("font_size", 12)
+                lbl.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
+                row.add_child(lbl)
+                var slider := HSlider.new()
+                slider.min_value = 0.0
+                slider.max_value = 1.0
+                slider.step = 0.05
+                slider.value = Sfx.get_bus_volume(bus_name)
+                slider.custom_minimum_size = Vector2(180, 20)
+                var bus: String = bus_name
+                slider.value_changed.connect(func _v(v: float):
+                        Sfx.set_bus_volume(bus, v)
+                        Sfx.save_settings())
+                row.add_child(slider)
+                _pause_box.add_child(row)
 
 
 func _refresh_pause() -> void:

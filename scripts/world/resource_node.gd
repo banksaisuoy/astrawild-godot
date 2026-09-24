@@ -98,6 +98,14 @@ func interact() -> bool:
         harvested.emit(self, def["item"], qty)
         Game.add_item(def["item"], qty)
         Game.toast.emit("+%d %s" % [qty, Data.item_name(def["item"])], Color(0.85, 1.0, 0.8))
+        # v1.1 Phase V8: per-material harvest feedback
+        var item_id: String = str(def["item"])
+        if item_id.find("Wood") >= 0 or item_id.find("Dawnwood") >= 0:
+                Sfx.play_at("harvest_wood", global_position, -8.0)
+        elif item_id.find("Stone") >= 0 or item_id.find("Ore") >= 0 or item_id.find("Astraite") >= 0:
+                Sfx.play_at("harvest_stone", global_position, -8.0)
+        else:
+                Sfx.play_at("wood_tap", global_position, -10.0)
         if charges <= 0:
                 respawn_timer = float(def.get("respawn", 30.0))
                 _set_visual_active(false)

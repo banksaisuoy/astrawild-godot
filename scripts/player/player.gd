@@ -446,7 +446,7 @@ func _light_attack() -> void:
         attack_cd = LIGHT_CD
         _do_sweep(LIGHT_DAMAGE + Game.weapon_damage(), 0.9)
         _play_anim("Gather")
-        Sfx.play("impact_kinetic", -22.0)  # soft swing whoosh; hit impacts fire in Echo.take_hit
+        Sfx.play("melee_swing", -16.0)
 
 
 func _heavy_attack() -> void:
@@ -455,7 +455,7 @@ func _heavy_attack() -> void:
         attack_cd = HEAVY_CD
         _do_sweep(HEAVY_DAMAGE + Game.weapon_damage(), 1.15)
         _play_anim("Fire")
-        Sfx.play("impact_kinetic", -16.0)
+        Sfx.play("melee_swing", -12.0, 0.1)
 
 
 func _do_sweep(damage: float, radius: float) -> void:
@@ -477,6 +477,9 @@ func _do_sweep(damage: float, radius: float) -> void:
                 var echo = collider.get_parent() if collider is Area3D else collider
                 if echo and echo is Node and echo.has_method("take_hit"):
                         echo.take_hit(damage, Game.weapon_element())
+                        # v1.1 Phase V8: audible hit confirmation
+                        Sfx.play("melee_hit" if damage > 20.0 else "melee_hit_light", -10.0)
+                        break  # one confirmation per swing is enough
 
 
 func _fire_weapon() -> void:

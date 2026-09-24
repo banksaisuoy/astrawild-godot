@@ -30,6 +30,42 @@ const EVENTS := {
         "capture_success": "A_Echo_Capture_Success",
         "legendary_wake": "A_Weapon_Singularity_Fire",
         "stinger_warning": "A_UI_Warning",
+        # ---- v1.1 Phase V8: Kenney CC0 game-feel layer ----
+        "melee_hit": "kenney/impactPunch_heavy_000",
+        "melee_hit_light": "kenney/impactPunch_medium_000",
+        "melee_swing": "kenney/drawKnife1",
+        "harvest_wood": "kenney/chop",
+        "harvest_stone": "kenney/impactMining_000",
+        "chest_open": "kenney/handleCoins",
+        "loot_coins": "kenney/handleCoins2",
+        "book_open": "kenney/bookOpen",
+        "book_flip": "kenney/bookFlip1",
+        "door_open": "kenney/doorOpen_1",
+        "door_close": "kenney/doorClose_1",
+        "ui_error": "kenney/error_001",
+        "ui_question": "kenney/question_001",
+        "ui_select": "kenney/confirmation_001",
+        "deploy_machine": "kenney/impactMetal_light_000",
+        "tin_ping": "kenney/impactTin_medium_000",
+        "wood_tap": "kenney/impactWood_light_000",
+}
+
+# v1.1 Phase V8: looping music tracks (OpenGameArt CC0)
+const MUSIC := {
+        "day": "oga/M_Music_Day_Ambient.ogg",
+        "calm": "oga/M_Music_Calm_Loop.mp3",
+        "heavenly": "oga/M_Music_Heavenly_Loop.ogg",
+        "crystal": "oga/M_Music_Crystal_Cave.mp3",
+        "dungeon": "oga/M_Music_Dungeon_Ambience.ogg",
+        "evil": "oga/M_Music_Evil_Temple.ogg",
+        "night": "oga/M_Music_Night_Contemplation.mp3",
+}
+
+# quest/evolve/discovery stingers (Kenney music jingles, CC0)
+const STINGERS := {
+        "quest_complete": "kenney_music/jingles_NES01",
+        "evolve": "kenney_music/jingles_PIZZI04",
+        "landmark": "kenney_music/jingles_SAX00",
 }
 
 # ranged weapon item id -> fire event
@@ -79,17 +115,23 @@ const ZONE_FOOTSTEPS := {
         "TidebreakerIsles": "A_Footstep_Sand",
         "AzureShallows": "A_Footstep_Water",
         "PearlseaReef": "A_Footstep_Water",
-        "Frostveil": "A_Footstep_Stone",
+        "Frostveil": "kenney/footstep_snow_000",
         "EmberRidge": "A_Footstep_Stone",
         "Stormcrest": "A_Footstep_Stone",
         "HollowApproach": "A_Footstep_Stone",
 }
 
 var _streams := {}            # wav stem -> AudioStream
+var _music_streams := {}      # music key -> AudioStream (v1.1 Phase V8)
 var _ambience_a: AudioStreamPlayer
 var _ambience_b: AudioStreamPlayer
 var _ambience_key := ""
 var _ambience_flip := false
+var _music_a: AudioStreamPlayer
+var _music_b: AudioStreamPlayer
+var _music_key := ""
+var _music_flip := false
+var _music_check := 0.0
 var _pool: Array[AudioStreamPlayer] = []
 var _pool_3d: Array[AudioStreamPlayer3D] = []
 var _last_heartbeat := 0.0
@@ -97,9 +139,131 @@ var _last_heartbeat := 0.0
 
 func _ready() -> void:
         _build_buses()
+        _load_settings()
         _load_streams()
         _build_ambience_players()
-        print("Sfx: %d streams, buses %s" % [_streams.size(), str(BUSES)])
+        _build_music_players()
+        print("Sfx: %d streams + %d music tracks, buses %s" % [_streams.size(), _music_streams.size(), str(BUSES)])
+
+
+func _process(delta: float) -> void:
+        _music_check -= delta
+        if _music_check > 0.0:
+                return
+        _music_check = 1.5
+        _update_music_context()
+
+
+func _update_music_context() -> void:
+        ## day/night + zone + dungeon + village music selection (Phase V8)
+        var player := get_tree().get_first_node_in_group("player")
+        if player == null:
+                return
+        var key := "calm"
+        if Game.is_night():
+                key = "night"
+        var world := get_tree().get_first_node_in_group("world")
+        if world:
+                # dungeon interior proximity
+                for d in world.get("dungeons"):
+                        if player.global_position.distance_to(d.global_position) < 90.0:
+                                key = "dungeon"
+                                break
+        if key != "dungeon":
+                # village safety
+                if player.global_position.distance_to(Vector3(-120, 0, 0)) < 50.0:
+                        key = "heavenly"
+                else:
+                        match Game.current_zone_id:
+                                "Zone_Frostveil", "Zone_PearlseaReef":
+                                        key = "crystal"
+                                "Zone_HollowApproach":
+                                        key = "evil"
+                                "Zone_DawnFields", "Zone_Glimmerwood", "Zone_VerdantReach":
+                                        key = "day" if not Game.is_night() else key
+        play_music(key)
+
+
+func play_music(key: String) -> void:
+        if key == _music_key or not _music_streams.has(key):
+                return
+        _music_key = key
+        var incoming: AudioStreamPlayer
+        var outgoing: AudioStreamPlayer
+        if _music_flip:
+                incoming = _music_a
+                outgoing = _music_b
+        else:
+                incoming = _music_b
+                outgoing = _music_a
+        _music_flip = not _music_flip
+        incoming.stream = _music_streams[key]
+        incoming.volume_db = -50.0
+        incoming.play()
+        var tw := create_tween()
+        tw.tween_property(incoming, "volume_db", -16.0, 2.4)
+        if outgoing.playing:
+                tw.parallel().tween_property(outgoing, "volume_db", -50.0, 2.4)
+                tw.chain().tween_callback(outgoing.stop)
+
+
+func play_stinger(kind: String) -> void:
+        var stem: String = STINGERS.get(kind, "")
+        if stem != "" and _streams.has(stem):
+                var p := _acquire_player()
+                p.bus = "Music"
+                p.stream = _streams[stem]
+                p.volume_db = -8.0
+                p.play()
+
+
+func _build_music_players() -> void:
+        _music_a = AudioStreamPlayer.new()
+        _music_a.bus = "Music"
+        add_child(_music_a)
+        _music_b = AudioStreamPlayer.new()
+        _music_b.bus = "Music"
+        add_child(_music_b)
+
+
+# ------------------------------------------------------- settings + volume --
+const SETTINGS_PATH := "user://settings.json"
+
+func _load_settings() -> void:
+        if not FileAccess.file_exists(SETTINGS_PATH):
+                return
+        var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+        var data: Dictionary = JSON.parse_string(f.get_as_text()) if f else {}
+        if data.is_empty():
+                return
+        for bus_name in ["Master"] + BUSES:
+                if data.has(bus_name):
+                        set_bus_volume(bus_name, float(data[bus_name]))
+
+
+func set_bus_volume(bus_name: String, linear: float) -> void:
+        var idx := AudioServer.get_bus_index(bus_name)
+        if idx < 0:
+                return
+        linear = clampf(linear, 0.0, 1.0)
+        AudioServer.set_bus_volume_db(idx, linear_to_db(maxf(linear, 0.001)))
+        AudioServer.set_bus_mute(idx, linear <= 0.01)
+
+
+func get_bus_volume(bus_name: String) -> float:
+        var idx := AudioServer.get_bus_index(bus_name)
+        if idx < 0:
+                return 1.0
+        return db_to_linear(AudioServer.get_bus_volume_db(idx))
+
+
+func save_settings() -> void:
+        var data := {}
+        for bus_name in ["Master"] + BUSES:
+                data[bus_name] = get_bus_volume(bus_name)
+        var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+        if f:
+                f.store_string(JSON.stringify(data))
 
 
 # ------------------------------------------------------------------ buses --
@@ -125,12 +289,29 @@ func _load_streams() -> void:
                 wanted[stem] = true
         for stem in ZONE_FOOTSTEPS.values():
                 wanted[stem] = true
+        for stem in STINGERS.values():
+                wanted[stem] = true
         for stem in wanted:
-                var path := "res://assets/audio/%s.wav" % stem
-                if ResourceLoader.exists(path):
+                var path := _stem_path(stem)
+                if path != "" and ResourceLoader.exists(path):
                         var stream: AudioStream = load(path)
                         if stream:
                                 _streams[stem] = stream
+        for key in MUSIC:
+                var mp := _stem_path(MUSIC[key])
+                if mp != "" and ResourceLoader.exists(mp):
+                        var stream: AudioStream = load(mp)
+                        if stream:
+                                _music_streams[key] = stream
+
+
+func _stem_path(stem: String) -> String:
+        if stem.find("/") >= 0:
+                # Kenney/OGA subfolders — .ogg unless the entry carries its own
+                if stem.get_extension() != "":
+                        return "res://assets/audio/%s" % stem
+                return "res://assets/audio/%s.ogg" % stem
+        return "res://assets/audio/%s.wav" % stem
 
 
 func _build_ambience_players() -> void:

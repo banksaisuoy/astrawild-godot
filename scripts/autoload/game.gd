@@ -790,6 +790,7 @@ func _check_quest_complete(qid: String) -> void:
                 add_item(reward["item"], reward["qty"])
         add_research_points(int(q.get("research_points", 0)))
         toast.emit("Quest complete: %s" % q.get("title", qid), Color(0.6, 1.0, 0.7))
+        Sfx.play_stinger("quest_complete")
         # advance chain
         var nxt = q.get("next")
         if nxt != null and str(nxt) != "":
@@ -972,6 +973,7 @@ func check_evolution(entry: Dictionary) -> void:
                 entry["species_id"] = evo["id"]
                 entry["name"] = evolved["name"] + " ✦"
                 toast.emit("%s evolved into %s!" % [s["name"], evolved["name"]], Color(1.0, 0.7, 1.0))
+                Sfx.play_stinger("evolve")
                 party_changed.emit()
 
 
