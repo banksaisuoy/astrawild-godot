@@ -15,6 +15,7 @@ var species := {}          # id -> species dict (226 total)
 var species_by_zone := {}  # zone id -> array of species ids
 var quests := {}           # id -> quest dict
 var camp := {}
+var species_rigs := {}     # id -> {rig, scale, tint} — Phase V4 mesh-resolution overrides
 
 const _PATHS := {
         "items": "res://data/items.json",
@@ -23,6 +24,7 @@ const _PATHS := {
         "bestiary": "res://data/bestiary.json",
         "special": "res://data/species_special.json",
         "quests": "res://data/quests.json",
+        "species_models": "res://data/species_models.json",
 }
 
 
@@ -83,6 +85,11 @@ func _load_all() -> void:
 
         for q in _load_json(_PATHS.quests):
                 quests[q["id"]] = q
+
+        # Phase V4 mesh-resolution overrides (species -> acquired CC0 rig).
+        # Missing file => empty map => every species falls back safely.
+        var rigs: Dictionary = _load_json(_PATHS.species_models) if FileAccess.file_exists(_PATHS.species_models) else {}
+        species_rigs = rigs.get("maps", {})
 
         for sid in species:
                 var s: Dictionary = species[sid]

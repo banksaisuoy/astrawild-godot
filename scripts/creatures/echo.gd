@@ -100,17 +100,32 @@ func _build_body() -> void:
         _body_root = Node3D.new()
         _body_root.name = "Body"
         add_child(_body_root)
-        var model_path: String = def.get("model", "")
+        # ---- Phase V4 mesh-resolution layer ----
+        # order: species_rigs override -> species data model -> procedural.
+        # every step is ResourceLoader-guarded: a missing file NEVER crashes,
+        # it just falls through to the next link of the chain.
+        var model_path := ""
+        var rig := Data.species_rigs.get(str(def.get("id", "")), {})
+        if rig.has("rig"):
+                var p := "res://assets/meshes/quaternius/" + str(rig["rig"])
+                if ResourceLoader.exists(p):
+                        model_path = p
+        if model_path == "":
+                model_path = str(def.get("model", ""))
         if model_path != "" and ResourceLoader.exists(model_path):
                 var scene: PackedScene = load(model_path)
                 if scene:
                         var visual := scene.instantiate()
                         _body_root.add_child(visual)
-                        _apply_model_tint(visual)
+                        # tint only when requested (shared rigs across species);
+                        # unique rigs keep their original Quaternius colours
+                        if rig.get("tint", false) or model_path.begins_with("res://assets/meshes/echoes/"):
+                                _apply_model_tint(visual)
                         _anim = _find_anim(visual)
                         if _anim:
                                 _anim.play(_anim_name("Idle"))
                         var s: float = Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0)
+                        s *= float(rig.get("scale", 1.0))
                         _body_root.scale = Vector3(s, s, s)
                         if def.get("body_plan", "") in ["Floating", "Amorphous"]:
                                 _body_root.position.y = 1.0
@@ -119,13 +134,26 @@ func _build_body() -> void:
 
 
 func _anim_name(kind: String) -> String:
+        if _anim == null:
+                return ""
         # production GLB animations follow AM_<Species>_<Kind>
         var species: String = def.get("name", "Echo").replace(" ", "")
         if _anim.has_animation("AM_%s_%s" % [species, kind]):
                 return "AM_%s_%s" % [species, kind]
-        for lib in _anim.get_animation_list():
-                if lib.ends_with("/%s" % kind) or lib.find("_%s" % kind) >= 0:
-                        return lib
+        # generic rigs (Quaternius CC0): semantic keyword fallback per kind.
+        # order matters — first keyword hit wins per animation list scan.
+        var wants: Array = []
+        match kind:
+                "Idle":  wants = ["Idle"]
+                "Move":  wants = ["Walk", "Gallop", "Fast_Flying", "Move"]
+                "Hit":   wants = ["HitReact", "Hit"]
+                "Attack": wants = ["Attack", "Punch", "Headbutt"]
+                "Death": wants = ["Death"]
+                _:       wants = [kind]
+        for kw in wants:
+                for lib in _anim.get_animation_list():
+                        if lib.find(kw) >= 0:
+                                return lib
         return ""
 
 
@@ -140,15 +168,31 @@ func _find_anim(node: Node) -> AnimationPlayer:
 
 
 func _apply_model_tint(root: Node) -> void:
-        # recolor GLB materials toward species tints (keeps model detail)
+        # recolor rigs toward species tints. Duplicates materials first so
+        # shared imported resources are never mutated globally. Textured rigs
+        # (Quaternius monster atlas) get a partial blend that keeps their art;
+        # untextured rigs get the full species palette.
         var prim: Array = def["colors"]["primary"]
         var sec: Array = def["colors"]["secondary"]
         var idx := 0
         for mi in _all_meshes(root):
+                var want: Color = Color(prim[0], prim[1], prim[2]) if idx % 2 == 0 else Color(sec[0], sec[1], sec[2])
                 var mat := StandardMaterial3D.new()
-                var c: Color = Color(prim[0], prim[1], prim[2]) if idx % 2 == 0 else Color(sec[0], sec[1], sec[2])
-                mat.albedo_color = c
-                mat.roughness = 0.8
+                var base_mat: Material = null
+                var mesh_res: Mesh = (mi as MeshInstance3D).mesh
+                if mesh_res is ArrayMesh and (mesh_res as ArrayMesh).get_surface_count() > 0:
+                        base_mat = (mesh_res as ArrayMesh).surface_get_material(0)
+                if base_mat is StandardMaterial3D:
+                        var bm := (base_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+                        if bm.albedo_texture != null:
+                                bm.albedo_color = Color(1, 1, 1).lerp(want, 0.6)
+                        else:
+                                bm.albedo_color = want
+                        bm.roughness = 0.8
+                        mat = bm
+                else:
+                        mat.albedo_color = want
+                        mat.roughness = 0.8
                 var el: Color = Data.element_color(def.get("element", "None"))
                 if el != Color(0.8, 0.8, 0.8):
                         mat.emission_enabled = true
@@ -644,7 +688,12 @@ func _perform_attack(target: Node3D) -> void:
         var mult := 1.0
         if boss_mode:
                 mult = [1.0, 1.15, 1.4][_phase - 1]
-        _play_anim("Hit")
+        # Phase V4: play a real Attack clip when the rig has one
+        # (Quaternius animals: Attack; monsters: Punch/Headbutt), else Hit.
+        if _anim_name("Attack") != "":
+                _play_anim("Attack")
+        else:
+                _play_anim("Hit")
         Sfx.play_species(str(def.get("name", "")), global_position)
         if target == get_tree().get_first_node_in_group("player"):
                 Game.take_damage(atk * mult, def.get("element", "None"), true)

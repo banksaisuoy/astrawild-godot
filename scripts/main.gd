@@ -31,6 +31,10 @@ func _ready() -> void:
         # headless smoke-test: skip the title screen and run the world directly
         if DisplayServer.get_name() == "headless" and OS.get_cmdline_user_args().find("--smoke") >= 0:
                 _start_game(false)
+        # screenshot mode (xvfb/CI): boot into the world, capture, quit
+        if OS.get_cmdline_user_args().find("--screenshot") >= 0:
+                _start_game(OS.get_cmdline_user_args().find("--cont") >= 0)
+                _screenshot_routine()
 
 
 func _build_title() -> void:
@@ -437,4 +441,126 @@ func _run_smoke_checks() -> void:
                 await get_tree().create_timer(0.5).timeout
                 print("SMOKE: t", i, " player y=", player.global_position.y, " floor=", player.is_on_floor(), " terr=", world.tile_height(player.global_position.x, player.global_position.z))
         print("SMOKE: after 3s: craft queue=", Game.craft_queue.size(), " resonators=", Game.count_item("Item_Resonator"))
+        # ---- Phase V4: mesh-resolution layer (species -> CC0 rig -> fallback) ----
+        var rig_total := 0
+        var rig_instanced := 0
+        var rig_anims := 0
+        for sid in Data.species_rigs:
+                if str(sid).begins_with("_"):
+                        continue
+                rig_total += 1
+                var rig: Dictionary = Data.species_rigs[sid]
+                var p := "res://assets/meshes/quaternius/" + str(rig.get("rig", ""))
+                if ResourceLoader.exists(p):
+                        rig_instanced += 1
+                        var ps: PackedScene = load(p)
+                        if ps:
+                                var inst = ps.instantiate()
+                                var ap := _smoke_find_anim(inst)
+                                if ap:
+                                        rig_anims += 1
+                                inst.free()
+        print("SMOKE: rigs mapped=", rig_total, " loadable=", rig_instanced, " with_anims=", rig_anims)
+        # resolution chain proof: override first, data model second, procedural last
+        var mosspaw_rig := Data.species_rigs.get("Echo_Mosspaw", {})
+        print("SMOKE: mosspaw rig=", mosspaw_rig.get("rig", "MISSING"), " exists=", ResourceLoader.exists("res://assets/meshes/quaternius/" + str(mosspaw_rig.get("rig", ""))))
+        var rigged_count := 0
+        var quaternius_count := 0
+        var prod_count := 0
+        var proc_count := 0
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo:
+                        if c._anim != null:
+                                rigged_count += 1
+                        if c._body_root != null and c._body_root.get_child_count() > 0:
+                                var vis: Node = c._body_root.get_child(0)
+                                var src := str(vis.scene_file_path)
+                                if src.begins_with("res://assets/meshes/quaternius/"):
+                                        quaternius_count += 1
+                                elif src.begins_with("res://assets/meshes/echoes/"):
+                                        prod_count += 1
+                                else:
+                                        proc_count += 1
+                        else:
+                                proc_count += 1
+        print("SMOKE: live creatures rigged=", rigged_count, " quaternius=", quaternius_count, " production=", prod_count, " procedural=", proc_count)
+        # attack clip availability on a live rigged Echo
+        var atk_clips := 0
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and c._anim != null:
+                        var n: String = c._anim_name("Attack")
+                        if n != "":
+                                atk_clips += 1
+        print("SMOKE: creatures with real Attack clips=", atk_clips)
         print("SMOKE COMPLETE")
+
+func _smoke_find_anim(n: Node) -> AnimationPlayer:
+        if n is AnimationPlayer:
+                return n
+        for c in n.get_children():
+                var found := _smoke_find_anim(c)
+                if found:
+                        return found
+        return null
+
+
+func _screenshot_routine() -> void:
+        ## --screenshot [name] [delay]: boot world, wait for things to settle,
+        ## optionally turn the camera toward the nearest rigged creature, then
+        ## save res://shot_<name>.png and quit.
+        var args := OS.get_cmdline_user_args()
+        var shot_name := "game"
+        var delay := 7.0
+        for a in args:
+                if a.begins_with("--shot="):
+                        shot_name = a.trim_prefix("--shot=")
+                if a.begins_with("--delay="):
+                        delay = float(a.trim_prefix("--delay="))
+        await get_tree().create_timer(delay).timeout
+        var fwd := -player.global_transform.basis.z
+        if shot_name == "gallery":
+                # spawn a showcase line-up of rigged species in front of the player
+                var gallery := [
+                        "Echo_Mosspaw", "Echo_Dawnhorn", "Echo_Gloomfang",
+                        "Echo_Lumewisp", "Echo_Terraquill", "Echo_Solaris",
+                ]
+                var echo_script := load("res://scripts/creatures/echo.gd")
+                for gi in gallery.size():
+                        var sid: String = gallery[gi]
+                        var gdef: Dictionary = Data.species_def(sid)
+                        if gdef.is_empty():
+                                continue
+                        var ge: Node = echo_script.new(gdef, RandomNumberGenerator.new())
+                        var gp: Vector3 = player.global_position + fwd * 9.0 + player.global_transform.basis.x * (float(gi) - 2.5) * 3.0
+                        ge.position = Vector3(gp.x, world.tile_height(gp.x, gp.z) + 0.3, gp.z)
+                        ge.rotation.y = player.rotation.y + PI
+                        world.creatures_root.add_child(ge)
+                await get_tree().create_timer(1.5).timeout
+        if OS.get_cmdline_user_args().find("--creature") >= 0 or shot_name == "gallery":
+                # aim the player camera at the nearest rigged Echo
+                var best: Node3D = null
+                var bd := INF
+                for c in get_tree().get_nodes_in_group("creatures"):
+                        if c is Echo and c._anim != null and is_instance_valid(c):
+                                var d: float = player.global_position.distance_to(c.global_position)
+                                if d < bd:
+                                        bd = d
+                                        best = c
+                if best:
+                        player.look_at(Vector3(best.global_position.x, player.global_position.y, best.global_position.z), Vector3.UP)
+                if shot_name == "gallery":
+                        # 3/4 top-down view of the line from just above the player
+                        var cam: Camera3D = get_viewport().get_camera_3d()
+                        if cam:
+                                var mid: Vector3 = player.global_position + fwd * 9.0
+                                cam.position = player.global_position + Vector3(0, 11.0, 0) + fwd * 2.0
+                                cam.look_at(mid + Vector3(0, 1.0, 0), Vector3.UP)
+        await get_tree().create_timer(0.5).timeout
+        var img: Image = get_viewport().get_texture().get_image()
+        var err := img.save_png("res://shot_%s.png" % shot_name)
+        print("SCREENSHOT saved=", err == OK, " path=res://shot_%s.png" % shot_name, " size=", img.get_size())
+        get_tree().quit(0)
+
+
+func fwd_dir(p: Node3D) -> Vector3:
+        return -p.global_transform.basis.z
