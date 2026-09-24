@@ -1,0 +1,275 @@
+{
+  "budget_mb": 250,
+  "max_file_mb": 20,
+  "ledger": "docs/ASSET_LICENSE_LEDGER.md",
+  "groups": [
+    {
+      "id": "quaternius_animals",
+      "source": "Quaternius — Ultimate Animated Animals",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "intended_use": "TIER S/A creature rigs — 12 rigged animals, 12 animations each incl. Attack (Fox→Mosspaw, Deer→Dawnhorn, Wolf→night predators, Stag→Emberwing, Husky→Duskhide, Bull→Stonehide, Donkey→Emberrunner, others→zone beasts/village ambience)",
+      "target_dir": "assets/meshes/quaternius/animals",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "1yJXdB1iSrI8Db7hG77zxZ66vKsqIt0ry",
+        "include": ["\\.gltf$"]
+      }
+    },
+    {
+      "id": "quaternius_monsters_flying",
+      "source": "Quaternius — Ultimate Monsters (Flying)",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/ultimatemonsters.html",
+      "intended_use": "TIER A floaters + legendaries — Dragon/Dragon_Evolved→Solaris, Goleling(+Evo)→monoliths, Ghost/Ghost_Skull→Umbrarch/Hollow spirits, Squidle/Hywirl/Glub→aquatics, Demon→Ember, Alpaking/Armabee→zone bosses",
+      "target_dir": "assets/meshes/quaternius/monsters_flying",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "1RDoNgoRYBNacHO-uRPfSxEgtc4U-EmaB",
+        "include": ["\\.gltf$", "^Atlas_Monsters\\.png$"]
+      }
+    },
+    {
+      "id": "quaternius_monsters_big",
+      "source": "Quaternius — Ultimate Monsters (Big)",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/ultimatemonsters.html",
+      "intended_use": "TIER A heavies — Dino→Sunscar, MushroomKing→Flora icon, Frog→marsh, Yeti→Frostveil, Birb→Avian, Bunny→small beasts, Fish→water zones, Cactoro→Sunscar flora, Orc/Orc_Skull/BlueDemon/Demon/Tribal/Monkroose→hostile variety",
+      "target_dir": "assets/meshes/quaternius/monsters_big",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "1sOXLt5U3ofaujPlQRL11s4ub2UsqN8V8",
+        "include": [
+          "^(BlueDemon|Demon|Dino|Frog|MushroomKing|Orc|Orc_Skull|Tribal|Yeti|Bunny|Birb|Cactoro|Fish|Monkroose)\\.gltf$",
+          "^Atlas_Monsters\\.png$"
+        ]
+      }
+    },
+    {
+      "id": "quaternius_monsters_blob",
+      "source": "Quaternius — Ultimate Monsters (Blob)",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/ultimatemonsters.html",
+      "intended_use": "TIER A smalls + village life — Wizard→distinct NPC villagers, Cat/Chicken/Dog/Pigeon→village ambience, PinkBlob/GreenBlob/GreenSpikyBlob→Amorphous species, Mushnub(+Evolved)→Flora smalls",
+      "target_dir": "assets/meshes/quaternius/monsters_blob",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "17vHFeosNDYa__PB29JzPQld2SvrJyZBD",
+        "include": [
+          "^(Cat|Chicken|Dog|Pigeon|Wizard|PinkBlob|GreenBlob|GreenSpikyBlob|Mushnub|Mushnub_Evolved|Yeti)\\.gltf$",
+          "^Atlas_Monsters\\.png$"
+        ]
+      }
+    },
+    {
+      "id": "quaternius_village",
+      "source": "Quaternius — Medieval Village (Buildings)",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/medievalvillage.html",
+      "intended_use": "V6 real village buildings — House_1-4/Inn/Mill/Blacksmith/Stable/Sawmill/Bell_Tower replace the cylinder+prism procedural huts",
+      "target_dir": "assets/meshes/quaternius/village",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "1EHn7T2poWldA-LNJ72MHwkqU7ffxhY3R",
+        "include": ["\\.fbx$"]
+      }
+    },
+    {
+      "id": "quaternius_ruins",
+      "source": "Quaternius — Ultimate Modular Ruins",
+      "license": "CC0",
+      "page": "https://quaternius.com/packs/ultimatemodularruins.html",
+      "intended_use": "V6 landmarks + dungeon dressing — arches/columns/walls/floors/stairs/bridge + chests/torches/pots/statues/candles/skull/trapdoor/cart/bookcase",
+      "target_dir": "assets/meshes/quaternius/ruins",
+      "fetch": {
+        "kind": "drive_folder",
+        "folder_id": "1r1KjTItYv3kFlzJZ-EP2iHMlK_fz-QLF",
+        "include": [
+          "^(Arch_Gothic|Arch_Gothic_RoundColumn|Arch_Round|Arch_Round_RoundColumn|Column_Round|Column_Round_Short|Column_Square|Wall|Wall_Broken|Wall_Overgrown|Wall_Hole|Wall_ArchRound_Broken|Wall_ArchRound_Overgrown|Floor_Standard|Floor_Diamond|Floor_Squares|Floor_Hole_Straight|Floor_Hole_Corner|Stairs|Stairs_2|BridgeSection|Support_Center|Support_Tall|Chest|Chest_Gold|Torch|Candles_1|Candles_2|Pot1|Pot1_Broken|Pot2|Pot2_Broken|Pot3|Pot3_Broken|Crate|Barrel|Cart|Skull|Statue_Fox|Statue_Stag|Trapdoor|Doors_GothicArch|Doors_RoundArch|Bookcase_Full|Curve_1_Overgrown|Curve_2_Overgrown|DeadTree_1|DeadTree_2|DeadTree_3|Tree_1|Tree_2|Tree_3|Bush_Round|Bush_Large)\\.fbx$"
+        ]
+      }
+    },
+    {
+      "id": "kenney_nature",
+      "source": "Kenney — Nature Kit",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/nature-kit",
+      "intended_use": "V6 per-zone prop dressing — mushrooms, plants, flowers, logs, rocks, foliage variety on MultiMesh",
+      "target_dir": "assets/meshes/kenney/nature",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "nature-kit",
+        "extract": ["\\.glb$"]
+      }
+    },
+    {
+      "id": "kenney_castle",
+      "source": "Kenney — Castle Kit",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/castle-kit",
+      "intended_use": "V6 landmarks — towers, walls, gates, battlements for the Hollow dungeon approach and Sunken Vault exterior",
+      "target_dir": "assets/meshes/kenney/castle",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "castle-kit",
+        "extract": ["\\.glb$"]
+      }
+    },
+    {
+      "id": "kenney_audio_ui",
+      "source": "Kenney — UI Audio + Interface Sounds",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/ui-audio",
+      "intended_use": "V8 UI feedback — clicks, rollovers, confirmations, notifications beyond the current 6",
+      "target_dir": "assets/audio/kenney",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "ui-audio",
+        "extract": ["\\.ogg$"]
+      }
+    },
+    {
+      "id": "kenney_audio_interface",
+      "source": "Kenney — Interface Sounds",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/interface-sounds",
+      "intended_use": "V8 interface feedback variety",
+      "target_dir": "assets/audio/kenney",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "interface-sounds",
+        "extract": ["\\.ogg$"]
+      }
+    },
+    {
+      "id": "kenney_audio_rpg",
+      "source": "Kenney — RPG Audio",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/rpg-audio",
+      "intended_use": "V8 game-feel stingers — coin/loot, level-up, potion, door, chest, creature hurt/death variety",
+      "target_dir": "assets/audio/kenney",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "rpg-audio",
+        "extract": ["\\.ogg$"]
+      }
+    },
+    {
+      "id": "kenney_audio_impact",
+      "source": "Kenney — Impact Sounds",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "intended_use": "V8 combat hit confirmation layering",
+      "target_dir": "assets/audio/kenney",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "impact-sounds",
+        "extract": ["\\.ogg$"]
+      }
+    },
+    {
+      "id": "kenney_music_jingles",
+      "source": "Kenney — Music Jingles",
+      "license": "CC0",
+      "page": "https://kenney.nl/assets/music-jingles",
+      "intended_use": "V8 short musical stings — quest complete, evolve fanfare alternative, discovery",
+      "target_dir": "assets/audio/kenney_music",
+      "fetch": {
+        "kind": "kenney_zip",
+        "slug": "music-jingles",
+        "extract": ["\\.ogg$"]
+      }
+    },
+    {
+      "id": "oga_music_dawn",
+      "source": "OpenGameArt — 'Birds and Wind — Ambient (Birds, Wind and Synth)' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/birds-and-wind-ambient-birds-wind-and-synth",
+      "intended_use": "V8 day-time exploration music — Dawn Fields / Glimmerwood / Verdant Reach",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/Birds%20and%20Wind%20-%20Ambient_1.ogg",
+        "filename": "M_Music_Day_Ambient.ogg"
+      }
+    },
+    {
+      "id": "oga_music_calm",
+      "source": "OpenGameArt — 'Calm Loop' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/calm-loop",
+      "intended_use": "V8 general exploration loop — overworld default",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/Relaxing_0.mp3",
+        "filename": "M_Music_Calm_Loop.mp3"
+      }
+    },
+    {
+      "id": "oga_music_heavenly",
+      "source": "OpenGameArt — 'Heavenly Loop' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/heavenly-loop",
+      "intended_use": "V8 safe haven music — villages, captures, bonding",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/Heavenly%20Loop_0.ogg",
+        "filename": "M_Music_Heavenly_Loop.ogg"
+      }
+    },
+    {
+      "id": "oga_music_crystal",
+      "source": "OpenGameArt — 'Crystal Cave (song18)' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/crystal-cave-song18",
+      "intended_use": "V8 Frostveil / Pearlsea Reef crystal-zone music",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/song18_0.mp3",
+        "filename": "M_Music_Crystal_Cave.mp3"
+      }
+    },
+    {
+      "id": "oga_music_dungeon",
+      "source": "OpenGameArt — 'Dungeon Ambience' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/dungeon-ambience",
+      "intended_use": "V8 dungeon interior music — both dungeons",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/dungeon002_0.ogg",
+        "filename": "M_Music_Dungeon_Ambience.ogg"
+      }
+    },
+    {
+      "id": "oga_music_evil",
+      "source": "OpenGameArt — 'Evil Temple Ambiance Loop' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/evil-temple-ambiance-loop",
+      "intended_use": "V8 Hollow Approach / hostile night music",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/evil_temple.ogg",
+        "filename": "M_Music_Evil_Temple.ogg"
+      }
+    },
+    {
+      "id": "oga_music_night",
+      "source": "OpenGameArt — 'Contemplation' by CleytonKauffman",
+      "license": "CC0",
+      "page": "https://opengameart.org/content/contemplation-0",
+      "intended_use": "V8 night-time exploration music — dusk-to-dawn shift",
+      "target_dir": "assets/audio/oga",
+      "fetch": {
+        "kind": "direct",
+        "url": "https://opengameart.org/sites/default/files/Contemplation.mp3",
+        "filename": "M_Music_Night_Contemplation.mp3"
+      }
+    }
+  ]
+}
