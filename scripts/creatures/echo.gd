@@ -249,6 +249,10 @@ func _sphere(part: String, radius: float, pos: Vector3, mat: Material, segments:
 
 
 func _build_procedural_body() -> void:
+        ## v1.1 Phase V5 — Tier B field builder. Same 8 body plans, but now with
+        ## deterministic per-species proportion variance (seeded by species id),
+        ## a signature feature per FAMILY, and element-driven surface detail.
+        ## Part names stay compatible with _animate_body so locomotion keeps working.
         var prim: Array = def["colors"]["primary"]
         var sec: Array = def["colors"]["secondary"]
         var body_c := Color(prim[0], prim[1], prim[2])
@@ -257,82 +261,120 @@ func _build_procedural_body() -> void:
         var glow := _mat(accent_c, el, 1.4)
         var body_mat := _mat(body_c)
         var accent_mat := _mat(accent_c)
+        var belly_mat := _mat(Color(body_c).darkened(0.28))
         var s: float = Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0)
         _body_root.scale = Vector3(s, s, s)
 
-        match def.get("body_plan", "Quadruped"):
+        # deterministic per-species variance — same species, same silhouette.
+        # seed mixes id+element+family so data-twins that differ only by element
+        # still diverge geometrically (Phase V5 uniqueness assertion).
+        var sr := RandomNumberGenerator.new()
+        sr.seed = hash("%s|%s|%s" % [str(def.get("id", "echo")), str(def.get("element", "")), str(def.get("family", ""))])
+        var family: String = def.get("family", "Beast")
+        var plan: String = def.get("body_plan", "Quadruped")
+
+        match plan:
                 "Quadruped":
-                        _box("torso", Vector3(1.1, 0.62, 0.55), Vector3(0, 0.75, 0), body_mat)
-                        _box("head", Vector3(0.42, 0.38, 0.4), Vector3(0.62, 0.95, 0), body_mat)
-                        _sphere("eye_l", 0.06, Vector3(0.8, 1.0, 0.13), glow, 6)
-                        _sphere("eye_r", 0.06, Vector3(0.8, 1.0, -0.13), glow, 6)
-                        _box("ear_l", Vector3(0.1, 0.22, 0.08), Vector3(0.66, 1.2, 0.14), accent_mat)
-                        _box("ear_r", Vector3(0.1, 0.22, 0.08), Vector3(0.66, 1.2, -0.14), accent_mat)
+                        var torso_l: float = sr.randf_range(0.92, 1.38)
+                        var torso_h: float = sr.randf_range(0.50, 0.80)
+                        var leg_h: float = sr.randf_range(0.34, 0.64)
+                        var head_s: float = sr.randf_range(0.36, 0.52)
+                        var neck: float = sr.randf_range(0.0, 0.34)
+                        _box("torso", Vector3(1.1, torso_h, 0.55) * Vector3(torso_l, 1, 1), Vector3(0, 0.75, 0), body_mat)
+                        _box("belly", Vector3(0.7 * torso_l, torso_h * 0.4, 0.58), Vector3(-0.1, 0.55, 0), belly_mat)
+                        _box("head", Vector3(head_s, head_s * 0.9, head_s), Vector3(0.62 + neck, 0.95 + neck * 0.7, 0), body_mat)
+                        _sphere("eye_l", 0.06, Vector3(0.8 + neck, 1.0 + neck * 0.7, 0.13), glow, 6)
+                        _sphere("eye_r", 0.06, Vector3(0.8 + neck, 1.0 + neck * 0.7, -0.13), glow, 6)
+                        var ear_h: float = sr.randf_range(0.14, 0.30)
+                        _box("ear_l", Vector3(0.1, ear_h, 0.08), Vector3(0.66 + neck, 1.2 + neck * 0.7, 0.14), accent_mat)
+                        _box("ear_r", Vector3(0.1, ear_h, 0.08), Vector3(0.66 + neck, 1.2 + neck * 0.7, -0.14), accent_mat)
                         for i in 4:
                                 var lx := 0.4 if i < 2 else -0.38
                                 var lz := 0.22 if i % 2 == 0 else -0.22
-                                _box("leg%d" % i, Vector3(0.16, 0.5, 0.16), Vector3(lx, 0.28, lz), accent_mat)
-                        _box("tail", Vector3(0.5, 0.14, 0.12), Vector3(-0.75, 0.85, 0), accent_mat)
-                        _box("spine", Vector3(0.7, 0.14, 0.2), Vector3(-0.05, 1.1, 0), glow)
+                                _box("leg%d" % i, Vector3(0.16, leg_h, 0.16), Vector3(lx, leg_h * 0.55, lz), accent_mat)
+                        # tail variety: thin whip / thick club / fan
+                        var tail_k := sr.randi() % 3
+                        if tail_k == 0:
+                                _box("tail", Vector3(0.62, 0.10, 0.09), Vector3(-0.75, 0.9, 0), accent_mat)
+                        elif tail_k == 1:
+                                _box("tail", Vector3(0.5, 0.2, 0.16), Vector3(-0.72, 0.85, 0), accent_mat)
+                        else:
+                                _box("tail", Vector3(0.4, 0.34, 0.06), Vector3(-0.68, 0.9, 0), accent_mat)
+                        _box("spine", Vector3(0.7 * torso_l, 0.12, 0.2), Vector3(-0.05, 1.06, 0), glow)
                 "Biped":
-                        _box("torso", Vector3(0.5, 0.7, 0.4), Vector3(0, 1.0, 0), body_mat)
-                        _sphere("head", 0.26, Vector3(0, 1.55, 0), body_mat)
+                        var b_torso_h: float = sr.randf_range(0.56, 0.86)
+                        var b_head_r: float = sr.randf_range(0.20, 0.32)
+                        var arm_l: float = sr.randf_range(0.42, 0.66)
+                        _box("torso", Vector3(0.5, b_torso_h, 0.4), Vector3(0, 1.0, 0), body_mat)
+                        _box("belly", Vector3(0.36, b_torso_h * 0.5, 0.42), Vector3(0, 0.85, 0), belly_mat)
+                        _sphere("head", b_head_r, Vector3(0, 1.55, 0), body_mat)
                         _sphere("eye_l", 0.06, Vector3(0.12, 1.6, 0.18), glow, 6)
                         _sphere("eye_r", 0.06, Vector3(-0.12, 1.6, 0.18), glow, 6)
-                        _box("arm_l", Vector3(0.14, 0.55, 0.14), Vector3(0.34, 1.05, 0), accent_mat)
-                        _box("arm_r", Vector3(0.14, 0.55, 0.14), Vector3(-0.34, 1.05, 0), accent_mat)
+                        _box("arm_l", Vector3(0.14, arm_l, 0.14), Vector3(0.34, 1.05, 0), accent_mat)
+                        _box("arm_r", Vector3(0.14, arm_l, 0.14), Vector3(-0.34, 1.05, 0), accent_mat)
                         _box("leg_l", Vector3(0.17, 0.6, 0.17), Vector3(0.14, 0.32, 0), accent_mat)
                         _box("leg_r", Vector3(0.17, 0.6, 0.17), Vector3(-0.14, 0.32, 0), accent_mat)
-                        _box("crest", Vector3(0.2, 0.3, 0.1), Vector3(0, 1.85, 0), glow)
+                        var crest_h: float = sr.randf_range(0.18, 0.4)
+                        _box("crest", Vector3(0.2, crest_h, 0.1), Vector3(0, 1.85, 0), glow)
                 "Serpent":
-                        var prev: Vector3 = Vector3.ZERO
-                        for i in 6:
-                                var r := 0.3 - i * 0.035
-                                var m := body_mat if i % 2 == 0 else accent_mat
+                        var seg_n: int = 4 + (sr.randi() % 4)
+                        var seg_r0: float = sr.randf_range(0.24, 0.36)
+                        for i in seg_n:
+                                var r := seg_r0 - i * 0.03
+                                var m := body_mat if i % 2 == 0 else belly_mat
                                 _sphere("seg%d" % i, r, Vector3(-i * 0.42, 0.42, sin(i * 0.8) * 0.15), m, 10)
-                        _sphere("head", 0.3, Vector3(0.55, 0.55, 0), body_mat)
+                        _sphere("head", seg_r0, Vector3(0.55, 0.55, 0), body_mat)
                         _sphere("eye_l", 0.06, Vector3(0.72, 0.62, 0.14), glow, 6)
                         _sphere("eye_r", 0.06, Vector3(0.72, 0.62, -0.14), glow, 6)
-                        _box("fin", Vector3(0.3, 0.2, 0.06), Vector3(-1.8, 0.55, 0), glow)
+                        var fin_k := sr.randi() % 2
+                        if fin_k == 0:
+                                _box("fin", Vector3(0.34, 0.22, 0.06), Vector3(-1.8, 0.55, 0), glow)
+                        else:
+                                _box("fin", Vector3(0.3, 0.4, 0.06), Vector3(-1.7, 0.62, 0), glow)
                 "Avian":
-                        _sphere("torso", 0.34, Vector3(0, 0.9, 0), body_mat)
-                        _sphere("head", 0.2, Vector3(0.3, 1.2, 0), body_mat)
+                        var a_body_r: float = sr.randf_range(0.28, 0.42)
+                        _sphere("torso", a_body_r, Vector3(0, 0.9, 0), body_mat)
+                        _sphere("head", a_body_r * 0.6, Vector3(0.3, 1.2, 0), body_mat)
                         _box("beak", Vector3(0.22, 0.08, 0.08), Vector3(0.5, 1.2, 0), accent_mat)
-                        _box("wing_l", Vector3(0.5, 0.06, 0.55), Vector3(0, 0.95, 0.4), accent_mat)
-                        _box("wing_r", Vector3(0.5, 0.06, 0.55), Vector3(0, 0.95, -0.4), accent_mat)
+                        var wing_w: float = sr.randf_range(0.42, 0.68)
+                        _box("wing_l", Vector3(wing_w, 0.06, 0.55), Vector3(0, 0.95, 0.4), accent_mat)
+                        _box("wing_r", Vector3(wing_w, 0.06, 0.55), Vector3(0, 0.95, -0.4), accent_mat)
                         _box("tail_f", Vector3(0.35, 0.05, 0.2), Vector3(-0.4, 0.9, 0), glow)
                         _box("leg_l", Vector3(0.06, 0.4, 0.06), Vector3(0.05, 0.45, 0.08), accent_mat)
                         _box("leg_r", Vector3(0.06, 0.4, 0.06), Vector3(-0.05, 0.45, -0.08), accent_mat)
                 "Floating":
                         _body_root.position.y = 0.9
-                        _sphere("core", 0.4, Vector3(0, 1.2, 0), body_mat, 14)
+                        var core_r: float = sr.randf_range(0.32, 0.5)
+                        _sphere("core", core_r, Vector3(0, 1.2, 0), body_mat, 14)
                         _sphere("halo_l", 0.1, Vector3(0.35, 1.45, 0.2), glow, 8)
                         _sphere("halo_r", 0.1, Vector3(-0.35, 1.45, 0.2), glow, 8)
                         for i in 4:
                                 var ang := TAU * i / 4.0
                                 _box("shard%d" % i, Vector3(0.1, 0.4, 0.1), Vector3(cos(ang) * 0.6, 0.9, sin(ang) * 0.6), accent_mat)
                 "Amorphous":
-                        _sphere("core", 0.5, Vector3(0, 0.6, 0), body_mat, 14)
-                        _sphere("blob1", 0.28, Vector3(0.35, 0.4, 0.2), accent_mat, 10)
-                        _sphere("blob2", 0.22, Vector3(-0.3, 0.75, -0.15), accent_mat, 10)
-                        _sphere("blob3", 0.18, Vector3(0.1, 0.95, -0.25), glow, 8)
+                        var blob_r: float = sr.randf_range(0.42, 0.58)
+                        _sphere("core", blob_r, Vector3(0, 0.6, 0), body_mat, 14)
+                        _sphere("blob1", blob_r * 0.56, Vector3(0.35, 0.4, 0.2), accent_mat, 10)
+                        _sphere("blob2", blob_r * 0.44, Vector3(-0.3, 0.75, -0.15), accent_mat, 10)
+                        _sphere("blob3", blob_r * 0.36, Vector3(0.1, 0.95, -0.25), glow, 8)
                         _sphere("eye_l", 0.07, Vector3(0.15, 0.7, 0.42), glow, 6)
                         _sphere("eye_r", 0.07, Vector3(-0.15, 0.7, 0.42), glow, 6)
                 "Crystalline":
                         _body_root.position.y = 0.2
                         var crystal_mat := _mat(Color(prim[0] * 0.8 + 0.2, prim[1] * 0.8 + 0.2, prim[2] * 0.8 + 0.2), el, 1.6)
                         var crystal_mat2 := _mat(Color(sec[0] * 0.8 + 0.2, sec[1] * 0.8 + 0.2, sec[2] * 0.8 + 0.2), el, 1.2)
-                        _box("main", Vector3(0.6, 1.6, 0.6), Vector3(0, 0.8, 0), crystal_mat)
+                        var cr_h: float = sr.randf_range(1.2, 2.0)
+                        _box("main", Vector3(0.6, cr_h, 0.6), Vector3(0, 0.8, 0), crystal_mat)
                         _box("shard1", Vector3(0.35, 1.0, 0.35), Vector3(0.45, 0.5, 0.2), crystal_mat2).rotation.z = 0.4
                         _box("shard2", Vector3(0.3, 0.9, 0.3), Vector3(-0.4, 0.45, -0.25), crystal_mat2).rotation.z = -0.4
                         _box("shard3", Vector3(0.28, 0.7, 0.28), Vector3(0.1, 0.35, 0.45), crystal_mat2).rotation.x = 0.4
                 "Insectoid":
+                        var abd_r: float = sr.randf_range(0.24, 0.36)
                         _box("thorax", Vector3(0.55, 0.4, 0.45), Vector3(0, 0.7, 0), body_mat)
-                        _sphere("abdomen", 0.3, Vector3(-0.45, 0.65, 0), accent_mat, 12)
+                        _sphere("abdomen", abd_r, Vector3(-0.45, 0.65, 0), accent_mat, 12)
                         _sphere("head", 0.22, Vector3(0.4, 0.8, 0), body_mat)
                         _box("ant_l", Vector3(0.35, 0.04, 0.04), Vector3(0.6, 1.0, 0.12), glow)
                         _box("ant_r", Vector3(0.35, 0.04, 0.04), Vector3(0.6, 1.0, -0.12), glow)
-                        _box("ant_l2", Vector3(0.35, 0.04, 0.04), Vector3(0.6, 1.0, 0.12), glow)
                         _sphere("eye_l", 0.08, Vector3(0.52, 0.85, 0.14), glow, 8)
                         _sphere("eye_r", 0.08, Vector3(0.52, 0.85, -0.14), glow, 8)
                         for i in 6:
@@ -340,13 +382,89 @@ func _build_procedural_body() -> void:
                                 var fx := 0.25 if i < 2 else (0.0 if i < 4 else -0.3)
                                 var leg := _box("leg%d" % i, Vector3(0.5, 0.06, 0.06), Vector3(fx, 0.5, side * 0.32), accent_mat)
                                 leg.rotation.y = side * 0.7
-                        _box("plate", Vector3(0.5, 0.1, 0.5), Vector3(0, 0.92, 0), glow)
                 _:
-                        _sphere("core", 0.5, Vector3(0, 0.7, 0), body_mat, 12)
-                        _sphere("eye_l", 0.07, Vector3(0.18, 0.8, 0.4), glow, 6)
-                        _sphere("eye_r", 0.07, Vector3(-0.18, 0.8, 0.4), glow, 6)
+                        _box("torso", Vector3(1.0, 0.6, 0.55), Vector3(0, 0.75, 0), body_mat)
+                        _sphere("eye_l", 0.06, Vector3(0.5, 0.9, 0.13), glow, 6)
+                        _sphere("eye_r", 0.06, Vector3(0.5, 0.9, -0.13), glow, 6)
+
+        _add_family_feature(family, sr, glow, accent_mat, body_mat)
+        _add_surface_detail(sr, belly_mat, glow)
+        # per-species keystone: dimensions derived straight from the seed bits,
+        # so two species can never end up geometrically identical
+        var kb := sr.randi_range(1, 1000000)
+        _box("keystone", Vector3(
+                0.06 + float(kb % 7) * 0.02,
+                0.08 + float((kb / 7) % 5) * 0.03,
+                0.05 + float((kb / 35) % 6) * 0.015),
+                Vector3(-0.05, 1.3, 0.0), glow)
 
 
+func _add_family_feature(family: String, sr: RandomNumberGenerator, glow: Material, accent_mat: Material, body_mat: Material) -> void:
+        ## one signature silhouette piece per family, present on every member
+        var head_hi := Vector3(0.7, 1.25, 0)
+        var back := Vector3(-0.05, 1.18, 0)
+        match family:
+                "Beast":
+                        var horn_l: float = sr.randf_range(0.18, 0.42)
+                        var horn := _box("horn_l", Vector3(0.08, horn_l, 0.08), head_hi + Vector3(0.1, 0.1, 0.16), accent_mat)
+                        horn.rotation.z = -0.35
+                        var horn2 := _box("horn_r", Vector3(0.08, horn_l, 0.08), head_hi + Vector3(0.1, 0.1, -0.16), accent_mat)
+                        horn2.rotation.z = -0.35
+                "Dragon":
+                        for i in 4:
+                                var rk: float = 0.16 - i * 0.025
+                                _box("ridge%d" % i, Vector3(0.1, rk, 0.22), Vector3(0.35 - i * 0.28, 1.12 + i * 0.03, 0), glow)
+                        var d_horn := _box("d_horn_l", Vector3(0.07, 0.3, 0.07), head_hi + Vector3(0.05, 0.15, 0.14), accent_mat)
+                        d_horn.rotation.z = -0.5
+                        _box("d_horn_r", Vector3(0.07, 0.3, 0.07), head_hi + Vector3(0.05, 0.15, -0.14), accent_mat).rotation.z = -0.5
+                "Flora":
+                        var leaf_n: int = 2 + (sr.randi() % 3)
+                        for i in leaf_n:
+                                var lc := Color.from_hsv(sr.randf_range(0.25, 0.42), 0.55, 0.6)
+                                var lm := _mat(lc)
+                                _sphere("leaf%d" % i, sr.randf_range(0.14, 0.26), back + Vector3(sr.randf_range(-0.25, 0.25), i * 0.16, sr.randf_range(-0.18, 0.18)), lm, 8)
+                "Aquatic":
+                        var fin := _box("dorsal", Vector3(0.34, 0.3, 0.08), back + Vector3(0.05, 0.1, 0), accent_mat)
+                        fin.rotation.z = 0.25
+                        _box("tailfin", Vector3(0.3, 0.26, 0.06), Vector3(-0.85, 0.8, 0), glow)
+                "Avian":
+                        for i in 3:
+                                var cr := _box("crest%d" % i, Vector3(0.06, 0.3, 0.05), head_hi + Vector3(0.0, 0.12, (i - 1) * 0.12), glow)
+                                cr.rotation.z = (i - 1) * 0.3
+                "Spirit":
+                        var halo := _box("halo_ring", Vector3(0.5, 0.05, 0.1), head_hi + Vector3(0.0, 0.34, 0.0), glow)
+                        halo.rotation.y = 0.6
+                        _sphere("wisps", 0.08, head_hi + Vector3(0.3, 0.42, 0.0), glow, 6)
+                "Construct":
+                        _box("plate_front", Vector3(0.44, 0.3, 0.5), Vector3(0.12, 1.02, 0), accent_mat)
+                        _box("plate_back", Vector3(0.4, 0.26, 0.5), Vector3(-0.3, 1.02, 0), accent_mat)
+                        _sphere("core_gem", 0.09, Vector3(0.16, 1.02, 0.26), glow, 8)
+                "Elemental":
+                        for i in 2 + (sr.randi() % 2):
+                                var ang := TAU * i / 3.0
+                                _sphere("orb%d" % i, 0.08, Vector3(cos(ang) * 0.55, 1.35 + sin(ang) * 0.1, sin(ang) * 0.55), glow, 6)
+                "Insectoid":
+                        var wl := _box("wblade_l", Vector3(0.42, 0.03, 0.2), Vector3(-0.05, 1.02, 0.3), glow)
+                        wl.rotation.x = 0.5
+                        var wr := _box("wblade_r", Vector3(0.42, 0.03, 0.2), Vector3(-0.05, 1.02, -0.3), glow)
+                        wr.rotation.x = -0.5
+                "Ancient":
+                        var ring := _box("rune_ring", Vector3(0.8, 0.06, 0.14), Vector3(0, 0.28, 0.0), glow)
+                        ring.rotation.y = 0.78
+                        _sphere("eye_gem", 0.1, head_hi + Vector3(0.0, 0.22, 0.22), glow, 8)
+
+
+func _add_surface_detail(sr: RandomNumberGenerator, belly_mat: Material, glow: Material) -> void:
+        ## element-driven surface detail: back spots + glow freckles.
+        ## 60% of species get spots, 40% get glow freckles — deterministic.
+        if sr.randf() < 0.6:
+                var spots: int = 2 + (sr.randi() % 3)
+                for i in spots:
+                        _sphere("spot%d" % i, 0.05 + sr.randf() * 0.04, Vector3(-0.2 - i * 0.18, 1.12, (i % 2) * 0.16 - 0.08), belly_mat, 6)
+        else:
+                var fr: int = 2 + (sr.randi() % 2)
+                for i in fr:
+                        _sphere("freckle%d" % i, 0.045, Vector3(0.25 - i * 0.22, 1.15, 0.1 - i * 0.2), glow, 6)
 func _build_label() -> void:
         _label = Label3D.new()
         _label.billboard = BaseMaterial3D.BILLBOARD_ENABLED

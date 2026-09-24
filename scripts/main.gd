@@ -492,6 +492,47 @@ func _run_smoke_checks() -> void:
                         if n != "":
                                 atk_clips += 1
         print("SMOKE: creatures with real Attack clips=", atk_clips)
+        # ---- Phase V5: Tier B procedural builder test — every procedural species
+        # builds, and no two species produce an identical geometry signature ----
+        var tb_built := 0
+        var tb_failed := 0
+        var tb_sigs := {}
+        var echo_script2 := load("res://scripts/creatures/echo.gd")
+        for sid in Data.species:
+                var sdef: Dictionary = Data.species[sid]
+                if Data.species_rigs.has(sid) or str(sdef.get("model", "")) != "":
+                        continue  # rigged species don't use the builder
+                var e: Node = echo_script2.new(sdef, RandomNumberGenerator.new())
+                e._build_body()
+                if e._body_root == null or e._body_root.get_child_count() == 0:
+                        tb_failed += 1
+                else:
+                        tb_built += 1
+                        var sig := PackedStringArray()
+                        for mi in e._body_root.get_children():
+                                if mi is MeshInstance3D:
+                                        var m: Mesh = (mi as MeshInstance3D).mesh
+                                        var dims := "n"
+                                        if m is BoxMesh:
+                                                dims = str((m as BoxMesh).size * 100.0).replace(" ", "")
+                                        elif m is SphereMesh:
+                                                dims = "r%d" % int((m as SphereMesh).radius * 100.0)
+                                        var rot: Vector3 = (mi as MeshInstance3D).rotation
+                                        sig.append("%s|%s|%s|%d,%d,%d" % [dims, str((mi as MeshInstance3D).position.round()), str(rot.round()), int(rot.x * 100), int(rot.y * 100), int(rot.z * 100)])
+                        var joined := ",".join(sig)
+                        if tb_sigs.has(joined):
+                                tb_sigs[joined].append(sid)
+                        else:
+                                tb_sigs[joined] = [sid]
+                e.free()
+        var tb_dupes := 0
+        for k in tb_sigs:
+                if (tb_sigs[k] as Array).size() > 1:
+                        tb_dupes += (tb_sigs[k] as Array).size() - 1
+        print("SMOKE: tierb built=", tb_built, " failed=", tb_failed, " unique_sigs=", tb_sigs.size(), " dupes=", tb_dupes)
+        for k in tb_sigs:
+                if (tb_sigs[k] as Array).size() > 1:
+                        print("SMOKE: tierb dupe group: ", tb_sigs[k])
         print("SMOKE COMPLETE")
 
 func _smoke_find_anim(n: Node) -> AnimationPlayer:
@@ -528,6 +569,25 @@ func _screenshot_routine() -> void:
                 if cam0:
                         cam0.position = Vector3(vx - 26.0, world.tile_height(vx, vz) + 22.0, vz + 26.0)
                         cam0.look_at(Vector3(vx, world.tile_height(vx, vz) + 2.0, vz), Vector3.UP)
+        if shot_name == "tierb":
+                # showcase of procedural Tier B species from different families
+                var gallery := [
+                        "Echo_Bramblethorn", "Echo_Hollowshade", "Echo_Irongolem",
+                        "Echo_Cinderblaze", "Echo_Glimmerfang", "Echo_Chronoweave",
+                ]
+                var echo_script := load("res://scripts/creatures/echo.gd")
+                for gi in gallery.size():
+                        var sid: String = gallery[gi]
+                        var gdef: Dictionary = Data.species_def(sid)
+                        if gdef.is_empty():
+                                continue
+                        var ge: Node = echo_script.new(gdef, RandomNumberGenerator.new())
+                        var gp: Vector3 = player.global_position + fwd * 9.0 + player.global_transform.basis.x * (float(gi) - 2.5) * 3.0
+                        ge.position = Vector3(gp.x, world.tile_height(gp.x, gp.z) + 0.3, gp.z)
+                        ge.rotation.y = player.rotation.y + PI
+                        world.creatures_root.add_child(ge)
+
+                await get_tree().create_timer(1.5).timeout
         if shot_name == "gallery":
                 # spawn a showcase line-up of rigged species in front of the player
                 var gallery := [
@@ -546,7 +606,7 @@ func _screenshot_routine() -> void:
                         ge.rotation.y = player.rotation.y + PI
                         world.creatures_root.add_child(ge)
                 await get_tree().create_timer(1.5).timeout
-        if OS.get_cmdline_user_args().find("--creature") >= 0 or shot_name == "gallery":
+        if OS.get_cmdline_user_args().find("--creature") >= 0 or shot_name == "gallery" or shot_name == "tierb":
                 # aim the player camera at the nearest rigged Echo
                 var best: Node3D = null
                 var bd := INF
@@ -558,13 +618,13 @@ func _screenshot_routine() -> void:
                                         best = c
                 if best:
                         player.look_at(Vector3(best.global_position.x, player.global_position.y, best.global_position.z), Vector3.UP)
-                if shot_name == "gallery":
-                        # 3/4 top-down view of the line from just above the player
+                if shot_name == "gallery" or shot_name == "tierb":
+                        # ground-level 3/4 view of the line from behind the player
                         var cam: Camera3D = get_viewport().get_camera_3d()
                         if cam:
                                 var mid: Vector3 = player.global_position + fwd * 9.0
-                                cam.position = player.global_position + Vector3(0, 11.0, 0) + fwd * 2.0
-                                cam.look_at(mid + Vector3(0, 1.0, 0), Vector3.UP)
+                                cam.position = player.global_position + Vector3(0, 3.2, 0) - fwd * 4.0
+                                cam.look_at(mid + Vector3(0, 0.8, 0), Vector3.UP)
         await get_tree().create_timer(0.5).timeout
         var img: Image = get_viewport().get_texture().get_image()
         var err := img.save_png("res://shot_%s.png" % shot_name)
