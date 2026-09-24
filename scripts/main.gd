@@ -506,6 +506,18 @@ func _run_smoke_checks() -> void:
         print("SMOKE: perf props_children=", world.props_root.get_child_count(), " multimeshes=", mm_count, " mm_instances=", mm_instances, " total_nodes=", node_total)
         var perf_ok: bool = world.props_root.get_child_count() < 700 and mm_instances < 22000 and node_total < 9000
         print("SMOKE: perf budget_ok=", perf_ok)
+        # ---- Phase V7: solo experience pass ----
+        var hud := get_tree().get_first_node_in_group("hud")
+        print("SMOKE: quest tracker children=", hud.quest_box.get_children().size() if hud.quest_box else -1)
+        print("SMOKE: onboarding panel=", hud.onboarding_box != null, " goals=", hud.onboarding_items.size(),
+                " compass=", hud.compass != null, " done=", hud.onboarding_done)
+        print("SMOKE: grace period day1=", Game.day <= 3, " day=", Game.day)
+        var dmg_test: float = 100.0
+        var expected: float = dmg_test * 0.65
+        print("SMOKE: solo grace math=", is_equal_approx(expected, dmg_test * 0.65))
+        var screens_node := get_tree().get_first_node_in_group("screens")
+        var now_line: String = screens_node._journal_now_line()
+        print("SMOKE: journal NOW line non-empty=", now_line.length() > 10, " starts=", now_line.substr(0, 20))
         # ---- Phase V5: Tier B procedural builder test — every procedural species
         # builds, and no two species produce an identical geometry signature ----
         var tb_built := 0

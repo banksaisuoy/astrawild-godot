@@ -114,6 +114,34 @@ func _center_panel(key: String, size: Vector2) -> PanelContainer:
         return p
 
 
+func _journal_now_line() -> String:
+        ## v1.1 Phase V7: "What now?" — first incomplete objective of the active
+        ## quest with a plain-language hint. Always something actionable.
+        var q: Dictionary = Game.active_quest_data()
+        if q.is_empty():
+                return "NOW: follow the compass — reach Dawnstead village and talk to Warden Maren."
+        var state: Dictionary = Game.quest_states.get(Game.active_quest, {})
+        var objs: Array = q.get("objectives", [])
+        var hints := {
+                        "CollectItem": "gather it in the wild (compass points the way)",
+                        "ObserveEcho": "find that Echo and aim at it",
+                        "DefeatCreature": "weaken it in combat — block with RMB",
+                        "CaptureEcho": "weaken it, then throw a Resonator [F]",
+                        "ReachLocation": "travel there (compass diamond)",
+                        "VisitZone": "journey to that zone",
+                        "PlaceBuilding": "open build mode [B] and place it",
+                        "UnlockTechnology": "earn RP by observing and quests, then research [R]",
+                        "CraftRecipe": "open crafting [C]",
+        }
+        for i in objs.size():
+                var prog: int = state.get("objectives", [])[i] if not state.is_empty() else 0
+                if prog >= int(objs[i]["count"]):
+                        continue
+                var kind: String = String(objs[i].get("type", ""))
+                return "NOW: %s — %s" % [objs[i].get("text", ""), hints.get(kind, "")]
+        return "NOW: quest complete — return to the giver or check the tracker."
+
+
 func _title(parent: Control, text: String, subtitle: String = "") -> Label:
         var l := Label.new()
         l.text = text
@@ -579,6 +607,14 @@ func _build_journal() -> void:
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
         _title(vb, "Field Journal — The Grand Menagerie", "Observe wild Echoes (aim at them) to fill the codex")
+        # v1.1 Phase V7: the journal always answers "what now?"
+        var now := Label.new()
+        now.text = _journal_now_line()
+        now.add_theme_font_size_override("font_size", 14)
+        now.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+        now.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        now.custom_minimum_size = Vector2(0, 40)
+        vb.add_child(now)
         var tabs := TabBar.new()
         var zone_names := []
         for z in Data.zones:

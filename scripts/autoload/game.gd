@@ -83,6 +83,7 @@ var autosave_enabled := true
 
 # ---- crafting ----
 var craft_queue := []      # {recipe_id, remaining, station_pos}
+var crafted_count := 0     # v1.1 Phase V7 onboarding counter
 
 
 func _enter_tree() -> void:
@@ -404,6 +405,11 @@ func take_damage(amount: float, element: String = "None", check_dodge: bool = tr
         if check_dodge and get_meta("dodging", false):
                 return 0.0
         var mitigated := amount
+        # v1.1 Phase V7 solo grace: the first three days cushion incoming damage
+        # so no early encounter can two-shot a lone player (the raid math and
+        # predator stats stay untouched — the shield fades on day 4).
+        if day <= 3:
+                mitigated *= 0.65
         if get_meta("blocking", false):
                 var mit := 0.45
                 if equipment["offhand"] != "" and Data.item(equipment["offhand"]).has("block"):
@@ -612,6 +618,7 @@ func _tick_crafting(delta: float) -> void:
                 Sfx.play("ui_craft_done", -8.0)
                 notify_event("CraftRecipe", recipe["id"])
                 crafting_done.emit(recipe["id"])
+                crafted_count += 1
 
 
 

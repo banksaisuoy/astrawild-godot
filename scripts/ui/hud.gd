@@ -19,6 +19,12 @@ var boss_bar: ProgressBar
 var boss_label: Label
 var hint_label: Label
 var _toast_timers := []
+# v1.1 Phase V7: onboarding + compass
+var onboarding_box: VBoxContainer
+var onboarding_items := {}
+var onboarding_done := false
+var compass: Control
+var compass_width := 340.0
 
 
 func _ready() -> void:
@@ -82,7 +88,9 @@ func _build() -> void:
 	# --- quest tracker (top-right) ---
 	var quest_panel := _panel(Vector2(-316, 16), Vector2(300, 150))
 	quest_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	quest_panel.position = Vector2(-316, 16)
+	quest_panel.offset_left = -316
+	quest_panel.offset_right = -16
+	quest_panel.offset_top = 16
 	quest_box = VBoxContainer.new()
 	quest_box.set_anchors_preset(Control.PRESET_FULL_RECT)
 	quest_box.offset_left = 10
@@ -123,6 +131,45 @@ func _build() -> void:
 	crosshair.set_anchors_preset(Control.PRESET_CENTER)
 	crosshair.custom_minimum_size = Vector2(8, 8)
 	crosshair.draw.connect(func _draw(): crosshair.draw_circle(Vector2(4, 4), 2.5, Color(1, 1, 1, 0.75)))
+
+	# --- v1.1 Phase V7: FIRST STEPS onboarding (bottom-right) ---
+	var ob_panel := _panel(Vector2(0, 0), Vector2(238, 136))
+	ob_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	ob_panel.offset_left = -248
+	ob_panel.offset_top = -196
+	ob_panel.offset_right = -10
+	ob_panel.offset_bottom = -60
+	onboarding_box = VBoxContainer.new()
+	onboarding_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	onboarding_box.offset_left = 8
+	onboarding_box.offset_top = 6
+	onboarding_box.offset_right = -8
+	onboarding_box.offset_bottom = -6
+	onboarding_box.add_theme_constant_override("separation", 2)
+	var ob_title := Label.new()
+	ob_title.text = "FIRST STEPS"
+	ob_title.add_theme_font_size_override("font_size", 12)
+	ob_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+	onboarding_box.add_child(ob_title)
+	root.add_child(ob_panel)
+	ob_panel.add_child(onboarding_box)
+	onboarding_items = {
+		"gather": Label.new(), "observe": Label.new(), "capture": Label.new(),
+		"craft": Label.new(), "village": Label.new(),
+	}
+	for k in onboarding_items:
+		var l: Label = onboarding_items[k]
+		l.add_theme_font_size_override("font_size", 11)
+		l.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
+		onboarding_box.add_child(l)
+
+	# --- v1.1 Phase V7: compass strip (top-center, under the clock) ---
+	compass = Control.new()
+	compass.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	compass.position = Vector2(-compass_width * 0.5, 96)
+	compass.custom_minimum_size = Vector2(compass_width, 34)
+	compass.draw.connect(func _draw(): _draw_compass())
+	root.add_child(compass)
 	root.add_child(crosshair)
 
 	observe_ring = Control.new()
@@ -320,6 +367,125 @@ func _refresh_party() -> void:
 func _process(_delta: float) -> void:
 	_update_prompt()
 	_update_boss()
+	_update_onboarding()
+	if compass:
+		compass.queue_redraw()
+
+
+func _update_onboarding() -> void:
+	if onboarding_done:
+		return
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return
+	var goals := {
+		"gather": Game.count_item("Item_Wood") + Game.count_item("Item_Stone") >= 5,
+		"observe": Game.journal.size() >= 1,
+		"capture": Game.party.size() >= 1,
+		"craft": Game.crafted_count > 0,
+		"village": player.global_position.distance_to(Vector3(-120, player.global_position.y, 0)) < 40.0,
+	}
+	var labels := {
+		"gather": "Gather wood or stone (LMB a node)",
+		"observe": "Observe a wild Echo (aim at it)",
+		"capture": "Capture your first Echo (F)",
+		"craft": "Craft anything (C)",
+		"village": "Visit Dawnstead village (east)",
+	}
+	var done_count := 0
+	for k in goals:
+		var l: Label = onboarding_items.get(k, null)
+		if l == null:
+			continue
+		if goals[k]:
+			done_count += 1
+			l.text = "✔ " + labels[k]
+			l.add_theme_color_override("font_color", Color(0.55, 0.9, 0.65))
+		else:
+			l.text = "• " + labels[k]
+	if done_count == goals.size():
+		onboarding_done = true
+		if onboarding_box:
+			var tw := onboarding_box.create_tween()
+			tw.tween_interval(2.5)
+			tw.tween_property(onboarding_box, "modulate:a", 0.0, 1.2)
+		Game.add_research_points(10)
+		Game.toast.emit("THE VALE KNOWS YOU — expedition established (+10 RP)", Color(1.0, 0.85, 0.5))
+		Sfx.play_event("ui_confirm")
+
+
+func _draw_compass() -> void:
+	## Cardinal ticks + a golden diamond pointing at the active quest objective.
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return
+	var w: float = compass_width
+	var h := 30.0
+	# backdrop
+	compass.draw_rect(Rect2(0, 0, w, h), Color(0.03, 0.04, 0.07, 0.45))
+	var yaw: float = player.rotation.y
+	var dirs := {"N": PI, "E": PI * 0.5, "S": 0.0, "W": PI * 1.5}
+	for d in dirs:
+		var rel: float = angle_difference(yaw, dirs[d])
+		var x: float = w * 0.5 + rel / PI * w * 0.5
+		if x < 8.0 or x > w - 8.0:
+			continue
+		var major: bool = d == "N"
+		compass.draw_string(_compass_font(), Vector2(x - 5, 20), d, HORIZONTAL_ALIGNMENT_LEFT, -1, 13 if major else 11,
+				Color(1.0, 0.95, 0.8, 0.95 if major else 0.65))
+	# objective marker
+	var obj_pos: Vector3 = _objective_world_pos()
+	if obj_pos != Vector3.INF:
+		var to_obj: Vector3 = obj_pos - player.global_position
+		var bearing: float = atan2(to_obj.x, to_obj.z)
+		var rel: float = angle_difference(yaw, bearing)
+		var x: float = clampf(w * 0.5 + rel / PI * w * 0.5, 10.0, w - 10.0)
+		var c := Vector2(x, 24)
+		compass.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -7), c + Vector2(5, 1), c + Vector2(0, 8), c + Vector2(-5, 1)]),
+				Color(1.0, 0.82, 0.35, 0.95))
+		compass.draw_string(_compass_font(), Vector2(w * 0.5 - 52, 12), "objective", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1.0, 0.82, 0.35, 0.5))
+
+
+func _compass_font() -> Font:
+	return ThemeDB.fallback_font
+
+
+func _objective_world_pos() -> Vector3:
+	## Resolve the current quest objective to a world position for the compass.
+	var q: Dictionary = Game.active_quest_data()
+	if q.is_empty():
+		return Vector3.INF
+	var state: Dictionary = Game.quest_states.get(Game.active_quest, {})
+	var objs: Array = q.get("objectives", [])
+	var world := get_tree().get_first_node_in_group("world")
+	for i in objs.size():
+		var prog: int = state.get("objectives", [])[i] if not state.is_empty() else 0
+		if prog >= int(objs[i]["count"]):
+			continue
+		var t: String = String(objs[i].get("target", ""))
+		var kind: String = String(objs[i].get("type", ""))
+		match kind:
+			"ReachLocation":
+				for m in get_tree().get_nodes_in_group("interactables"):
+					if m.get_meta("location_id", "") == t:
+						return m.global_position
+			"VisitZone":
+				var zone: Dictionary = Data.zone(t)
+				if not zone.is_empty():
+					var c: Array = zone.get("center", [0, 0])
+					return Vector3(c[0], 0, c[1])
+			"ObserveEcho", "DefeatCreature", "CaptureEcho":
+				for c2 in get_tree().get_nodes_in_group("creatures"):
+					if c2 is Echo and c2.def.get("id", "") == t and not c2.is_defeated():
+						return c2.global_position
+			"CollectItem":
+				if world and world.get("nodes_root"):
+					for n2 in world.nodes_root.get_children():
+						if n2.get_meta("loot", "").find(t) >= 0 or t in str(n2.get_meta("loot", [])):
+							return n2.global_position
+		break  # first incomplete objective only
+	# fallback: guide toward Dawnstead (people = answers)
+	return Vector3(-120, 0, 0)
 
 
 func _update_prompt() -> void:
