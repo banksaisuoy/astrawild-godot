@@ -1009,6 +1009,14 @@ func bind_entry(p_entry: Dictionary) -> void:
         var sdef := Data.species_def(entry.get("species_id", ""))
         if not sdef.is_empty():
                 max_hp = float(sdef["stats"]["hp"]) * (1.0 + 0.1 * float(entry.get("level", 1) - 1))
+        # v1.3 V12-a: evolution swaps the species — rebuild the body so the
+        # companion VISIBLY becomes its evolved form (was: stats/label only).
+        if not sdef.is_empty() and str(sdef.get("id", "")) != str(def.get("id", "")):
+                def = sdef
+                if _body_root:
+                        _body_root.queue_free()
+                _build_body()
+                _play_anim("Idle")
         _update_label()
 
 

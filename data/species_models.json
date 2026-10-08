@@ -1,5 +1,5 @@
 {
- "_comment": "Phase V4 mesh-resolution overrides + v1.2 V11-c Tier-B expansion. Manual entries first (Tier S/A); every remaining bestiary species is mapped deterministically (md5 of id) to a Quaternius CC0 rig from its body_plan pool, scale calibrated = TARGET[size_class]/native (see tools/build_rig_maps.py + tools/measure_rigs.gd).",
+ "_comment": "Phase V4 mesh-resolution overrides + v1.2 V11-c Tier-B expansion. Manual entries first (Tier S/A); every remaining bestiary species is mapped deterministically (md5 of id) to a Quaternius CC0 rig from its body_plan pool, scale calibrated = TARGET[size_class]/native (see tools/build_rig_maps.py + tools/measure_rigs.gd). v1.3 V12-a: +Echo_Petalume/Echo_Corallume (mod species) \u2014 every species now resolves to rig OR production model; species with def.model are deliberately NOT overridden.",
  "maps": {
   "Echo_Abyssfang": {
    "rig": "monsters_flying/Glub.gltf",
@@ -169,6 +169,11 @@
   "Echo_Coralfin": {
    "rig": "monsters_big/Fish.gltf",
    "scale": 0.303,
+   "tint": true
+  },
+  "Echo_Corallume": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.326,
    "tint": true
   },
   "Echo_Coralray": {
@@ -644,6 +649,11 @@
   "Echo_Petalthorn": {
    "rig": "monsters_blob/Wizard.gltf",
    "scale": 1.169,
+   "tint": true
+  },
+  "Echo_Petalume": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.424,
    "tint": true
   },
   "Echo_Pistongolem": {
