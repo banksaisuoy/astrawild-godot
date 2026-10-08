@@ -1,7 +1,7 @@
 extends Node
 ## Main entry: title screen → world build (loading) → gameplay.
 
-const GAME_VERSION := "v1.2"
+const GAME_VERSION := "v1.3"
 
 var title_layer: CanvasLayer
 var loading_layer: CanvasLayer
@@ -945,6 +945,32 @@ func _screenshot_routine() -> void:
                                 var mid: Vector3 = player.global_position + fwd * 9.0
                                 cam.position = player.global_position + Vector3(0, 6.5, 0) - fwd * 13.0
                                 cam.look_at(mid + Vector3(0, 1.0, 0), Vector3.UP)
+        # v1.3 V12-e: UI screen captures — help / credits / inventory / map
+        if shot_name in ["help", "credits", "inv", "map"]:
+                if shot_name == "inv":
+                        # a varied, believable backpack so the icon grid shows its range
+                        Game.add_item("Item_DawnwoodClub", 1)
+                        Game.add_item("Item_DawnShard", 40)
+                        Game.add_item("Item_WoodPlank", 6)
+                        Game.add_item("Item_CrystalShard", 3)
+                        Game.add_item("Item_WaterFlask", 2)
+                        Game.add_item("Item_CookedMeat", 4)
+                        Game.add_item("Item_Bandage", 2)
+                        Game.add_item("Item_StonehideShield", 1)
+                        Game.equip("weapon", "Item_DawnwoodClub")
+                        screens.open("inventory")
+                elif shot_name == "map":
+                        # a mid-expedition map: zones found, five landmarks charted
+                        for zid in ["Zone_DawnFields", "Zone_Glimmerwood", "Zone_DuskMarsh", "Zone_EmberRidge", "Zone_Frostveil", "Zone_Stormcrest", "Zone_VerdantReach", "Zone_HollowApproach"]:
+                                Game.discovered_zones[zid] = true
+                        for lid in ["Location_WaystoneDawn", "Location_GlimmerGrove", "Location_OldBridge", "Location_Frostwatch", "Location_MotherTree"]:
+                                Game.chart_location(lid)
+                        screens.open("map")
+                elif shot_name == "help":
+                        screens.open("help")
+                elif shot_name == "credits":
+                        screens.open("credits")
+                await get_tree().create_timer(1.0).timeout
         await get_tree().create_timer(0.5).timeout
         var img: Image = get_viewport().get_texture().get_image()
         var err := img.save_png("res://shot_%s.png" % shot_name)

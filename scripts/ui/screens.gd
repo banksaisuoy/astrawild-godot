@@ -824,6 +824,7 @@ func _refresh_journal() -> void:
 
 # --------------------------------------------------------------------- map --
 var _map_draw: Control
+var _map_legend: Label         # v1.3 V12-e: live charted counter (was stale)
 
 
 func _build_map() -> void:
@@ -841,9 +842,12 @@ func _build_map() -> void:
         legend.add_theme_font_size_override("font_size", 11)
         legend.add_theme_color_override("font_color", Color(0.6, 0.65, 0.72))
         vb.add_child(legend)
+        _map_legend = legend
 
 
 func _refresh_map() -> void:
+        if _map_legend:
+                _map_legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home" % Game.charted_locations.size()
         if _map_draw:
                 _map_draw.queue_redraw()
 
@@ -893,7 +897,13 @@ func _draw_map() -> void:
                         var zone_known: bool = Game.discovered_zones.has(str(lm.get("zone", "")))
                         if charted:
                                 _draw_star(lm_pos, 7.0, Color(1.0, 0.84, 0.35))
-                                _map_draw.draw_string(_map_draw.get_theme_default_font(), lm_pos + Vector2(10, 4), str(lm["name"]), HORIZONTAL_ALIGNMENT_LEFT, 130, 11, Color(1.0, 0.9, 0.6))
+                                # dark backing plate so landmark names never collide
+                                # visually with zone labels underneath
+                                var lm_font := _map_draw.get_theme_default_font()
+                                var lm_name := str(lm["name"])
+                                var lm_size := lm_font.get_string_size(lm_name, HORIZONTAL_ALIGNMENT_LEFT, 130, 11)
+                                _map_draw.draw_rect(Rect2(lm_pos + Vector2(8, -6), lm_size + Vector2(4, 2)), Color(0.03, 0.04, 0.07, 0.72), true)
+                                _map_draw.draw_string(lm_font, lm_pos + Vector2(10, 4), lm_name, HORIZONTAL_ALIGNMENT_LEFT, 130, 11, Color(1.0, 0.9, 0.6))
                         elif zone_known:
                                 _map_draw.draw_circle(lm_pos, 3, Color(0.75, 0.8, 0.9, 0.45))
         # player
