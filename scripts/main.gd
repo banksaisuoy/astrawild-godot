@@ -780,6 +780,11 @@ func _screenshot_routine() -> void:
                 if a.begins_with("--delay="):
                         delay = float(a.trim_prefix("--delay="))
         await get_tree().create_timer(delay).timeout
+        # --clean: hide HUD/panels for pure world-showcase captures
+        if args.find("--clean") >= 0 and is_instance_valid(hud):
+                hud.root.visible = false
+                if is_instance_valid(screens):
+                        screens.root.visible = false
         var fwd := Vector3.FORWARD
         if is_instance_valid(player):
                 fwd = -player.global_transform.basis.z
