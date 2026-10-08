@@ -614,6 +614,7 @@ func _refresh_research() -> void:
 # ---------------------------------------------------------------- journal --
 var _journal_list: VBoxContainer
 var _journal_tab := 0
+var _journal_stats: Label        # v1.3 V12-b: field-notes completeness counters
 
 
 func _build_journal() -> void:
@@ -630,6 +631,11 @@ func _build_journal() -> void:
         now.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         now.custom_minimum_size = Vector2(0, 40)
         vb.add_child(now)
+        # v1.3 V12-b: completeness counters — how full is the menagerie / the map
+        _journal_stats = Label.new()
+        _journal_stats.add_theme_font_size_override("font_size", 12)
+        _journal_stats.add_theme_color_override("font_color", Color(0.65, 0.8, 0.95))
+        vb.add_child(_journal_stats)
         var tabs := TabBar.new()
         var zone_names := []
         for z in Data.zones:
@@ -649,6 +655,13 @@ func _build_journal() -> void:
 func _refresh_journal() -> void:
         if _journal_list == null:
                 return
+        # v1.3 V12-b: field-notes counters
+        if _journal_stats:
+                var observed := 0
+                for sid in Game.journal:
+                        if Game.observe_progress(str(sid)) > 0.0:
+                                observed += 1
+                _journal_stats.text = "Field notes — species observed: %d/%d · landmarks charted: %d/15 · zones discovered: %d/12" % [observed, Data.species.size(), Game.charted_locations.size(), Game.discovered_zones.size()]
         for c in _journal_list.get_children():
                 c.queue_free()
         if _journal_tab >= Data.zones.size():
@@ -732,13 +745,13 @@ func _build_map() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "The Shattered Vale — Grand Expanse", "[Esc] close · gold dot is you", "map")
+        _title(vb, "The Shattered Vale — Grand Expanse", "[Esc] close · gold dot is you · ★ = charted landmark", "map")
         _map_draw = Control.new()
         _map_draw.custom_minimum_size = Vector2(720, 480)
         _map_draw.draw.connect(_draw_map)
         vb.add_child(_map_draw)
         var legend := Label.new()
-        legend.text = "Zone tint = biome · ★ landmarks discovered · campfire = home"
+        legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home" % Game.charted_locations.size()
         legend.add_theme_font_size_override("font_size", 11)
         legend.add_theme_color_override("font_color", Color(0.6, 0.65, 0.72))
         vb.add_child(legend)
@@ -784,12 +797,35 @@ func _draw_map() -> void:
         # camp
         var camp := _map_xy(-400, 0)
         _map_draw.draw_circle(camp, 7, Color(1.0, 0.6, 0.25))
+        # v1.3 V12-b: the promised ★ landmarks — gold star + name when charted,
+        # faint dot for uncharted rumours (zone must be discovered).
+        var world := get_tree().get_first_node_in_group("world")
+        if world and world.has_method("landmark_list"):
+                for lm in world.landmark_list():
+                        var lm_pos := _map_xy(float(lm["pos"].x), float(lm["pos"].z))
+                        var charted: bool = Game.charted_locations.has(str(lm["id"]))
+                        var zone_known: bool = Game.discovered_zones.has(str(lm.get("zone", "")))
+                        if charted:
+                                _draw_star(lm_pos, 7.0, Color(1.0, 0.84, 0.35))
+                                _map_draw.draw_string(_map_draw.get_theme_default_font(), lm_pos + Vector2(10, 4), str(lm["name"]), HORIZONTAL_ALIGNMENT_LEFT, 130, 11, Color(1.0, 0.9, 0.6))
+                        elif zone_known:
+                                _map_draw.draw_circle(lm_pos, 3, Color(0.75, 0.8, 0.9, 0.45))
         # player
         var player := get_tree().get_first_node_in_group("player")
         if player:
                 var pp := _map_xy(player.global_position.x, player.global_position.z)
                 _map_draw.draw_circle(pp, 6, Color(1.0, 0.85, 0.3))
                 _map_draw.draw_arc(pp, 9.0, 0.0, TAU, 20, Color(1.0, 0.85, 0.3, 0.5), 2.0)
+
+
+func _draw_star(center: Vector2, radius: float, color: Color) -> void:
+        ## v1.3 V12-b: five-pointed star polygon (outer/inner radius ~2:1).
+        var pts := PackedVector2Array()
+        for i in 10:
+                var ang: float = TAU * float(i) / 10.0 - PI / 2.0
+                var r: float = radius if i % 2 == 0 else radius * 0.45
+                pts.append(center + Vector2(cos(ang), sin(ang)) * r)
+        _map_draw.draw_colored_polygon(pts, color)
 
 
 # ------------------------------------------------------------------- pause --

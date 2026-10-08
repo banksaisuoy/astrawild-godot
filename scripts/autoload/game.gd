@@ -43,6 +43,8 @@ var weather_id: String = "Clear"
 var weather_timer: float = 90.0
 var current_zone_id: String = ""
 var discovered_zones := {}
+var opened_chests := {}      # v1.3 V12-b: landmark chest location_id -> true (stays opened across save/load)
+var charted_locations := {}  # v1.3 V12-b: examined landmark location_id -> true (map stars + journal count)
 
 # ---- player survival ----
 var hp: float = 100.0
@@ -101,6 +103,8 @@ func reset_run() -> void:
         weather_timer = 90.0
         current_zone_id = ""
         discovered_zones = {}
+        opened_chests = {}
+        charted_locations = {}
         hp = 100.0
         stamina = 100.0
         hunger = 100.0
@@ -988,3 +992,18 @@ func notify_zone(zone_id: String) -> void:
                 toast.emit("Discovered %s — %s" % [z.get("name", zone_id), z.get("subtitle", "")], Color(1.0, 0.95, 0.7))
                 add_research_points(1)
         zone_changed.emit(zone_id)
+
+
+# ------------------------------------------------------- v1.3 V12-b locations --
+func chart_location(location_id: String) -> void:
+        ## Records an examined landmark (marker 'location' / opened chest / dungeon portal).
+        if location_id == "" or charted_locations.has(location_id):
+                return
+        charted_locations[location_id] = true
+
+
+func open_chest(location_id: String) -> void:
+        ## Persists 'this landmark chest has been looted' so reloads can't re-grant it.
+        if location_id != "":
+                opened_chests[location_id] = true
+                chart_location(location_id)

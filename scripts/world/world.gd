@@ -1026,6 +1026,12 @@ func _sync_party() -> void:
                 followers[idx] = follower
 
 
+# -------------------------------------------------- v1.3 V12-b: map support --
+func landmark_list() -> Array:
+        ## exposes the 15 named landmarks to the map screen (★ stars).
+        return LANDMARKS
+
+
 # ------------------------------------------------------------------- save --
 func get_save_data() -> Dictionary:
         var buildings := []
