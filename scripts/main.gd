@@ -861,12 +861,13 @@ func _screenshot_routine() -> void:
                 if best:
                         player.look_at(Vector3(best.global_position.x, player.global_position.y, best.global_position.z), Vector3.UP)
                 if shot_name == "gallery" or shot_name == "tierb":
-                        # ground-level 3/4 view of the line from behind the player
+                        # high 3/4 view of the line from behind the player
+                        # (v1.2: pulled back + up so the player body never blocks the frame)
                         var cam: Camera3D = get_viewport().get_camera_3d()
                         if cam:
                                 var mid: Vector3 = player.global_position + fwd * 9.0
-                                cam.position = player.global_position + Vector3(0, 3.2, 0) - fwd * 4.0
-                                cam.look_at(mid + Vector3(0, 0.8, 0), Vector3.UP)
+                                cam.position = player.global_position + Vector3(0, 6.5, 0) - fwd * 13.0
+                                cam.look_at(mid + Vector3(0, 1.0, 0), Vector3.UP)
         await get_tree().create_timer(0.5).timeout
         var img: Image = get_viewport().get_texture().get_image()
         var err := img.save_png("res://shot_%s.png" % shot_name)

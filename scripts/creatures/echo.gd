@@ -185,7 +185,8 @@ func _apply_model_tint(root: Node) -> void:
                 if base_mat is StandardMaterial3D:
                         var bm := (base_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
                         if bm.albedo_texture != null:
-                                bm.albedo_color = Color(1, 1, 1).lerp(want, 0.6)
+                                # v1.2 V11-c: soft blend only — atlas faces/eyes stay visible
+                                bm.albedo_color = Color(1, 1, 1).lerp(want, 0.32)
                         else:
                                 bm.albedo_color = want
                         bm.roughness = 0.8

@@ -1,47 +1,1123 @@
 {
-  "_comment": "Central species->rig mapping (Phase V4 mesh-resolution layer). Resolution order: this override -> species data 'model' field -> procedural builder. 'scale' multiplies on top of size_class scaling (rigs come in different native units). 'tint' true = recolor toward species palette (shared rigs); false = keep original Quaternius colors (unique rigs).",
-  "maps": {
-    "Echo_Mosspaw": { "rig": "animals/Fox.gltf", "scale": 0.33, "tint": false },
-    "Echo_Lumewisp": { "rig": "monsters_flying/Ghost.gltf", "scale": 0.38, "tint": true },
-
-    "Echo_Gloomfang": { "rig": "animals/Wolf.gltf", "scale": 0.40, "tint": true },
-    "Echo_Emberfang": { "rig": "animals/Fox.gltf", "scale": 0.40, "tint": true },
-    "Echo_Rimefang": { "rig": "animals/Husky.gltf", "scale": 0.38, "tint": true },
-    "Echo_Voltmaw": { "rig": "animals/ShibaInu.gltf", "scale": 0.38, "tint": true },
-
-    "Echo_Dawnhorn": { "rig": "animals/Deer.gltf", "scale": 0.33, "tint": false },
-    "Echo_Duskhide": { "rig": "monsters_blob/Cat.gltf", "scale": 0.48, "tint": true },
-    "Echo_Emberrunner": { "rig": "animals/Horse.gltf", "scale": 0.33, "tint": true },
-    "Echo_Galewing": { "rig": "monsters_big/Birb.gltf", "scale": 0.40, "tint": true },
-    "Echo_Skysong": { "rig": "monsters_blob/Pigeon.gltf", "scale": 0.34, "tint": true },
-
-    "Echo_Emberwing": { "rig": "animals/Stag.gltf", "scale": 0.34, "tint": true },
-    "Echo_Tidefang": { "rig": "monsters_flying/Squidle.gltf", "scale": 0.60, "tint": true },
-    "Echo_Abysswing": { "rig": "monsters_flying/Dragon.gltf", "scale": 0.90, "tint": true },
-    "Echo_Frostwing": { "rig": "monsters_big/Frog.gltf", "scale": 0.42, "tint": true },
-    "Echo_Glimmerfang": { "rig": "monsters_flying/Hywirl.gltf", "scale": 0.50, "tint": true },
-    "Echo_Tidewyrm": { "rig": "monsters_big/Dino.gltf", "scale": 0.62, "tint": true },
-    "Echo_Coralcrest": { "rig": "monsters_big/Cactoro.gltf", "scale": 0.44, "tint": false },
-    "Echo_Dunewing": { "rig": "monsters_big/Fish.gltf", "scale": 0.40, "tint": true },
-    "Echo_Primemonolith": { "rig": "monsters_flying/Goleling.gltf", "scale": 1.10, "tint": true },
-    "Echo_Eldermonolith": { "rig": "monsters_flying/Goleling_Evolved.gltf", "scale": 0.90, "tint": true },
-    "Echo_Astralmonolith": { "rig": "monsters_flying/Alpaking_Evolved.gltf", "scale": 0.62, "tint": true },
-    "Echo_Vespermonolith": { "rig": "monsters_flying/Armabee_Evolved.gltf", "scale": 0.75, "tint": true },
-
-    "Echo_Stonehide": { "rig": "animals/Bull.gltf", "scale": 0.36, "tint": true },
-    "Echo_Voltling": { "rig": "monsters_blob/GreenSpikyBlob.gltf", "scale": 0.32, "tint": true },
-    "Echo_Duskmoth": { "rig": "monsters_flying/Alpaking.gltf", "scale": 0.60, "tint": true },
-    "Echo_Auroraling": { "rig": "monsters_flying/Ghost.gltf", "scale": 0.42, "tint": true },
-    "Echo_Sprigling": { "rig": "monsters_blob/Mushnub.gltf", "scale": 0.38, "tint": false },
-
-    "Echo_Solaris": { "rig": "monsters_flying/Dragon_Evolved.gltf", "scale": 0.62, "tint": true },
-    "Echo_Umbrarch": { "rig": "monsters_flying/Ghost_Skull.gltf", "scale": 0.48, "tint": true },
-    "Echo_Terravore": { "rig": "monsters_flying/Goleling_Evolved.gltf", "scale": 1.05, "tint": true },
-    "Echo_Chronoweave": { "rig": "monsters_flying/Glub_Evolved.gltf", "scale": 0.42, "tint": true },
-
-    "_extras": {
-      "_note": "unused-but-fetched rigs available for future assignment / world dressing",
-      "rigs": ["animals/Alpaca.gltf", "animals/Cow.gltf", "animals/Donkey.gltf", "animals/Horse_White.gltf", "monsters_big/BlueDemon.gltf", "monsters_big/Demon.gltf", "monsters_big/Monkroose.gltf", "monsters_big/MushroomKing.gltf", "monsters_big/Orc.gltf", "monsters_big/Orc_Skull.gltf", "monsters_big/Tribal.gltf", "monsters_big/Yeti.gltf", "monsters_big/Bunny.gltf", "monsters_blob/Chicken.gltf", "monsters_blob/Dog.gltf", "monsters_blob/GreenBlob.gltf", "monsters_blob/PinkBlob.gltf", "monsters_blob/Wizard.gltf", "monsters_blob/Yeti.gltf", "monsters_flying/Armabee.gltf", "monsters_flying/Demon.gltf", "monsters_flying/Glub.gltf", "monsters_flying/Tribal.gltf"]
-    }
+ "_comment": "Phase V4 mesh-resolution overrides + v1.2 V11-c Tier-B expansion. Manual entries first (Tier S/A); every remaining bestiary species is mapped deterministically (md5 of id) to a Quaternius CC0 rig from its body_plan pool, scale calibrated = TARGET[size_class]/native (see tools/build_rig_maps.py + tools/measure_rigs.gd).",
+ "maps": {
+  "Echo_Abyssfang": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.781,
+   "tint": true
+  },
+  "Echo_Abyssfin": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.282,
+   "tint": true
+  },
+  "Echo_Abyssjelly": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.588,
+   "tint": true
+  },
+  "Echo_Abysswing": {
+   "rig": "monsters_flying/Dragon.gltf",
+   "scale": 0.9,
+   "tint": true
+  },
+  "Echo_Ashfang": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.572,
+   "tint": true
+  },
+  "Echo_Ashwing": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.537,
+   "tint": true
+  },
+  "Echo_Astralmonolith": {
+   "rig": "monsters_flying/Alpaking_Evolved.gltf",
+   "scale": 0.62,
+   "tint": true
+  },
+  "Echo_Auroraling": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.42,
+   "tint": true
+  },
+  "Echo_Bloomblaze": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.641,
+   "tint": true
+  },
+  "Echo_Bloombloom": {
+   "rig": "animals/Deer.gltf",
+   "scale": 0.299,
+   "tint": true
+  },
+  "Echo_Bloomshard": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.379,
+   "tint": true
+  },
+  "Echo_Boughbloom": {
+   "rig": "animals/Husky.gltf",
+   "scale": 0.349,
+   "tint": true
+  },
+  "Echo_Boughbough": {
+   "rig": "animals/Horse.gltf",
+   "scale": 0.239,
+   "tint": true
+  },
+  "Echo_Boughsprout": {
+   "rig": "monsters_big/MushroomKing.gltf",
+   "scale": 0.422,
+   "tint": true
+  },
+  "Echo_Bramblebloom": {
+   "rig": "animals/Horse_White.gltf",
+   "scale": 0.234,
+   "tint": true
+  },
+  "Echo_Bramblesprout": {
+   "rig": "monsters_blob/GreenSpikyBlob.gltf",
+   "scale": 0.486,
+   "tint": true
+  },
+  "Echo_Bramblethorn": {
+   "rig": "monsters_big/Orc.gltf",
+   "scale": 0.67,
+   "tint": true
+  },
+  "Echo_Brinefin": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.318,
+   "tint": true
+  },
+  "Echo_Chimegolem": {
+   "rig": "monsters_big/Orc_Skull.gltf",
+   "scale": 0.316,
+   "tint": true
+  },
+  "Echo_Chimesentinel": {
+   "rig": "monsters_flying/Goleling.gltf",
+   "scale": 0.479,
+   "tint": true
+  },
+  "Echo_Chitinhornet": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.367,
+   "tint": true
+  },
+  "Echo_Chitinmite": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.135,
+   "tint": true
+  },
+  "Echo_Chronoweave": {
+   "rig": "monsters_flying/Glub_Evolved.gltf",
+   "scale": 0.42,
+   "tint": true
+  },
+  "Echo_Cinderblaze": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 0.697,
+   "tint": true
+  },
+  "Echo_Cindershard": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Clockworkgolem": {
+   "rig": "monsters_big/Orc_Skull.gltf",
+   "scale": 0.29,
+   "tint": true
+  },
+  "Echo_Clockworksentinel": {
+   "rig": "monsters_flying/Goleling.gltf",
+   "scale": 0.461,
+   "tint": true
+  },
+  "Echo_Cometplume": {
+   "rig": "monsters_flying/Pigeon.gltf",
+   "scale": 0.339,
+   "tint": true
+  },
+  "Echo_Cometwing": {
+   "rig": "monsters_blob/Chicken.gltf",
+   "scale": 0.368,
+   "tint": true
+  },
+  "Echo_Coppergolem": {
+   "rig": "monsters_big/BlueDemon.gltf",
+   "scale": 0.284,
+   "tint": true
+  },
+  "Echo_Coppersentinel": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.434,
+   "tint": true
+  },
+  "Echo_Coralcrest": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.44,
+   "tint": false
+  },
+  "Echo_Coraldrake": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 1.2,
+   "tint": true
+  },
+  "Echo_Coralfin": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.303,
+   "tint": true
+  },
+  "Echo_Coralray": {
+   "rig": "animals/Alpaca.gltf",
+   "scale": 0.545,
+   "tint": true
+  },
+  "Echo_Coralwing": {
+   "rig": "animals/Horse_White.gltf",
+   "scale": 0.37,
+   "tint": true
+  },
+  "Echo_Crestplume": {
+   "rig": "monsters_big/Birb.gltf",
+   "scale": 0.319,
+   "tint": true
+  },
+  "Echo_Dawnfang": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.639,
+   "tint": true
+  },
+  "Echo_Dawnhorn": {
+   "rig": "animals/Deer.gltf",
+   "scale": 0.33,
+   "tint": false
+  },
+  "Echo_Dawnpaw": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.33,
+   "tint": true
+  },
+  "Echo_Dawnplume": {
+   "rig": "monsters_flying/Dragon.gltf",
+   "scale": 0.3,
+   "tint": true
+  },
+  "Echo_Dawnwing": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 0.313,
+   "tint": true
+  },
+  "Echo_Downplume": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 0.608,
+   "tint": true
+  },
+  "Echo_Downsong": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.336,
+   "tint": true
+  },
+  "Echo_Downwing": {
+   "rig": "monsters_blob/Chicken.gltf",
+   "scale": 0.323,
+   "tint": true
+  },
+  "Echo_Driftfin": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.342,
+   "tint": true
+  },
+  "Echo_Driftskimmer": {
+   "rig": "animals/Alpaca.gltf",
+   "scale": 0.61,
+   "tint": true
+  },
+  "Echo_Dunedrake": {
+   "rig": "monsters_flying/Alpaking.gltf",
+   "scale": 0.7,
+   "tint": true
+  },
+  "Echo_Dunefang": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.566,
+   "tint": true
+  },
+  "Echo_Dunewing": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.4,
+   "tint": true
+  },
+  "Echo_Duskhide": {
+   "rig": "monsters_blob/Cat.gltf",
+   "scale": 0.48,
+   "tint": true
+  },
+  "Echo_Duskhorn": {
+   "rig": "animals/Cow.gltf",
+   "scale": 0.263,
+   "tint": true
+  },
+  "Echo_Duskmoth": {
+   "rig": "monsters_flying/Alpaking.gltf",
+   "scale": 0.6,
+   "tint": true
+  },
+  "Echo_Duskpaw": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.232,
+   "tint": true
+  },
+  "Echo_Duskshade": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.15,
+   "tint": true
+  },
+  "Echo_Dustmite": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.177,
+   "tint": true
+  },
+  "Echo_Dustweevil": {
+   "rig": "monsters_flying/Armabee_Evolved.gltf",
+   "scale": 0.345,
+   "tint": true
+  },
+  "Echo_Eldermonolith": {
+   "rig": "monsters_flying/Goleling_Evolved.gltf",
+   "scale": 0.9,
+   "tint": true
+  },
+  "Echo_Emberfang": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.4,
+   "tint": true
+  },
+  "Echo_Emberhorn": {
+   "rig": "animals/Horse.gltf",
+   "scale": 0.331,
+   "tint": true
+  },
+  "Echo_Emberpaw": {
+   "rig": "animals/Bull.gltf",
+   "scale": 0.187,
+   "tint": true
+  },
+  "Echo_Emberrunner": {
+   "rig": "animals/Horse.gltf",
+   "scale": 0.33,
+   "tint": true
+  },
+  "Echo_Embershade": {
+   "rig": "monsters_flying/Ghost_Skull.gltf",
+   "scale": 0.134,
+   "tint": true
+  },
+  "Echo_Emberwing": {
+   "rig": "animals/Stag.gltf",
+   "scale": 0.34,
+   "tint": true
+  },
+  "Echo_Fadedhaunt": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.442,
+   "tint": true
+  },
+  "Echo_Fadedshade": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.142,
+   "tint": true
+  },
+  "Echo_Fernbloom": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.257,
+   "tint": true
+  },
+  "Echo_Fernsprout": {
+   "rig": "monsters_blob/GreenSpikyBlob.gltf",
+   "scale": 0.476,
+   "tint": true
+  },
+  "Echo_Fernthorn": {
+   "rig": "monsters_big/BlueDemon.gltf",
+   "scale": 0.691,
+   "tint": true
+  },
+  "Echo_Forgottencolossus": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.681,
+   "tint": true
+  },
+  "Echo_Frostblaze": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 0.641,
+   "tint": true
+  },
+  "Echo_Frostshard": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Frostwing": {
+   "rig": "monsters_big/Frog.gltf",
+   "scale": 0.42,
+   "tint": true
+  },
+  "Echo_Galeblaze": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.437,
+   "tint": true
+  },
+  "Echo_Galehide": {
+   "rig": "monsters_big/Tribal.gltf",
+   "scale": 0.422,
+   "tint": true
+  },
+  "Echo_Galehorn": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.522,
+   "tint": true
+  },
+  "Echo_Galepaw": {
+   "rig": "animals/Stag.gltf",
+   "scale": 0.304,
+   "tint": true
+  },
+  "Echo_Galeshard": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.335,
+   "tint": true
+  },
+  "Echo_Galesong": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.354,
+   "tint": true
+  },
+  "Echo_Galewing": {
+   "rig": "monsters_big/Birb.gltf",
+   "scale": 0.4,
+   "tint": true
+  },
+  "Echo_Geargolem": {
+   "rig": "monsters_big/Demon.gltf",
+   "scale": 0.291,
+   "tint": true
+  },
+  "Echo_Gearsentinel": {
+   "rig": "monsters_flying/Goleling_Evolved.gltf",
+   "scale": 0.429,
+   "tint": true
+  },
+  "Echo_Ghostshade": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.139,
+   "tint": true
+  },
+  "Echo_Ghostveil": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 0.676,
+   "tint": true
+  },
+  "Echo_Gildedhornet": {
+   "rig": "animals/Donkey.gltf",
+   "scale": 0.446,
+   "tint": true
+  },
+  "Echo_Glacierblaze": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 0.745,
+   "tint": true
+  },
+  "Echo_Glassgolem": {
+   "rig": "monsters_big/Tribal.gltf",
+   "scale": 0.31,
+   "tint": true
+  },
+  "Echo_Glimmerdrake": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 1.2,
+   "tint": true
+  },
+  "Echo_Glimmerfang": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.5,
+   "tint": true
+  },
+  "Echo_Glimmerhornet": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.313,
+   "tint": true
+  },
+  "Echo_Glimmermite": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.201,
+   "tint": true
+  },
+  "Echo_Glimmerweevil": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.332,
+   "tint": true
+  },
+  "Echo_Glimmerwing": {
+   "rig": "animals/Horse.gltf",
+   "scale": 0.338,
+   "tint": true
+  },
+  "Echo_Gloomfang": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.4,
+   "tint": true
+  },
+  "Echo_Hallowedcolossus": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.64,
+   "tint": true
+  },
+  "Echo_Hivemite": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.199,
+   "tint": true
+  },
+  "Echo_Hollowhorn": {
+   "rig": "animals/Alpaca.gltf",
+   "scale": 0.381,
+   "tint": true
+  },
+  "Echo_Hollowpaw": {
+   "rig": "animals/Donkey.gltf",
+   "scale": 0.291,
+   "tint": true
+  },
+  "Echo_Hollowshade": {
+   "rig": "monsters_flying/Ghost_Skull.gltf",
+   "scale": 0.14,
+   "tint": true
+  },
+  "Echo_Hollowveil": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.672,
+   "tint": true
+  },
+  "Echo_Irongolem": {
+   "rig": "monsters_big/Orc_Skull.gltf",
+   "scale": 0.31,
+   "tint": true
+  },
+  "Echo_Ironsentinel": {
+   "rig": "monsters_big/Monkroose.gltf",
+   "scale": 0.43,
+   "tint": true
+  },
+  "Echo_Lagoonfin": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.319,
+   "tint": true
+  },
+  "Echo_Lagoongill": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.907,
+   "tint": true
+  },
+  "Echo_Lanternmote": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.143,
+   "tint": true
+  },
+  "Echo_Lanternshade": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.134,
+   "tint": true
+  },
+  "Echo_Latticegolem": {
+   "rig": "monsters_big/Monkroose.gltf",
+   "scale": 0.277,
+   "tint": true
+  },
+  "Echo_Lumewisp": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Magmablaze": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.635,
+   "tint": true
+  },
+  "Echo_Magmashard": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.393,
+   "tint": true
+  },
+  "Echo_Magmasurge": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.654,
+   "tint": true
+  },
+  "Echo_Magmawing": {
+   "rig": "animals/Horse_White.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Mistcry": {
+   "rig": "monsters_flying/Alpaking.gltf",
+   "scale": 0.184,
+   "tint": true
+  },
+  "Echo_Mistwing": {
+   "rig": "monsters_flying/Pigeon.gltf",
+   "scale": 0.19,
+   "tint": true
+  },
+  "Echo_Monolithcolossus": {
+   "rig": "monsters_flying/Goleling_Evolved.gltf",
+   "scale": 0.716,
+   "tint": true
+  },
+  "Echo_Monolithprimarch": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.588,
+   "tint": true
+  },
+  "Echo_Mosspaw": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.33,
+   "tint": false
+  },
+  "Echo_Mourningshade": {
+   "rig": "monsters_flying/Ghost_Skull.gltf",
+   "scale": 0.151,
+   "tint": true
+  },
+  "Echo_Mourningveil": {
+   "rig": "monsters_blob/GreenSpikyBlob.gltf",
+   "scale": 0.34,
+   "tint": true
+  },
+  "Echo_Mudmite": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.143,
+   "tint": true
+  },
+  "Echo_Mycelsprout": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.396,
+   "tint": true
+  },
+  "Echo_Orchidbloom": {
+   "rig": "animals/Stag.gltf",
+   "scale": 0.281,
+   "tint": true
+  },
+  "Echo_Orchidsprout": {
+   "rig": "monsters_blob/GreenSpikyBlob.gltf",
+   "scale": 0.457,
+   "tint": true
+  },
+  "Echo_Paleshade": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.134,
+   "tint": true
+  },
+  "Echo_Paleveil": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.42,
+   "tint": true
+  },
+  "Echo_Pearlcrest": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.276,
+   "tint": true
+  },
+  "Echo_Pearlgill": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.844,
+   "tint": true
+  },
+  "Echo_Petalbloom": {
+   "rig": "animals/Husky.gltf",
+   "scale": 0.331,
+   "tint": true
+  },
+  "Echo_Petalthorn": {
+   "rig": "monsters_blob/Wizard.gltf",
+   "scale": 1.169,
+   "tint": true
+  },
+  "Echo_Pistongolem": {
+   "rig": "monsters_big/Tribal.gltf",
+   "scale": 0.325,
+   "tint": true
+  },
+  "Echo_Plumeplume": {
+   "rig": "monsters_flying/Alpaking.gltf",
+   "scale": 0.3,
+   "tint": true
+  },
+  "Echo_Plumewing": {
+   "rig": "monsters_flying/Dragon.gltf",
+   "scale": 0.188,
+   "tint": true
+  },
+  "Echo_Pollenbloom": {
+   "rig": "animals/Donkey.gltf",
+   "scale": 0.306,
+   "tint": true
+  },
+  "Echo_Pollensprout": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 1.015,
+   "tint": true
+  },
+  "Echo_Pollenthorn": {
+   "rig": "monsters_big/BlueDemon.gltf",
+   "scale": 0.705,
+   "tint": true
+  },
+  "Echo_Primemonolith": {
+   "rig": "monsters_flying/Goleling.gltf",
+   "scale": 1.1,
+   "tint": true
+  },
+  "Echo_Pyreblaze": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.591,
+   "tint": true
+  },
+  "Echo_Pyreshard": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.343,
+   "tint": true
+  },
+  "Echo_Reedmite": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.18,
+   "tint": true
+  },
+  "Echo_Reedweevil": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.316,
+   "tint": true
+  },
+  "Echo_Reefgill": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.4,
+   "tint": true
+  },
+  "Echo_Reefskimmer": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.582,
+   "tint": true
+  },
+  "Echo_Reliccolossus": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.64,
+   "tint": true
+  },
+  "Echo_Resonantgolem": {
+   "rig": "monsters_big/Tribal.gltf",
+   "scale": 0.298,
+   "tint": true
+  },
+  "Echo_Resonantsentinel": {
+   "rig": "monsters_flying/Goleling_Evolved.gltf",
+   "scale": 0.434,
+   "tint": true
+  },
+  "Echo_Rimeblaze": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.403,
+   "tint": true
+  },
+  "Echo_Rimefang": {
+   "rig": "animals/Husky.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Rimehorn": {
+   "rig": "animals/Cow.gltf",
+   "scale": 0.26,
+   "tint": true
+  },
+  "Echo_Rimepaw": {
+   "rig": "animals/Donkey.gltf",
+   "scale": 0.279,
+   "tint": true
+  },
+  "Echo_Riverpaw": {
+   "rig": "animals/Cow.gltf",
+   "scale": 0.17,
+   "tint": true
+  },
+  "Echo_Rootbloom": {
+   "rig": "animals/Cow.gltf",
+   "scale": 0.161,
+   "tint": true
+  },
+  "Echo_Rootsprout": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.898,
+   "tint": true
+  },
+  "Echo_Runedgolem": {
+   "rig": "monsters_big/Tribal.gltf",
+   "scale": 0.319,
+   "tint": true
+  },
+  "Echo_Saltcrest": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.276,
+   "tint": true
+  },
+  "Echo_Saltray": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.522,
+   "tint": true
+  },
+  "Echo_Sandweevil": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.303,
+   "tint": true
+  },
+  "Echo_Sapsprout": {
+   "rig": "monsters_blob/GreenBlob.gltf",
+   "scale": 0.836,
+   "tint": true
+  },
+  "Echo_Silenthaunt": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.351,
+   "tint": true
+  },
+  "Echo_Silentshade": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.134,
+   "tint": true
+  },
+  "Echo_Silentveil": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.313,
+   "tint": true
+  },
+  "Echo_Skyplume": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 0.62,
+   "tint": true
+  },
+  "Echo_Skysong": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 0.34,
+   "tint": true
+  },
+  "Echo_Skywing": {
+   "rig": "monsters_flying/Alpaking.gltf",
+   "scale": 0.175,
+   "tint": true
+  },
+  "Echo_Solaris": {
+   "rig": "monsters_flying/Dragon_Evolved.gltf",
+   "scale": 0.62,
+   "tint": true
+  },
+  "Echo_Sporemite": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.195,
+   "tint": true
+  },
+  "Echo_Sporeweevil": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.3,
+   "tint": true
+  },
+  "Echo_Sprigling": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.38,
+   "tint": false
+  },
+  "Echo_Staticblaze": {
+   "rig": "monsters_blob/PinkBlob.gltf",
+   "scale": 0.676,
+   "tint": true
+  },
+  "Echo_Staticshard": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.355,
+   "tint": true
+  },
+  "Echo_Stonegolem": {
+   "rig": "monsters_big/Orc.gltf",
+   "scale": 0.317,
+   "tint": true
+  },
+  "Echo_Stonehide": {
+   "rig": "animals/Bull.gltf",
+   "scale": 0.36,
+   "tint": true
+  },
+  "Echo_Stonepaw": {
+   "rig": "animals/Fox.gltf",
+   "scale": 0.245,
+   "tint": true
+  },
+  "Echo_Stonesentinel": {
+   "rig": "monsters_flying/Goleling.gltf",
+   "scale": 0.447,
+   "tint": true
+  },
+  "Echo_Stormplume": {
+   "rig": "monsters_blob/Chicken.gltf",
+   "scale": 0.643,
+   "tint": true
+  },
+  "Echo_Stormwing": {
+   "rig": "animals/Alpaca.gltf",
+   "scale": 0.385,
+   "tint": true
+  },
+  "Echo_Sunhide": {
+   "rig": "monsters_big/Demon.gltf",
+   "scale": 0.408,
+   "tint": true
+  },
+  "Echo_Sunhorn": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.35,
+   "tint": true
+  },
+  "Echo_Sunpaw": {
+   "rig": "animals/Deer.gltf",
+   "scale": 0.328,
+   "tint": true
+  },
+  "Echo_Sunwing": {
+   "rig": "monsters_blob/Pigeon.gltf",
+   "scale": 0.337,
+   "tint": true
+  },
+  "Echo_Terravore": {
+   "rig": "monsters_flying/Goleling_Evolved.gltf",
+   "scale": 1.05,
+   "tint": true
+  },
+  "Echo_Thermalwing": {
+   "rig": "monsters_flying/Pigeon.gltf",
+   "scale": 0.19,
+   "tint": true
+  },
+  "Echo_Thornbloom": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.358,
+   "tint": true
+  },
+  "Echo_Thornhorn": {
+   "rig": "animals/Bull.gltf",
+   "scale": 0.25,
+   "tint": true
+  },
+  "Echo_Thornmite": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.18,
+   "tint": true
+  },
+  "Echo_Thornpaw": {
+   "rig": "animals/Horse.gltf",
+   "scale": 0.251,
+   "tint": true
+  },
+  "Echo_Thornsprout": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.396,
+   "tint": true
+  },
+  "Echo_Thornweevil": {
+   "rig": "monsters_flying/Armabee_Evolved.gltf",
+   "scale": 0.3,
+   "tint": true
+  },
+  "Echo_Tidefang": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.6,
+   "tint": true
+  },
+  "Echo_Tidegill": {
+   "rig": "monsters_big/MushroomKing.gltf",
+   "scale": 0.465,
+   "tint": true
+  },
+  "Echo_Tidehide": {
+   "rig": "monsters_big/Yeti.gltf",
+   "scale": 0.409,
+   "tint": true
+  },
+  "Echo_Tidehorn": {
+   "rig": "animals/Horse_White.gltf",
+   "scale": 0.331,
+   "tint": true
+  },
+  "Echo_Tidenymph": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.25,
+   "tint": true
+  },
+  "Echo_Tidepaw": {
+   "rig": "animals/Horse_White.gltf",
+   "scale": 0.229,
+   "tint": true
+  },
+  "Echo_Tidewing": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.36,
+   "tint": true
+  },
+  "Echo_Tidewyrm": {
+   "rig": "monsters_big/Dino.gltf",
+   "scale": 0.62,
+   "tint": true
+  },
+  "Echo_Umbrarch": {
+   "rig": "monsters_flying/Ghost_Skull.gltf",
+   "scale": 0.48,
+   "tint": true
+  },
+  "Echo_Undertowgill": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.447,
+   "tint": true
+  },
+  "Echo_Undertowray": {
+   "rig": "animals/Wolf.gltf",
+   "scale": 0.617,
+   "tint": true
+  },
+  "Echo_Veilshade": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.15,
+   "tint": true
+  },
+  "Echo_Veilveil": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.329,
+   "tint": true
+  },
+  "Echo_Verdantbloom": {
+   "rig": "animals/Donkey.gltf",
+   "scale": 0.303,
+   "tint": true
+  },
+  "Echo_Vespermonolith": {
+   "rig": "monsters_flying/Armabee_Evolved.gltf",
+   "scale": 0.75,
+   "tint": true
+  },
+  "Echo_Voidwing": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.522,
+   "tint": true
+  },
+  "Echo_Voltblaze": {
+   "rig": "monsters_blob/Mushnub.gltf",
+   "scale": 0.395,
+   "tint": true
+  },
+  "Echo_Voltcore": {
+   "rig": "monsters_flying/Squidle.gltf",
+   "scale": 0.369,
+   "tint": true
+  },
+  "Echo_Voltheart": {
+   "rig": "monsters_big/MushroomKing.gltf",
+   "scale": 0.286,
+   "tint": true
+  },
+  "Echo_Voltling": {
+   "rig": "monsters_blob/GreenSpikyBlob.gltf",
+   "scale": 0.32,
+   "tint": true
+  },
+  "Echo_Voltmaw": {
+   "rig": "animals/ShibaInu.gltf",
+   "scale": 0.38,
+   "tint": true
+  },
+  "Echo_Voltshard": {
+   "rig": "monsters_flying/Ghost.gltf",
+   "scale": 0.349,
+   "tint": true
+  },
+  "Echo_Wavecrest": {
+   "rig": "monsters_big/Fish.gltf",
+   "scale": 0.303,
+   "tint": true
+  },
+  "Echo_Wavejelly": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.452,
+   "tint": true
+  },
+  "Echo_Whispershade": {
+   "rig": "monsters_flying/Ghost_Skull.gltf",
+   "scale": 0.153,
+   "tint": true
+  },
+  "Echo_Whisperveil": {
+   "rig": "monsters_flying/Glub.gltf",
+   "scale": 0.342,
+   "tint": true
+  },
+  "Echo_Wireweevil": {
+   "rig": "monsters_flying/Armabee.gltf",
+   "scale": 0.352,
+   "tint": true
+  },
+  "Echo_Wispshade": {
+   "rig": "monsters_flying/Demon.gltf",
+   "scale": 0.137,
+   "tint": true
+  },
+  "Echo_Zephyrblaze": {
+   "rig": "monsters_big/Cactoro.gltf",
+   "scale": 0.307,
+   "tint": true
+  },
+  "Echo_Zephyrshard": {
+   "rig": "monsters_flying/Hywirl.gltf",
+   "scale": 0.336,
+   "tint": true
+  },
+  "Echo_Zephyrsurge": {
+   "rig": "monsters_big/Monkroose.gltf",
+   "scale": 0.681,
+   "tint": true
+  },
+  "_extras": {
+   "_note": "unused-but-fetched rigs available for future assignment / world dressing",
+   "rigs": [
+    "animals/Alpaca.gltf",
+    "animals/Cow.gltf",
+    "animals/Donkey.gltf",
+    "animals/Horse_White.gltf",
+    "monsters_big/BlueDemon.gltf",
+    "monsters_big/Demon.gltf",
+    "monsters_big/Monkroose.gltf",
+    "monsters_big/MushroomKing.gltf",
+    "monsters_big/Orc.gltf",
+    "monsters_big/Orc_Skull.gltf",
+    "monsters_big/Tribal.gltf",
+    "monsters_big/Yeti.gltf",
+    "monsters_big/Bunny.gltf",
+    "monsters_blob/Chicken.gltf",
+    "monsters_blob/Dog.gltf",
+    "monsters_blob/GreenBlob.gltf",
+    "monsters_blob/PinkBlob.gltf",
+    "monsters_blob/Wizard.gltf",
+    "monsters_blob/Yeti.gltf",
+    "monsters_flying/Armabee.gltf",
+    "monsters_flying/Demon.gltf",
+    "monsters_flying/Glub.gltf",
+    "monsters_flying/Tribal.gltf"
+   ]
   }
+ }
 }
