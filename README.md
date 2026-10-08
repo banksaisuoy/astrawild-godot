@@ -7,8 +7,9 @@ resources, landmarks and signature light.
 This is the **Godot 4 port** of the [ASTRAWILD Unreal Engine 5 project](https://github.com/banksaisuoy/astrawild-game)
 — a third-person cooperative survival adventure with Echo creature
 companionship, crafting, base building and a data-driven bestiary of
-**226 Echo species** (204 generated + 10 hand-authored + 6 production species
-with evolutions + 2 dungeon bosses).
+**228 Echo species** (204 generated + 10 hand-authored + 6 production species
+with 6 evolutions + 2 dungeon bosses — and 6 modded legendaries via the
+Echo Mods system, 234 in total with mods active).
 
 The gameplay rules (stats, capture formula, elemental combat, survival decay,
 crafting costs, tech tree, quest chain) are ported 1:1 from the UE5 C++ core
@@ -58,8 +59,10 @@ all data is JSON-driven and every asset is in-repo.
 | H | **Utility Drone** — deploy/recall (auto-scan + auto-harvest, 600 s battery) |
 | U | **Utility Robot** — deploy/recall (mans an unmanned work site at ×0.8) |
 | F5 / F9 | **Quick save / quick load** (autosave also runs every 5 minutes) |
+| F1 | **Field manual** — every control and survival wisdom, in-game |
+| F11 | **Fullscreen toggle** (also in the pause menu) |
+| Esc | Pause (save/load, mods, credits, volumes) |
 | N | Rotate build piece (alias for `,`) |
-| Esc | Pause menu (save / load / restart) |
 | **Dawn Skiff** | [E] near the hull to board · W/S thrust · A/D yaw · SPACE/CTRL climb/descend · SHIFT resonance boost (14→26 m/s) · [E] in flight to dismount |
 | ` (backquote) | Debug console — the 15 `AW.*` cheat commands (SpawnEcho, GiveItem, SetTime, SetWeather, God, …) |
 

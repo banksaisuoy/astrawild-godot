@@ -1,7 +1,9 @@
 class_name UiScreens
 extends CanvasLayer
 ## Full-screen game screens: inventory, crafting, research, journal, map,
-## pause, dialogue, shop. One panel visible at a time; ESC closes.
+## pause, dialogue, shop, help, credits. One panel visible at a time; ESC closes.
+
+signal closed                 ## v1.3 V12-c: emitted on close (title credits restore)
 
 const ERAS := ["Primitive", "Electrical", "Mechanical", "Eco", "AdvancedEnergy", "Ancient"]
 
@@ -24,7 +26,7 @@ func _ready() -> void:
         dim.color = Color(0.02, 0.03, 0.05, 0.68)
         dim.set_anchors_preset(Control.PRESET_FULL_RECT)
         root.add_child(dim)
-        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods"]:
+        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods", "help", "credits"]:
                 var p := Control.new()
                 p.set_anchors_preset(Control.PRESET_FULL_RECT)
                 p.visible = false
@@ -40,6 +42,8 @@ func _ready() -> void:
         _build_dialogue()
         _build_shop()
         _build_mods()
+        _build_help()
+        _build_credits()
 
 
 func is_open() -> bool:
@@ -74,6 +78,10 @@ func open(screen: String) -> void:
                 "pause":
                         get_tree().paused = true
                         _refresh_pause()
+                "help":
+                        get_tree().paused = true
+                "credits":
+                        pass
         if screen == "dialogue" or screen == "shop":
                 current = screen
 
@@ -82,14 +90,30 @@ func close() -> void:
         current = ""
         root.visible = false
         get_tree().paused = false
-        Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+        if get_tree().get_first_node_in_group("player") != null:
+                Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
         _station_context = ""
+        closed.emit()
 
 
 func _input(event: InputEvent) -> void:
         if event.is_action_pressed("pause") and is_open():
                 close()
                 get_viewport().set_input_as_handled()
+        # v1.3 V12-c: F1 = field manual (in-game only), F11 = fullscreen toggle
+        if event is InputEventKey and not event.echo:
+                if event.pressed and event.keycode == KEY_F1 and get_tree().get_first_node_in_group("player") != null:
+                        if current == "help":
+                                close()
+                        else:
+                                open("help")
+                        get_viewport().set_input_as_handled()
+                if event.pressed and event.keycode == KEY_F11 and not OS.has_feature("web"):
+                        if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+                                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+                        else:
+                                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+                        get_viewport().set_input_as_handled()
 
 
 func _notification(what: int) -> void:
@@ -274,12 +298,38 @@ func _refresh_inventory() -> void:
                         continue
                 shown += 1
                 var b := Button.new()
-                b.custom_minimum_size = Vector2(108, 64)
+                b.custom_minimum_size = Vector2(112, 78)
                 var qty: int = Game.inventory[id]
-                b.text = "%s\n×%d" % [def.get("name", id), qty]
-                b.add_theme_font_size_override("font_size", 12)
                 var equipped: bool = id in Game.equipment.values()
-                b.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55) if equipped else Color(0.88, 0.9, 0.95))
+                # v1.3 V12-c: every cell gets its vector icon + qty chip
+                b.text = ""
+                var cell := VBoxContainer.new()
+                cell.set_anchors_preset(Control.PRESET_FULL_RECT)
+                cell.alignment = BoxContainer.ALIGNMENT_CENTER
+                cell.add_theme_constant_override("separation", 2)
+                cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+                b.add_child(cell)
+                var ic_info: Array = _item_icon(id, def)
+                var icon_row := HBoxContainer.new()
+                icon_row.alignment = BoxContainer.ALIGNMENT_CENTER
+                icon_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+                icon_row.add_child(GameIcons.make(ic_info[0], ic_info[1] if not equipped else Color(1.0, 0.85, 0.5), 22))
+                cell.add_child(icon_row)
+                var name_l := Label.new()
+                name_l.text = String(def.get("name", id))
+                name_l.add_theme_font_size_override("font_size", 11)
+                name_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+                name_l.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55) if equipped else Color(0.88, 0.9, 0.95))
+                name_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+                name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+                cell.add_child(name_l)
+                var qty_l := Label.new()
+                qty_l.text = "×%d%s" % [qty, " · equipped" if equipped else ""]
+                qty_l.add_theme_font_size_override("font_size", 10)
+                qty_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+                qty_l.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5) if equipped else Color(0.62, 0.68, 0.75))
+                qty_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+                cell.add_child(qty_l)
                 var item_id: String = id
                 b.pressed.connect(func _c(): _show_item_detail(item_id))
                 _inv_grid.add_child(b)
@@ -292,17 +342,48 @@ func _refresh_inventory() -> void:
         for c in _inv_equip_box.get_children():
                 c.queue_free()
         for slot in ["weapon", "offhand", "body", "head", "tool"]:
-                var l := Label.new()
+                var l := VBoxContainer.new()
+                l.custom_minimum_size = Vector2(62, 46)
+                l.alignment = BoxContainer.ALIGNMENT_CENTER
                 var eq: String = Game.equipment[slot]
-                var txt := "%s\n%s" % [slot.capitalize(), Data.item(eq).get("name", "—")]
-                l.text = txt
-                l.add_theme_font_size_override("font_size", 11)
-                l.custom_minimum_size = Vector2(62, 40)
-                l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-                l.add_theme_color_override("font_color", Color(0.8, 0.95, 1.0) if eq != "" else Color(0.5, 0.55, 0.6))
+                var slot_icon: String = {"weapon": "sword", "offhand": "shield", "body": "shield", "head": "shield", "tool": "gear"}[slot]
+                l.add_child(GameIcons.make(slot_icon, Color(0.8, 0.95, 1.0) if eq != "" else Color(0.5, 0.55, 0.6), 14))
+                var slot_l := Label.new()
+                slot_l.text = "%s\n%s" % [slot.capitalize(), Data.item(eq).get("name", "—")]
+                slot_l.add_theme_font_size_override("font_size", 10)
+                slot_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+                slot_l.add_theme_color_override("font_color", Color(0.8, 0.95, 1.0) if eq != "" else Color(0.5, 0.55, 0.6))
+                l.add_child(slot_l)
                 _inv_equip_box.add_child(l)
         _inv_weight.max_value = Game.carry_limit()
         _inv_weight.value = Game.carry_weight()
+
+
+func _item_icon(id: String, def: Dictionary) -> Array:
+        ## v1.3 V12-c: category/name-aware vector icon + accent colour per item.
+        var cat := String(def.get("category", "material"))
+        var name := String(def.get("name", id)).to_lower()
+        match cat:
+                "weapon": return ["sword", Color(0.95, 0.75, 0.45)]
+                "offhand", "armor": return ["shield", Color(0.55, 0.85, 0.9)]
+                "tool": return ["gear", Color(0.7, 0.78, 0.9)]
+                "currency": return ["coin", Color(1.0, 0.85, 0.4)]
+                "creature": return ["eye", Color(0.75, 0.9, 1.0)]
+                "quest": return ["book", Color(0.9, 0.8, 0.55)]
+                "consumable":
+                        if name.find("water") >= 0 or name.find("flask") >= 0:
+                                return ["drop", Color(0.5, 0.8, 1.0)]
+                        if name.find("bandage") >= 0 or name.find("salve") >= 0:
+                                return ["heart", Color(0.95, 0.55, 0.6)]
+                        if name.find("feed") >= 0:
+                                return ["paw", Color(0.8, 0.9, 0.7)]
+                        return ["meat", Color(0.95, 0.7, 0.5)]
+                _:  # materials — crystal vs organic vs building
+                        if name.find("crystal") >= 0 or name.find("shard") >= 0 or name.find("core") >= 0 or name.find("alloy") >= 0:
+                                return ["star", Color(0.7, 0.9, 1.0)]
+                        if name.find("wood") >= 0 or name.find("plank") >= 0:
+                                return ["backpack", Color(0.75, 0.65, 0.5)]
+                        return ["star", Color(0.85, 0.8, 0.65)]
 
 
 func _show_item_detail(id: String) -> void:
@@ -311,11 +392,16 @@ func _show_item_detail(id: String) -> void:
         var def := Data.item(id)
         if def.is_empty():
                 return
+        var name_row := HBoxContainer.new()
+        name_row.add_theme_constant_override("separation", 8)
+        _inv_detail.add_child(name_row)
+        var ic_info: Array = _item_icon(id, def)
+        name_row.add_child(GameIcons.make(ic_info[0], ic_info[1], 24))
         var name_l := Label.new()
         name_l.text = def.get("name", id)
         name_l.add_theme_font_size_override("font_size", 18)
         name_l.add_theme_color_override("font_color", Color(1.0, 0.92, 0.7))
-        _inv_detail.add_child(name_l)
+        name_row.add_child(name_l)
         var cat := Label.new()
         cat.text = "%s · %.1f kg · stack %d" % [def.get("category", "?"), def.get("weight", 0.0), def.get("stack", 1)]
         cat.add_theme_font_size_override("font_size", 11)
@@ -828,6 +914,169 @@ func _draw_star(center: Vector2, radius: float, color: Color) -> void:
         _map_draw.draw_colored_polygon(pts, color)
 
 
+# ------------------------------------------------------------------- help --
+# v1.3 V12-c: the field manual — every control in the game, readable in-game.
+const HELP_ROWS_LEFT := [
+        ["WASD / mouse", "Move · orbit third-person camera"],
+        ["Shift", "Sprint (drains stamina)"],
+        ["Space", "Jump"],
+        ["LMB tap / hold", "Light attack / heavy attack (25 stamina)"],
+        ["RMB hold", "Block — 45% unarmed, 65% with shield"],
+        ["Q", "Dodge — 0.4 s invulnerability, 22 stamina"],
+        ["E", "Interact — harvest, talk, rest, stations, place"],
+        ["F", "Capture targeted Echo (needs a Resonator)"],
+        ["G", "Feed nearest wild Echo (builds trust)"],
+        ["Aim at creatures", "Passive observation fills the journal (+RP)"],
+]
+
+const HELP_ROWS_RIGHT := [
+        ["I / C / R / J", "Inventory · Crafting · Research · Journal"],
+        ["B / M", "Build mode (, . rotate, / cycle) · Map"],
+        ["1–5 / V", "Party commands · cycle (follow/stay/attack/defend/work)"],
+        ["X", "Equip best — auto-equip best item per slot"],
+        ["Z", "Dismantle building under crosshair (full refund)"],
+        ["T", "Smart consume — eat/drink for most-depleted vital"],
+        ["H / U", "Utility Drone · Utility Robot (deploy/recall)"],
+        ["F5 / F9", "Quick save · quick load (autosave every 5 min)"],
+        ["F1", "This field manual"],
+        ["F11 / Esc", "Fullscreen · pause"],
+]
+
+const HELP_TIPS := [
+        "Weaken an Echo before capturing — low HP and hitting its weakness element roughly triples capture odds.",
+        "Feed wild Echoes (G) to build trust; trusted companions evolve when level and bond are high enough.",
+        "Observing creatures with your eyes (no cost) fills the Field Journal and grants research points.",
+        "Rest Points restore you AND save the game. Night is dangerous — cold, predators, worse visibility.",
+        "Days 1–3 carry a solo grace period (35% less damage). Craft a club and bandages before dusk.",
+        "★ Chart all 15 landmarks and open their chests — the map (M) tracks your progress.",
+]
+
+
+func _build_help() -> void:
+        var p := _center_panel("help", Vector2(940, 620))
+        var vb := VBoxContainer.new()
+        vb.add_theme_constant_override("separation", 8)
+        p.add_child(vb)
+        _title(vb, "Field Manual", "Every control in the Vale · [Esc] close", "book")
+        var cols := HBoxContainer.new()
+        cols.add_theme_constant_override("separation", 18)
+        cols.size_flags_vertical = Control.SIZE_EXPAND_FILL
+        vb.add_child(cols)
+        cols.add_child(_help_column("Movement & Combat", HELP_ROWS_LEFT))
+        cols.add_child(_help_column("Screens, Party & Tools", HELP_ROWS_RIGHT))
+        var tips_head := Label.new()
+        tips_head.text = "— Field wisdom —"
+        tips_head.add_theme_font_size_override("font_size", 14)
+        tips_head.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+        vb.add_child(tips_head)
+        var tips := Label.new()
+        var joined := ""
+        for t in HELP_TIPS:
+                joined += "·  " + t + "\n"
+        tips.text = joined.strip_edges()
+        tips.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        tips.add_theme_font_size_override("font_size", 12)
+        tips.add_theme_color_override("font_color", Color(0.78, 0.85, 0.92))
+        tips.custom_minimum_size = Vector2(880, 100)
+        vb.add_child(tips)
+
+
+func _help_column(heading: String, rows: Array) -> VBoxContainer:
+        var col := VBoxContainer.new()
+        col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        col.add_theme_constant_override("separation", 4)
+        var head := Label.new()
+        head.text = heading
+        head.add_theme_font_size_override("font_size", 15)
+        head.add_theme_color_override("font_color", Color(0.95, 0.9, 0.75))
+        col.add_child(head)
+        for row in rows:
+                var hr := HBoxContainer.new()
+                hr.add_theme_constant_override("separation", 8)
+                col.add_child(hr)
+                hr.add_child(_key_chip(row[0]))
+                var desc := Label.new()
+                desc.text = row[1]
+                desc.add_theme_font_size_override("font_size", 12)
+                desc.add_theme_color_override("font_color", Color(0.82, 0.87, 0.93))
+                desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+                desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+                hr.add_child(desc)
+        return col
+
+
+func _key_chip(k: String) -> PanelContainer:
+        var pc := PanelContainer.new()
+        var sb := StyleBoxFlat.new()
+        sb.bg_color = Color(0.13, 0.15, 0.2, 0.95)
+        sb.border_color = Color(0.95, 0.76, 0.35, 0.55)
+        sb.set_border_width_all(1)
+        sb.set_corner_radius_all(6)
+        sb.content_margin_left = 8.0
+        sb.content_margin_right = 8.0
+        sb.content_margin_top = 3.0
+        sb.content_margin_bottom = 3.0
+        pc.add_theme_stylebox_override("panel", sb)
+        var l := Label.new()
+        l.text = k
+        l.add_theme_font_size_override("font_size", 11)
+        l.add_theme_color_override("font_color", Color(1.0, 0.88, 0.6))
+        pc.add_child(l)
+        return pc
+
+
+# --------------------------------------------------------------- credits --
+# v1.3 V12-c: CC0 attribution surfaced in-game (ledger: docs/ASSET_LICENSE_LEDGER.md)
+func _build_credits() -> void:
+        var p := _center_panel("credits", Vector2(720, 620))
+        var scroll := ScrollContainer.new()
+        scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+        p.add_child(scroll)
+        var vb := VBoxContainer.new()
+        vb.add_theme_constant_override("separation", 10)
+        vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        scroll.add_child(vb)
+        _title(vb, "Credits & Licenses", "ASTRAWILD — Echoes of the First Dawn", "star")
+        _credit_section(vb, "The Game",
+                "ASTRAWILD Godot Division — built with Godot 4.7.\n" +
+                "Gameplay ported 1:1 from the ASTRAWILD Unreal Engine 5 core (AstrawildCore).\n" +
+                "Production Echo models, creature audio and terrain math: original ASTRAWILD ArtSource.")
+        _credit_section(vb, "Creature & Building Models — Quaternius (CC0)",
+                "54 animated creature rigs, village buildings, ruins and props\n" +
+                "quaternius.com — dedicated to the public domain via CC0.")
+        _credit_section(vb, "Props, Nature Kits, SFX & Jingles — Kenney (CC0)",
+                "Castle kits, nature dressing, 55+ game-feel audio events, UI jingles\n" +
+                "kenney.nl — dedicated to the public domain via CC0.")
+        _credit_section(vb, "Soundtrack — CleytonKauffman @ OpenGameArt (CC0)",
+                "Day Ambient · Calm Loop · Heavenly Loop · Crystal Cave ·\n" +
+                "Dungeon Ambience · Evil Temple · Contemplation (Night)\n" +
+                "opengameart.org — dedicated to the public domain via CC0.")
+        _credit_section(vb, "Title Key Art",
+                "AI-generated original artwork (own asset).")
+        _credit_section(vb, "License",
+                "All third-party assets in this build are CC0 / public domain.\n" +
+                "Full per-file ledger with sources and hashes:\n" +
+                "docs/ASSET_LICENSE_LEDGER.md (215 rows) in the source repository.\n" +
+                "ASTRAWILD is offline-first and free.")
+        var close_btn := _btn("Close", func _c(): close())
+        vb.add_child(close_btn)
+
+
+func _credit_section(vb: VBoxContainer, heading: String, body: String) -> void:
+        var h := Label.new()
+        h.text = heading
+        h.add_theme_font_size_override("font_size", 14)
+        h.add_theme_color_override("font_color", Color(0.95, 0.9, 0.75))
+        vb.add_child(h)
+        var b := Label.new()
+        b.text = body
+        b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        b.add_theme_font_size_override("font_size", 12)
+        b.add_theme_color_override("font_color", Color(0.8, 0.85, 0.9))
+        b.custom_minimum_size = Vector2(640, 0)
+        vb.add_child(b)
+
+
 # ------------------------------------------------------------------- pause --
 var _pause_box: VBoxContainer
 
@@ -891,6 +1140,15 @@ func _refresh_pause() -> void:
                 get_tree().paused = false
                 get_tree().reload_current_scene()))
         _pause_box.add_child(_btn("Echo Mods [F7]", func _m(): open("mods")))
+        # v1.3 V12-c: field manual, credits and fullscreen reachable from pause
+        _pause_box.add_child(_btn("Controls & Help [F1]", func _h(): open("help")))
+        _pause_box.add_child(_btn("Credits & Licenses", func _cr(): open("credits")))
+        if not OS.has_feature("web"):
+                _pause_box.add_child(_btn("Toggle fullscreen [F11]", func _f():
+                        if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+                                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+                        else:
+                                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)))
         _pause_box.add_child(_btn("Quit to desktop", func _q(): get_tree().quit(), Color(0.9, 0.6, 0.55)))
 
 

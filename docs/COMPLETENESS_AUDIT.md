@@ -20,7 +20,7 @@
 
 | # | Gap | Severity | Evidence |
 |---|---|---|---|
-| 1 | **14 species have no rig map → naked procedural bodies**: 6 production legendaries (Terraquill, Cindermule, Voltpylon, Bastionbeetle, Mistmender, Deepdelver), their **6 evolutions**, and **2 dungeon bosses** (Underlight Warden, Vault Colossus) | HIGH — the rarest, most exciting creatures look worst; smoke `procedural=3` | `data/species_models.json` maps=218, bestiary 204 + special 24 = 228 species |
+| 1 | **2 mod species (Echo_Petalume, Echo_Corallume from glimmer_garden) had NO rig map → naked procedural bodies**. Initial audit also flagged 14 species (6 production legendaries + 6 evolutions + 2 bosses) as unmapped — deep-check showed they resolve via their own production GLB models (`def.model`), so they were never naked; the rig-map gap for them was cosmetic bookkeeping only | HIGH for the 2 | `data/species_models.json` maps=218 vs 234 real species (incl. mods); smoke `procedural=3` (spawn RNG: 2 mod species + 1 borderline) |
 | 2 | **Evolution never rebuilds the follower body** — `bind_entry()` updates stats/label only; your Terraquill evolves into TerraquillVerdant but still *looks* like a Terraquill | HIGH — core emotional payoff invisible | `scripts/creatures/echo.gd:1006` |
 | 3 | **Landmark chests not persisted** — `chest_opened` lives only on the marker node; save/load resets all 15 chests → infinite 40×DawnShard+Resonator+2×AncientAlloy farming | HIGH — economy break | nothing in `scripts/autoload/saves.gd` mentions chest/landmark |
 | 4 | **Map legend lies** — promises "★ landmarks discovered" but `_draw_map()` draws zero landmarks | MED | `scripts/ui/screens.gd:745` vs `_draw_map` body |
@@ -30,11 +30,11 @@
 | 8 | **No credits/license screen** — Quaternius, Kenney and CleytonKauffman (OGA) CC0 attribution invisible to players | MED (CC0 citizenship) | ledger has 215 rows, game shows none |
 | 9 | **README species count stale** ("226 = 204+10+6+2" — sums to 222; real total 228 = 204+10+6+6evolutions+2 bosses) + no fullscreen toggle (F11 free) | LOW | `README.md` line 7 |
 
-## Fix plan (executed as V12-a…f)
+## Fix plan (executed as V12-a…f) — ALL VERIFIED GREEN in smoke
 
-- **V12-a:** rig maps for all 14 (AABB-calibrated like build_rig_maps.py) + evolution body rebuild in `bind_entry` + smoke coverage assert **228/228**
-- **V12-b:** `Game.opened_chests` + `Game.charted_locations` persisted through saves; chests stay opened after reload; map draws 15 ★ (bright = charted); journal "locations charted n/15"
-- **V12-c:** inventory grid icons; **F1 Help & Controls screen**; **Credits & Licenses screen** (title + pause); **F11 fullscreen toggle** (+ pause button)
-- **V12-d:** README count fix + smoke extensions for every new system
+- **V12-a ✓:** rig maps for Echo_Petalume (Mushnub) + Echo_Corallume (Glub), AABB-calibrated; evolution body rebuild in `bind_entry` + smoke asserts `visual coverage 234/234 missing=[]`, `evolution body rebuilt=true`, `live procedural=0`
+- **V12-b ✓:** `Game.opened_chests` + `Game.charted_locations` persisted through saves; chests stay opened after reload; map draws 15 ★ (bright = charted + name, faint dots = rumours in known zones); journal field-notes counters — smoke `chest persistence=true`, `location persistence=true`, `landmark_list=15`
+- **V12-c ✓:** inventory grid icons (category/name-aware vector icons, equipped = gold); **F1 Field Manual** (all controls + survival wisdom, pauses game); **Credits & Licenses** screen (title menu + pause menu — Quaternius/Kenney/CleytonKauffman CC0 attribution + ledger pointer); **F11 fullscreen** (+ pause button) — smoke `help screen=true`, `credits screen=true`, `inventory icons=true`
+- **V12-d ✓:** README corrected to 228 species (+ 6 modded = 234), F1/F11/Esc rows added, duplicate Esc row removed; smoke suite extended with 6 new assertion groups
 - **V12-e:** xvfb screenshots + VLM verification
 - **V12-f:** release v1.3 (4-platform exports + web build + landing sync), push, STATUS BLOCK

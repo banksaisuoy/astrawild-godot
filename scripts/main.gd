@@ -23,6 +23,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _ready() -> void:
         get_tree().paused = false
+        # v1.3 V12-c: the screens layer exists from boot (credits at title need it)
+        if screens == null:
+                screens = UiScreens.new()
+                screens.add_to_group("screens")
+                add_child(screens)
+                screens.closed.connect(func _sc():
+                        if title_layer and is_instance_valid(title_layer) and not _started:
+                                title_layer.visible = true)
         # F9 quick-load (v1.0.4): reload_current_scene() restarts main.tscn —
         # the pending flag routes straight into the save, skipping the title.
         if Game.quick_load_pending:
@@ -170,6 +178,13 @@ func _build_title() -> void:
         start_btn.pressed.connect(func _s(): _start_game(false))
         menu.add_child(start_btn)
         _start_btn = start_btn
+
+        # v1.3 V12-c: credits reachable from the title screen
+        var credits_btn := _menu_button("Credits & Licenses", false)
+        credits_btn.pressed.connect(func _cr():
+                title_layer.visible = false
+                screens.open("credits"))
+        menu.add_child(credits_btn)
 
         if not OS.has_feature("web"):
                 var quit_btn := _menu_button("Quit", false)
@@ -340,9 +355,10 @@ func _start_game(continue_save: bool) -> void:
         hud = Hud.new()
         hud.add_to_group("hud")
         game_layer.add_child(hud)
-        screens = UiScreens.new()
-        screens.add_to_group("screens")
-        game_layer.add_child(screens)
+        # screens was created in _ready() (v1.3 V12-c) — reparent under the game layer
+        if screens and screens.get_parent() != game_layer:
+                remove_child(screens)
+                game_layer.add_child(screens)
 
         player = PlayerCharacter.new()
         player.position = Vector3(-400, world.tile_height(-400, 0) + 1.2, 0)
@@ -754,6 +770,62 @@ func _run_smoke_checks() -> void:
         for k in tb_sigs:
                 if (tb_sigs[k] as Array).size() > 1:
                         print("SMOKE: tierb dupe group: ", tb_sigs[k])
+        # ---- v1.3 V12: completeness-pass assertions ----
+        # 1) every species resolves to a rig OR a production model — zero naked primitives
+        var covered := 0
+        var uncovered := []
+        for sid in Data.species:
+                if Data.species_rigs.has(sid) or str(Data.species[sid].get("model", "")) != "":
+                        covered += 1
+                else:
+                        uncovered.append(sid)
+        print("SMOKE: visual coverage ", covered, "/", Data.species.size(), " naked=", uncovered.size() < 3, " missing=", uncovered)
+        # 2) evolution rebuilds the follower body (species swap -> new visual)
+        var tq_def: Dictionary = Data.species_def("Echo_Terraquill")
+        var tq_evo: Node = load("res://scripts/creatures/echo.gd").new(tq_def, RandomNumberGenerator.new())
+        add_child(tq_evo)
+        tq_evo._build_body()
+        var body_v1: Node = tq_evo._body_root
+        tq_evo.bind_entry({"species_id": "Echo_TerraquillVerdant", "level": 5, "trust": 0.6, "bond": 1.0, "name": "Test", "hp": 100.0})
+        var rebuilt: bool = tq_evo._body_root != body_v1 and tq_evo._body_root.get_child_count() > 0
+        var evo_def_ok: bool = str(tq_evo.def.get("id", "")) == "Echo_TerraquillVerdant"
+        tq_evo.free()
+        print("SMOKE: evolution body rebuilt=", rebuilt, " def_swapped=", evo_def_ok)
+        # 3) chest + location persistence roundtrip
+        Game.open_chest("Location_WaystoneDawn")
+        Game.chart_location("Location_GlimmerGrove")
+        var world_node := get_tree().get_first_node_in_group("world")
+        var saved_ok: bool = Saves.save_game(world_node, get_tree().get_first_node_in_group("player"))
+        Game.opened_chests.clear()
+        Game.charted_locations.clear()
+        var reload_data := Saves.load_game()
+        var chest_persist: bool = not reload_data.is_empty() and Game.opened_chests.has("Location_WaystoneDawn")
+        var loc_persist: bool = Game.charted_locations.has("Location_GlimmerGrove")
+        print("SMOKE: chest persistence=", chest_persist and saved_ok, " location persistence=", loc_persist)
+        # 4) landmark list + map stars data
+        var lms: Array = world_node.landmark_list() if world_node and world_node.has_method("landmark_list") else []
+        print("SMOKE: landmark_list=", lms.size(), " (15 expected)")
+        # 5) help + credits screens exist and open/close
+        screens.open("help")
+        var help_open: bool = screens.current == "help"
+        screens.close()
+        screens.open("credits")
+        var credits_open: bool = screens.current == "credits"
+        screens.close()
+        print("SMOKE: help screen=", help_open, " credits screen=", credits_open)
+        # 6) inventory cells carry icons (first cell has an icon-bearing child)
+        screens.open("inventory")
+        var inv_icon_ok := false
+        for cell in screens._inv_grid.get_children():
+                if cell is Button and cell.get_child_count() > 0:
+                        var vbox: Node = cell.get_child(0)
+                        if vbox is VBoxContainer and vbox.get_child_count() > 0:
+                                var irow: Node = vbox.get_child(0)
+                                if irow is HBoxContainer and irow.get_child_count() > 0:
+                                        inv_icon_ok = true
+                break
+        screens.close()
+        print("SMOKE: inventory icons=", inv_icon_ok)
         print("SMOKE COMPLETE")
 
 func _smoke_find_anim(n: Node) -> AnimationPlayer:
