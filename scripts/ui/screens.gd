@@ -149,12 +149,20 @@ func _journal_now_line() -> String:
         return "NOW: quest complete — return to the giver or check the tracker."
 
 
-func _title(parent: Control, text: String, subtitle: String = "") -> Label:
+func _title(parent: Control, text: String, subtitle: String = "", icon := "") -> Label:
         var l := Label.new()
         l.text = text
         l.add_theme_font_size_override("font_size", 24)
         l.add_theme_color_override("font_color", Color(1.0, 0.92, 0.7))
-        parent.add_child(l)
+        if icon != "":
+                # v1.2 de-jank pass: vector icon next to the screen title
+                var row := HBoxContainer.new()
+                row.add_theme_constant_override("separation", 10)
+                row.add_child(GameIcons.make(icon, Color(1.0, 0.85, 0.55), 22))
+                row.add_child(l)
+                parent.add_child(row)
+        else:
+                parent.add_child(l)
         if subtitle != "":
                 var s := Label.new()
                 s.text = subtitle
@@ -199,7 +207,7 @@ func _build_inventory() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "Inventory", "[Esc] close · click an item for actions")
+        _title(vb, "Inventory", "[Esc] close · click an item for actions", "backpack")
         var filter_row := HBoxContainer.new()
         vb.add_child(filter_row)
         for f in [["all", "All"], ["material", "Materials"], ["consumable", "Consumables"], ["weapon", "Weapons"], ["armor", "Armor"], ["tool", "Tools"]]:
@@ -370,7 +378,7 @@ func _build_crafting() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "Crafting", "[Esc] close · craft anywhere for field recipes")
+        _title(vb, "Crafting", "[Esc] close · craft anywhere for field recipes", "gear")
         _craft_list = VBoxContainer.new()
         _craft_list.add_theme_constant_override("separation", 4)
         var scroll := ScrollContainer.new()
@@ -520,7 +528,7 @@ func _build_research() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        var t := _title(vb, "Research", "Observe Echoes, discover zones and finish quests to earn RP")
+        var t := _title(vb, "Research", "Observe Echoes, discover zones and finish quests to earn RP", "flask")
         _research_points_label = Label.new()
         _research_points_label.add_theme_font_size_override("font_size", 17)
         _research_points_label.add_theme_color_override("font_color", Color(0.75, 0.95, 1.0))
@@ -613,7 +621,7 @@ func _build_journal() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "Field Journal — The Grand Menagerie", "Observe wild Echoes (aim at them) to fill the codex")
+        _title(vb, "Field Journal — The Grand Menagerie", "Observe wild Echoes (aim at them) to fill the codex", "book")
         # v1.1 Phase V7: the journal always answers "what now?"
         var now := Label.new()
         now.text = _journal_now_line()
@@ -724,7 +732,7 @@ func _build_map() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "The Shattered Vale — Grand Expanse", "[Esc] close · gold dot is you")
+        _title(vb, "The Shattered Vale — Grand Expanse", "[Esc] close · gold dot is you", "map")
         _map_draw = Control.new()
         _map_draw.custom_minimum_size = Vector2(720, 480)
         _map_draw.draw.connect(_draw_map)
@@ -794,7 +802,7 @@ func _build_pause() -> void:
         _pause_box.add_theme_constant_override("separation", 12)
         _pause_box.alignment = BoxContainer.ALIGNMENT_CENTER
         p.add_child(_pause_box)
-        var t := _title(_pause_box, "ASTRAWILD", "Echoes of the First Dawn")
+        var t := _title(_pause_box, "ASTRAWILD", "Echoes of the First Dawn", "star")
         # ---- v1.1 Phase V8: audio volume sliders, live + persisted ----
         var audio_head := Label.new()
         audio_head.text = "Audio"
@@ -860,7 +868,7 @@ func _build_mods() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 10)
         p.add_child(vb)
-        _title(vb, "ECHO MODS", "[F7] / [Esc] close · runtime mod manager")
+        _title(vb, "ECHO MODS", "[F7] / [Esc] close · runtime mod manager", "star")
         _mods_count_label = Label.new()
         _mods_count_label.add_theme_font_size_override("font_size", 13)
         _mods_count_label.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
@@ -1019,7 +1027,7 @@ func _build_shop() -> void:
         var vb := VBoxContainer.new()
         vb.add_theme_constant_override("separation", 8)
         p.add_child(vb)
-        _title(vb, "Trader Tam's Wares", "Dawn Shards trade for everything")
+        _title(vb, "Trader Tam's Wares", "Dawn Shards trade for everything", "coin")
         var scroll := ScrollContainer.new()
         scroll.custom_minimum_size = Vector2(600, 380)
         vb.add_child(scroll)
