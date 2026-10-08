@@ -1,6 +1,8 @@
 extends Node
 ## Main entry: title screen → world build (loading) → gameplay.
 
+const GAME_VERSION := "v1.2"
+
 var title_layer: CanvasLayer
 var loading_layer: CanvasLayer
 var game_layer: Node3D
@@ -33,86 +35,269 @@ func _ready() -> void:
                 _start_game(false)
         # screenshot mode (xvfb/CI): boot into the world, capture, quit
         if OS.get_cmdline_user_args().find("--screenshot") >= 0:
-                _start_game(OS.get_cmdline_user_args().find("--cont") >= 0)
-                _screenshot_routine()
+                var shot_mode := "game"
+                for a in OS.get_cmdline_user_args():
+                        if a.begins_with("--shot="):
+                                shot_mode = a.trim_prefix("--shot=")
+                if shot_mode == "title":
+                        # title-only capture: never start the world
+                        _screenshot_routine()
+                else:
+                        _start_game(OS.get_cmdline_user_args().find("--cont") >= 0)
+                        _screenshot_routine()
 
 
 func _build_title() -> void:
+        ## v1.2 de-jank pass: cinematic title — AI key art (own asset), slow Ken
+        ## Burns zoom, radial vignette, drifting light motes, outlined logo,
+        ## styled menu buttons. Falls back to a dawn gradient if art missing.
         title_layer = CanvasLayer.new()
         title_layer.layer = 30
         add_child(title_layer)
-        var bg := ColorRect.new()
-        bg.color = Color(0.05, 0.06, 0.1)
-        bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-        title_layer.add_child(bg)
+        var vp := get_viewport().get_visible_rect().size
 
-        var center := VBoxContainer.new()
-        center.set_anchors_preset(Control.PRESET_CENTER)
-        center.alignment = BoxContainer.ALIGNMENT_CENTER
-        center.position = Vector2(-220, -180)
-        center.custom_minimum_size = Vector2(440, 360)
-        title_layer.add_child(center)
+        var art: Texture2D = null
+        if ResourceLoader.exists("res://assets/ui/title_keyart.png"):
+                art = load("res://assets/ui/title_keyart.png")
+
+        if art != null:
+                var tr := TextureRect.new()
+                tr.texture = art
+                tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+                tr.set_anchors_preset(Control.PRESET_FULL_RECT)
+                tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+                title_layer.add_child(tr)
+                # slow cinematic zoom (Ken Burns), pivot at center once laid out
+                _ken_burns(tr)
+        else:
+                var cr := ColorRect.new()
+                cr.color = Color(0.07, 0.09, 0.14)
+                cr.set_anchors_preset(Control.PRESET_FULL_RECT)
+                title_layer.add_child(cr)
+
+        # radial vignette: dark edges keep the menu readable over bright art
+        var vig := TextureRect.new()
+        var grad := Gradient.new()
+        grad.set_color(0, Color(0, 0, 0, 0))
+        grad.set_color(1, Color(0.02, 0.015, 0.0, 0.62))
+        grad.add_point(0.45, Color(0, 0, 0, 0.05))
+        var gtex := GradientTexture2D.new()
+        gtex.gradient = grad
+        gtex.fill_from = Vector2(0.5, 0.42)
+        gtex.fill_to = Vector2(1.05, 0.42)
+        gtex.width = 256
+        gtex.height = 8
+        vig.texture = gtex
+        vig.stretch_mode = TextureRect.STRETCH_SCALE
+        vig.set_anchors_preset(Control.PRESET_FULL_RECT)
+        title_layer.add_child(vig)
+
+        # drifting golden motes (additive) — the "echoes" of the Vale
+        var motes := CPUParticles2D.new()
+        motes.position = Vector2(vp.x * 0.5, vp.y * 0.6)
+        motes.amount = 42
+        motes.lifetime = 14.0
+        motes.preprocess = 10.0
+        motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+        motes.emission_rect_extents = Vector2(vp.x * 0.55, 40)
+        motes.direction = Vector2(0, -1)
+        motes.spread = 12.0
+        motes.gravity = Vector2(0, -3)
+        motes.initial_velocity_min = 6.0
+        motes.initial_velocity_max = 22.0
+        motes.scale_amount_min = 0.35
+        motes.scale_amount_max = 1.15
+        motes.color = Color(1.0, 0.82, 0.45, 0.55)
+        var dot := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+        for x in 16:
+                for y in 16:
+                        var d: float = Vector2(x - 7.5, y - 7.5).length() / 8.0
+                        var a: float = clampf(1.0 - d, 0.0, 1.0)
+                        dot.set_pixel(x, y, Color(1.0, 0.86, 0.55, a * a))
+        motes.texture = ImageTexture.create_from_image(dot)
+        var add_mat := CanvasItemMaterial.new()
+        add_mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+        motes.material = add_mat
+        title_layer.add_child(motes)
+
+        # ---- logo block (upper third, over calm sky; absolute placement) ----
+        var shadow := Label.new()
+        shadow.text = "A S T R A W I L D"
+        shadow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        shadow.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+        shadow.position = Vector2(vp.x * 0.5 - 446, 91)
+        shadow.size = Vector2(900, 100)
+        shadow.add_theme_font_size_override("font_size", 76)
+        shadow.add_theme_color_override("font_color", Color(0.03, 0.02, 0.01, 0.55))
+        title_layer.add_child(shadow)
 
         var title := Label.new()
-        title.text = "ASTRAWILD"
+        title.text = "A S T R A W I L D"
         title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-        title.add_theme_font_size_override("font_size", 64)
-        title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.55))
-        center.add_child(title)
-        var sub := Label.new()
-        sub.text = "Echoes of the First Dawn"
-        sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-        sub.add_theme_font_size_override("font_size", 20)
-        sub.add_theme_color_override("font_color", Color(0.85, 0.75, 0.9))
-        center.add_child(sub)
-        var spacer := Control.new()
-        spacer.custom_minimum_size = Vector2(0, 28)
-        center.add_child(spacer)
+        title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+        title.position = Vector2(vp.x * 0.5 - 450, 84)
+        title.size = Vector2(900, 100)
+        title.add_theme_font_size_override("font_size", 76)
+        title.add_theme_color_override("font_color", Color(1.0, 0.87, 0.55))
+        title.add_theme_color_override("font_outline_color", Color(0.16, 0.09, 0.03, 0.9))
+        title.add_theme_constant_override("outline_size", 10)
+        title_layer.add_child(title)
 
-        var start_btn := Button.new()
-        start_btn.text = "Begin Expedition"
-        start_btn.custom_minimum_size = Vector2(260, 44)
-        start_btn.add_theme_font_size_override("font_size", 18)
-        start_btn.pressed.connect(func _s(): _start_game(false))
-        start_btn.focus_mode = Control.FOCUS_ALL
-        center.add_child(start_btn)
-        _start_btn = start_btn
-        # full-rect click catcher: any click/tap on the title starts the expedition
-        var catcher := Button.new()
-        catcher.flat = true
-        catcher.set_anchors_preset(Control.PRESET_FULL_RECT)
-        catcher.mouse_filter = Control.MOUSE_FILTER_STOP
-        catcher.pressed.connect(func _c(): _start_game(false))
-        catcher.modulate = Color(1, 1, 1, 0)
-        catcher.text = ""
-        title_layer.add_child(catcher)
-        title_layer.move_child(catcher, 1)  # above bg, below content
+        var sub := Label.new()
+        sub.text = "— Echoes of the First Dawn —"
+        sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        sub.position = Vector2(vp.x * 0.5 - 450, 192)
+        sub.size = Vector2(900, 30)
+        sub.add_theme_font_size_override("font_size", 21)
+        sub.add_theme_color_override("font_color", Color(0.93, 0.87, 0.97, 0.95))
+        sub.add_theme_color_override("font_shadow_color", Color(0.05, 0.04, 0.1, 0.8))
+        sub.add_theme_constant_override("shadow_offset_y", 3)
+        title_layer.add_child(sub)
+
+        # ---- menu block (below logo) ----
+        var menu := VBoxContainer.new()
+        menu.position = Vector2(vp.x * 0.5 - 150, 336)
+        menu.custom_minimum_size = Vector2(300, 0)
+        menu.add_theme_constant_override("separation", 14)
+        title_layer.add_child(menu)
 
         if Saves.has_save():
-                var cont_btn := Button.new()
-                cont_btn.text = "Continue"
-                cont_btn.custom_minimum_size = Vector2(260, 44)
-                cont_btn.add_theme_font_size_override("font_size", 18)
+                var cont_btn := _menu_button("Continue", true)
                 cont_btn.pressed.connect(func _c(): _start_game(true))
-                center.add_child(cont_btn)
+                menu.add_child(cont_btn)
 
+        var start_btn := _menu_button("Begin Expedition", false)
+        start_btn.pressed.connect(func _s(): _start_game(false))
+        menu.add_child(start_btn)
+        _start_btn = start_btn
+
+        if not OS.has_feature("web"):
+                var quit_btn := _menu_button("Quit", false)
+                quit_btn.pressed.connect(func _q(): get_tree().quit())
+                menu.add_child(quit_btn)
+
+        var hint := Label.new()
+        hint.text = "Press Enter to begin"
+        hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        hint.add_theme_font_size_override("font_size", 13)
+        hint.add_theme_color_override("font_color", Color(0.85, 0.78, 0.7, 0.85))
+        menu.add_child(hint)
+
+        # ---- compact controls card (bottom, above footer) ----
+        var card := PanelContainer.new()
+        card.position = Vector2(vp.x * 0.5 - 310, vp.y - 150)
+        card.size = Vector2(620, 72)
+        var card_sb := StyleBoxFlat.new()
+        card_sb.bg_color = Color(0.04, 0.05, 0.09, 0.62)
+        card_sb.border_color = Color(0.95, 0.76, 0.35, 0.35)
+        card_sb.set_border_width_all(1)
+        card_sb.set_corner_radius_all(10)
+        card_sb.content_margin_left = 18.0
+        card_sb.content_margin_right = 18.0
+        card_sb.content_margin_top = 10.0
+        card_sb.content_margin_bottom = 10.0
+        card.add_theme_stylebox_override("panel", card_sb)
+        title_layer.add_child(card)
         var help := Label.new()
-        help.text = "\nWASD move · Shift sprint · LMB attack (hold = heavy) · RMB block\nE interact · F capture Echo · G feed · aim at creatures to observe\nI inventory · C craft · R research · J journal · B build (N rotate) · M map\nX equip best · Z dismantle · T smart-eat · H drone · U robot\n1-5 party commands (V cycles) · F5 quicksave · F9 quickload\n` debug console · board the Dawn Skiff with E and fly with WASD/SPACE\n\nA full Godot 4 desktop port of the ASTRAWILD Unreal Engine 5 project."
+        help.text = "WASD move · Shift sprint · LMB attack · RMB block · Q dodge · E interact\nF capture Echo · I inventory · C craft · J journal · M map · Esc pause"
         help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         help.add_theme_font_size_override("font_size", 13)
-        help.add_theme_color_override("font_color", Color(0.7, 0.72, 0.78))
-        center.add_child(help)
+        help.add_theme_color_override("font_color", Color(0.82, 0.8, 0.85))
+        card.add_child(help)
+
+        # ---- version chip (top-right) ----
+        var chip := PanelContainer.new()
+        chip.position = Vector2(vp.x - 206, 16)
+        var chip_sb := StyleBoxFlat.new()
+        chip_sb.bg_color = Color(0.05, 0.06, 0.1, 0.55)
+        chip_sb.border_color = Color(0.95, 0.76, 0.35, 0.4)
+        chip_sb.set_border_width_all(1)
+        chip_sb.set_corner_radius_all(8)
+        chip_sb.content_margin_left = 12.0
+        chip_sb.content_margin_right = 12.0
+        chip_sb.content_margin_top = 4.0
+        chip_sb.content_margin_bottom = 4.0
+        chip.add_theme_stylebox_override("panel", chip_sb)
+        title_layer.add_child(chip)
+        var chip_lbl := Label.new()
+        chip_lbl.text = "%s · Godot 4 · 226 species" % GAME_VERSION
+        chip_lbl.add_theme_font_size_override("font_size", 12)
+        chip_lbl.add_theme_color_override("font_color", Color(0.92, 0.85, 0.7))
+        chip.add_child(chip_lbl)
 
         var footer := Label.new()
-        footer.text = "Click anywhere or press Enter to begin · The Shattered Vale · 12 zones · 226 Echo species · Godot 4"
+        footer.text = "The Shattered Vale awaits · 12 zones · 2 villages · 2 dungeons · 11-quest campaign · full offline single-player"
         footer.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
         footer.position = Vector2(0, -30)
         footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         footer.add_theme_font_size_override("font_size", 12)
-        footer.add_theme_color_override("font_color", Color(0.5, 0.55, 0.65))
+        footer.add_theme_color_override("font_color", Color(0.72, 0.66, 0.6, 0.9))
         title_layer.add_child(footer)
+
+        # fade the whole screen in from black
+        var curtain := ColorRect.new()
+        curtain.color = Color(0.01, 0.01, 0.02)
+        curtain.set_anchors_preset(Control.PRESET_FULL_RECT)
+        curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        title_layer.add_child(curtain)
+        create_tween().tween_property(curtain, "color:a", 0.0, 0.9).set_ease(Tween.EASE_OUT)
+
         if _start_btn:
                 _start_btn.grab_focus()
+
+
+func _ken_burns(tr: TextureRect) -> void:
+        ## wait for layout, then start the slow centered zoom
+        await get_tree().process_frame
+        await get_tree().process_frame
+        if not is_instance_valid(tr):
+                return
+        tr.pivot_offset = tr.size * 0.5
+        var tw := create_tween().set_loops()
+        tw.tween_property(tr, "scale", Vector2(1.07, 1.07), 42.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+        tw.tween_property(tr, "scale", Vector2.ONE, 42.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+
+func _menu_button(label: String, primary: bool) -> Button:
+        ## Amber-on-dark stylized menu button (v1.2 title pass).
+        var b := Button.new()
+        b.text = label
+        b.custom_minimum_size = Vector2(300, 48)
+        b.add_theme_font_size_override("font_size", 19)
+        b.focus_mode = Control.FOCUS_ALL
+
+        var normal := StyleBoxFlat.new()
+        normal.bg_color = Color(0.06, 0.07, 0.12, 0.72)
+        normal.border_color = Color(0.95, 0.76, 0.35, 0.45 if primary else 0.3)
+        normal.set_border_width_all(1)
+        normal.set_corner_radius_all(12)
+        normal.content_margin_left = 20.0
+        normal.content_margin_right = 20.0
+        normal.content_margin_top = 10.0
+        normal.content_margin_bottom = 10.0
+
+        var hover := normal.duplicate()
+        hover.bg_color = Color(0.16, 0.13, 0.06, 0.85)
+        hover.border_color = Color(0.98, 0.8, 0.4, 0.95)
+        hover.set_border_width_all(2)
+
+        var pressed := normal.duplicate()
+        pressed.bg_color = Color(0.24, 0.18, 0.07, 0.92)
+        pressed.border_color = Color(1.0, 0.85, 0.5, 1.0)
+
+        var focus := normal.duplicate()
+        focus.border_color = Color(0.98, 0.8, 0.4, 1.0)
+        focus.set_border_width_all(2)
+
+        b.add_theme_stylebox_override("normal", normal)
+        b.add_theme_stylebox_override("hover", hover)
+        b.add_theme_stylebox_override("pressed", pressed)
+        b.add_theme_stylebox_override("focus", focus)
+        b.add_theme_color_override("font_color", Color(0.97, 0.93, 0.86))
+        b.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.62))
+        b.add_theme_color_override("font_pressed_color", Color(1.0, 0.95, 0.75))
+        b.add_theme_color_override("font_focus_color", Color(1.0, 0.9, 0.62))
+        return b
 
 
 func _start_game(continue_save: bool) -> void:
@@ -584,7 +769,8 @@ func _smoke_find_anim(n: Node) -> AnimationPlayer:
 func _screenshot_routine() -> void:
         ## --screenshot [name] [delay]: boot world, wait for things to settle,
         ## optionally turn the camera toward the nearest rigged creature, then
-        ## save res://shot_<name>.png and quit.
+        ## save res://shot_<name>.png and quit. shot name "title" captures the
+        ## title screen itself (world never boots).
         var args := OS.get_cmdline_user_args()
         var shot_name := "game"
         var delay := 7.0
@@ -594,7 +780,17 @@ func _screenshot_routine() -> void:
                 if a.begins_with("--delay="):
                         delay = float(a.trim_prefix("--delay="))
         await get_tree().create_timer(delay).timeout
-        var fwd := -player.global_transform.basis.z
+        var fwd := Vector3.FORWARD
+        if is_instance_valid(player):
+                fwd = -player.global_transform.basis.z
+        if not is_instance_valid(player):
+                # title-only capture path — save and quit before world refs
+                await get_tree().process_frame
+                var img0: Image = get_viewport().get_texture().get_image()
+                var err0 := img0.save_png("res://shot_%s.png" % shot_name)
+                print("SCREENSHOT saved=", err0 == OK, " path=res://shot_%s.png" % shot_name, " size=", img0.get_size())
+                get_tree().quit(0)
+                return
         if shot_name == "village":
                 # teleport near Dawnstead and frame the village from above
                 var vx: float = -120.0
