@@ -1,3 +1,4 @@
 .godot/
 shot_*.png
 build/
+shot_*.png.import
