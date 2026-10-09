@@ -98,20 +98,26 @@ func _build_mesh() -> void:
         var st := SurfaceTool.new()
         st.begin(Mesh.PRIMITIVE_TRIANGLES)
         var gt: Color = Color(zone["ground"][0], zone["ground"][1], zone["ground"][2])
-        # v1.3 gallery pass: richer ground — 14% darker + 25% more saturated so
-        # no lighting stack (even a 2-3x hot one) can blow the terrain to white;
-        # the world reads as tinted earth instead of pastel plastic
+        # v1.4 world-dress pass: zone ground colors ship at display-brightness
+        # (DawnFields G=0.8) — after sun+sky-ambient (~1.3x) they clipped to
+        # ~245/255 and every vertex-color variation was crushed to flat neon.
+        # Re-base to a mid albedo (~0.45 lit ≈ 150/255) so tone noise, meadow
+        # patches, moss, shoreline and slope-rock all stay readable in-world.
         var lum: float = gt.r * 0.299 + gt.g * 0.587 + gt.b * 0.114
         gt = Color(
-                clampf(lerpf(lum, gt.r, 1.25), 0.0, 1.0) * 0.86,
-                clampf(lerpf(lum, gt.g, 1.25), 0.0, 1.0) * 0.86,
-                clampf(lerpf(lum, gt.b, 1.25), 0.0, 1.0) * 0.86,
+                clampf(lerpf(lum, gt.r, 1.15), 0.0, 1.0) * 0.55,
+                clampf(lerpf(lum, gt.g, 1.15), 0.0, 1.0) * 0.55,
+                clampf(lerpf(lum, gt.b, 1.15), 0.0, 1.0) * 0.55,
         )
         var rock := Color(0.42, 0.38, 0.34)
         var snow := Color(0.80, 0.85, 0.93)
         var char_col := Color(0.16, 0.13, 0.12)
         var muck := Color(0.18, 0.24, 0.16)
         var sand := Color(0.55, 0.5, 0.42)
+        # v1.4 world-dress pass: dry-golden meadow patches + shoreline grit
+        var olive := Color(0.58, 0.52, 0.27)
+        var shore := Color(0.52, 0.48, 0.40)
+        var patch_col := gt.lerp(olive, 0.68)
         # v1.3 gallery pass: subtle high-frequency tonal noise so the ground
         # reads as "dirt with variation" instead of one flat vertex color
         var tone: float = 0.0
@@ -122,12 +128,22 @@ func _build_mesh() -> void:
                         var h: float = heights[i]
                         var v := Vector3(tile_origin.x + step * ix, h, tile_origin.z + step * iz)
                         var col := gt
-                        # v1.3 gallery pass: ±6% tonal noise per vertex (cheap fake detail)
+                        # v1.4: tonal noise ±9% (was ±6%) — reads as broken
+                        # ground instead of a slightly noisy flat fill
                         tone = noise.fbm(v.x, v.z, 11.0, 2)
                         if tone > 0.5:
-                                col = col.lightened(clampf((tone - 0.5) * 0.12, 0.0, 0.06))
+                                col = col.lightened(clampf((tone - 0.5) * 0.18, 0.0, 0.09))
                         else:
-                                col = col.darkened(clampf((0.5 - tone) * 0.12, 0.0, 0.06))
+                                col = col.darkened(clampf((0.5 - tone) * 0.18, 0.0, 0.09))
+                        # v1.4: ~48 m meadow patches toward a drier olive tone —
+                        # breaks the single-hue "flat neon field" read at distance
+                        # while staying relative to the zone's own ground color;
+                        # low band darkens toward moss so both patch polarities show
+                        var patch: float = noise.fbm(v.x, v.z, 48.0, 2)
+                        if patch > 0.34:
+                                col = col.lerp(patch_col, clampf((patch - 0.34) * 2.0, 0.0, 1.0) * 0.75)
+                        elif patch < -0.3:
+                                col = col.darkened(clampf((-0.3 - patch) * 1.0, 0.0, 1.0) * 0.22)
                         # slope → rock
                         var slope := _grid_slope(ix, iz)
                         var rock_mix: float = clampf(slope * 2.4 - 0.5, 0.0, 1.0)
@@ -140,6 +156,11 @@ func _build_mesh() -> void:
                                 col = col.lerp(char_col, clampf((h - 34.0) / 10.0, 0.0, 1.0) * 0.8)
                         if h < 0.0 and zone.get("dressing", {}).get("muck", false):
                                 col = col.lerp(muck, clampf(-h / 1.5, 0.0, 1.0))
+                        # v1.4: visible shoreline — wet-grit band above the water
+                        # line so lakes/rivers get real banks instead of an abrupt
+                        # grass-to-water edge (marsh muck still wins where set)
+                        if h > -3.0 and h < -1.3 and not zone.get("dressing", {}).get("muck", false):
+                                col = col.lerp(shore, clampf((-1.3 - h) / 1.7, 0.0, 1.0) * 0.55)
                         if h < -3.0:
                                 col = col.lerp(sand, clampf((-3.0 - h) / 6.0, 0.0, 1.0))
                         st.set_color(col)

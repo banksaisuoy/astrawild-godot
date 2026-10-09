@@ -234,7 +234,9 @@ func _dress_all_zones() -> void:
                         "conifer": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
                         "spore": tree_path = "res://assets/meshes/environment/SM_Tree_SporeCanopy.glb"
                         "dead": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
-                var tree_count := int(float(dressing.get("tree_density", 0.0)) * 430.0)
+                # v1.4 world-dress pass: density × ~2.3 (perf guard allows 22k instances,
+                # v1.3 used only ~6.7k — the world read as empty at this scale)
+                var tree_count := int(float(dressing.get("tree_density", 0.0)) * 820.0)
                 if tree_path != "" and tree_count > 0:
                         var tree_mat: Material = null
                         if String(dressing.get("trees", "")) == "dead":
@@ -251,7 +253,7 @@ func _dress_all_zones() -> void:
                                 _add_tree_collisions(trs)
 
                 # rocks
-                var rock_count := int(float(dressing.get("rocks", 0.0)) * 200.0)
+                var rock_count := int(float(dressing.get("rocks", 0.0)) * 420.0)
                 if rock_count > 0:
                         var rock_mat: Material = null
                         if dressing.get("char", false):
@@ -270,16 +272,16 @@ func _dress_all_zones() -> void:
                         _multimesh(rock_path, rtrs, rock_mat)
 
                 # grass
-                var grass_count := int(float(dressing.get("grass", 0.0)) * 1400.0)
+                var grass_count := int(float(dressing.get("grass", 0.0)) * 2100.0)
                 if grass_count > 0:
                         var gtrs := []
                         for p in _scatter(rng, grass_count, zone, 0.5):
-                                var s := rng.randf_range(0.7, 1.6)
+                                var s := rng.randf_range(1.15, 2.3)
                                 gtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
                         _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false)
                         if dressing.get("muck", false):
                                 var ftrs := []
-                                for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 520.0), zone, 0.4):
+                                for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
                                         ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
                                 _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs)
 
@@ -287,6 +289,10 @@ func _dress_all_zones() -> void:
                 _dress_special(rng, zone)
                 # v1.1 Phase V6: CC0 prop kits (Kenney nature + zone signatures)
                 _dress_prop_kits(rng, zone)
+                # v1.4: the home meadow — dense ring around the spawn camp so the
+                # first frame a new player sees reads as alive, not empty
+                if dressing.get("camp", false):
+                        _dress_camp_richness(rng)
 
 
 func _add_tree_collisions(trs: Array) -> void:
@@ -443,50 +449,92 @@ func _dress_prop_kits(rng: RandomNumberGenerator, zone: Dictionary) -> void:
         var grass_k: float = float(d.get("grass", 0.0))
         var special: String = String(d.get("special", ""))
 
-        # --- mushrooms: deep forest zones ---
+        # --- mushrooms: deep forest zones (v1.4 density pass) ---
         if trees == "broadleaf" and grass_k >= 0.6:
-                _kit_multimesh(rng, zone, ["mushroom_redTall", "mushroom_tanTall"], 34, 0.85, 1.5, true)
+                _kit_multimesh(rng, zone, ["mushroom_redTall", "mushroom_tanTall"], 68, 0.85, 1.5, true)
         if zid == "Zone_Glimmerwood":
-                _kit_multimesh(rng, zone, ["mushroom_redGroup"], 26, 0.9, 1.8, true, Color(0.9, 0.4, 0.45))
+                _kit_multimesh(rng, zone, ["mushroom_redGroup"], 52, 0.9, 1.8, true, Color(0.9, 0.4, 0.45))
 
         # --- flowers: meadow zones ---
         if grass_k >= 0.8:
-                _kit_multimesh(rng, zone, ["flower_redA", "flower_yellowB", "flower_purpleC"], 60, 0.6, 1.2, false)
+                _kit_multimesh(rng, zone, ["flower_redA", "flower_yellowB", "flower_purpleC"], 130, 0.6, 1.2, false)
         if zid == "Zone_VerdantReach":
-                _kit_multimesh(rng, zone, ["flower_redB", "flower_yellowA", "flower_purpleA"], 90, 0.6, 1.3, false)
+                _kit_multimesh(rng, zone, ["flower_redB", "flower_yellowA", "flower_purpleA"], 200, 0.6, 1.3, false)
 
         # --- logs & stumps: forest floors ---
         if trees != "none" and d.get("tree_density", 0.0) >= 0.3:
-                _kit_multimesh(rng, zone, ["log", "stump_round", "stump_old"], 18, 0.8, 1.4, true)
+                _kit_multimesh(rng, zone, ["log", "stump_round", "stump_old"], 40, 0.8, 1.4, true)
 
         # --- bushes: anywhere green ---
         if grass_k >= 0.4:
-                _kit_multimesh(rng, zone, ["plant_bushSmall", "plant_bush", "plant_flatTall"], 40, 0.7, 1.5, false)
+                _kit_multimesh(rng, zone, ["plant_bushSmall", "plant_bush", "plant_flatTall"], 88, 0.7, 1.5, false)
 
         # --- lily pads: marsh + shallows ---
         if special == "glow_reeds" or zid == "Zone_AzureShallows" or zid == "Zone_PearlseaReef":
-                _kit_multimesh(rng, zone, ["lily_small", "lily_large"], 46, 0.5, 1.4, false)
+                _kit_multimesh(rng, zone, ["lily_small", "lily_large"], 96, 0.5, 1.4, false)
 
         # --- cacti: the Sunscar signature ---
         if zid == "Zone_Sunscar":
-                _kit_multimesh(rng, zone, ["cactus_tall", "cactus_short"], 40, 0.7, 1.4, true)
+                _kit_multimesh(rng, zone, ["cactus_tall", "cactus_short"], 84, 0.7, 1.4, true)
 
         # --- palms: isles + reef ---
         if zid == "Zone_TidebreakerIsles" or zid == "Zone_PearlseaReef":
-                _kit_multimesh(rng, zone, ["tree_palmTall", "tree_palmShort"], 34, 0.35, 0.7, true)
+                _kit_multimesh(rng, zone, ["tree_palmTall", "tree_palmShort"], 60, 0.35, 0.7, true)
 
         # --- big cliffs: ember + storm ---
         if zid == "Zone_EmberRidge":
-                _kit_multimesh(rng, zone, ["cliff_rock", "cliff_large_stone"], 26, 0.55, 1.1, true)
+                _kit_multimesh(rng, zone, ["cliff_rock", "cliff_large_stone"], 46, 0.55, 1.1, true)
         if zid == "Zone_Stormcrest":
-                _kit_multimesh(rng, zone, ["rock_tallA", "rock_tallD", "rock_tallG"], 34, 0.5, 1.0, true)
+                _kit_multimesh(rng, zone, ["rock_tallA", "rock_tallD", "rock_tallG"], 64, 0.5, 1.0, true)
 
         # --- snow boulders: frostveil ---
         if d.get("snow", false):
-                _kit_multimesh(rng, zone, ["rock_largeB", "rock_largeE"], 24, 0.5, 1.0, true, Color(0.88, 0.92, 0.98))
+                _kit_multimesh(rng, zone, ["rock_largeB", "rock_largeE"], 48, 0.5, 1.0, true, Color(0.88, 0.92, 0.98))
 
         # --- scattered stones: everywhere, light density ---
-        _kit_multimesh(rng, zone, ["rock_smallB", "rock_smallE", "stone_smallC"], 26, 0.5, 1.2, false)
+        _kit_multimesh(rng, zone, ["rock_smallB", "rock_smallE", "stone_smallC"], 56, 0.5, 1.2, false)
+
+
+func _dress_camp_richness(rng: RandomNumberGenerator) -> void:
+        ## v1.4: concentrated dressing in a 95 m ring around the spawn camp —
+        ## global scatter at zone scale can never look dense (640,000 m² per
+        ## zone), but the player's first hour lives inside this ring.
+        var ring: Array = []
+        var f_red: Array = []
+        var f_yellow: Array = []
+        var f_purple: Array = []
+        var ferns: Array = []
+        var tries := 0
+        while ring.size() < 1900 and tries < 22000:
+                tries += 1
+                var ang: float = rng.randf() * TAU
+                var rad: float = sqrt(rng.randf()) * 95.0
+                if rad < 4.0:
+                        continue
+                var x: float = _camp_pos.x + cos(ang) * rad
+                var z: float = _camp_pos.z + sin(ang) * rad
+                var h: float = tile_height(x, z)
+                if h < -1.0:
+                        continue
+                if slope_at(x, z) > 0.5:
+                        continue
+                var p := Vector3(x, h, z)
+                var s := rng.randf_range(1.8, 3.4)
+                ring.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
+                var roll: float = rng.randf()
+                if f_red.size() < 150 and roll < 0.07:
+                        f_red.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(1.4, 2.0) * KENNEY_PROP_SCALE), p + Vector3(0, 0.03, 0)))
+                elif f_yellow.size() < 150 and roll < 0.14:
+                        f_yellow.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(1.4, 2.0) * KENNEY_PROP_SCALE), p + Vector3(0, 0.03, 0)))
+                elif f_purple.size() < 140 and roll < 0.21:
+                        f_purple.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(1.4, 2.0) * KENNEY_PROP_SCALE), p + Vector3(0, 0.03, 0)))
+                elif ferns.size() < 200 and roll < 0.33:
+                        ferns.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(1.1, 2.0)), p + Vector3(0, 0.02, 0)))
+        _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", ring, null, false)
+        _multimesh("res://assets/meshes/kenney/nature/flower_redA.glb", f_red, null, false)
+        _multimesh("res://assets/meshes/kenney/nature/flower_yellowB.glb", f_yellow, null, false)
+        _multimesh("res://assets/meshes/kenney/nature/flower_purpleC.glb", f_purple, null, false)
+        _multimesh("res://assets/meshes/environment/SM_Fern.glb", ferns, null, false)
 
 
 const KENNEY_PROP_SCALE := 2.6  # Kenney nature props import at mini scale

@@ -2,3 +2,6 @@
 shot_*.png
 build/
 shot_*.png.import
+docs/shots/live/*.import
+gallery/*.import
+export/
