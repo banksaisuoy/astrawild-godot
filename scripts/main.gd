@@ -235,7 +235,7 @@ func _build_title() -> void:
         chip.add_theme_stylebox_override("panel", chip_sb)
         title_layer.add_child(chip)
         var chip_lbl := Label.new()
-        chip_lbl.text = "%s · Godot 4 · 226 species" % GAME_VERSION
+        chip_lbl.text = "%s · Godot 4 · 228 species" % GAME_VERSION
         chip_lbl.add_theme_font_size_override("font_size", 12)
         chip_lbl.add_theme_color_override("font_color", Color(0.92, 0.85, 0.7))
         chip.add_child(chip_lbl)
@@ -851,6 +851,9 @@ func _screenshot_routine() -> void:
                         shot_name = a.trim_prefix("--shot=")
                 if a.begins_with("--delay="):
                         delay = float(a.trim_prefix("--delay="))
+                if a.begins_with("--hour="):
+                        # gallery/tuning override: jump the clock before the wait
+                        Game.time_minutes = float(a.trim_prefix("--hour=")) * 60.0
         await get_tree().create_timer(delay).timeout
         # --clean: hide HUD/panels for pure world-showcase captures
         if args.find("--clean") >= 0 and is_instance_valid(hud):
@@ -874,20 +877,60 @@ func _screenshot_routine() -> void:
                 var vz: float = 0.0
                 player.global_position = Vector3(vx - 40.0, world.tile_height(vx - 40.0, vz) + 1.5, vz)
                 await get_tree().create_timer(0.8).timeout
-                var cam0: Camera3D = get_viewport().get_camera_3d()
-                if cam0:
-                        cam0.position = Vector3(vx - 26.0, world.tile_height(vx, vz) + 22.0, vz + 26.0)
-                        cam0.look_at(Vector3(vx, world.tile_height(vx, vz) + 2.0, vz), Vector3.UP)
+                var cam0: Camera3D = Camera3D.new()
+                world.add_child(cam0)
+                cam0.global_position = Vector3(vx - 26.0, world.tile_height(vx, vz) + 22.0, vz + 26.0)
+                cam0.look_at(Vector3(vx, world.tile_height(vx, vz) + 2.0, vz), Vector3.UP)
+                cam0.make_current()
         if shot_name == "plaza":
                 # close-up of the campfire plaza + stone paths
                 var px: float = -120.0
                 var pz: float = 0.0
                 player.global_position = Vector3(px + 6.0, world.tile_height(px + 6.0, pz) + 1.5, pz)
                 await get_tree().create_timer(0.8).timeout
-                var camp: Camera3D = get_viewport().get_camera_3d()
-                if camp:
-                        camp.position = Vector3(px + 10.0, world.tile_height(px, pz) + 4.5, pz + 12.0)
-                        camp.look_at(Vector3(px, world.tile_height(px, pz) + 1.0, pz), Vector3.UP)
+                var camp: Camera3D = Camera3D.new()
+                world.add_child(camp)
+                camp.global_position = Vector3(px + 10.0, world.tile_height(px, pz) + 4.5, pz + 12.0)
+                camp.look_at(Vector3(px, world.tile_height(px, pz) + 1.0, pz), Vector3.UP)
+                camp.make_current()
+        if shot_name == "zone":
+                # v1.3 gameplay gallery: biome identity shot — teleport to a zone
+                # center (via --zone=Zone_X), mark it discovered so the compass
+                # strip names it, and capture palette/props/fog with the HUD on
+                var zid := "Zone_Glimmerwood"
+                for a2 in args:
+                        if a2.begins_with("--zone="):
+                                zid = a2.trim_prefix("--zone=")
+                var zdef: Dictionary = Data.zone_by_id.get(zid, {})
+                var zc: Array = zdef.get("center", [-400.0, 0.0])
+                var zpx: float = float(zc[0]) + 8.0
+                var zpz: float = float(zc[1]) + 8.0
+                player.global_position = Vector3(zpx, world.tile_height(zpx, zpz) + 1.5, zpz)
+                Game.discovered_zones[zid] = true
+                await get_tree().create_timer(1.6).timeout
+        if shot_name == "combat":
+                # v1.3 gameplay gallery: mid-fight frame — a hostile Echo engages
+                # the player; two light swings land so health bars + hit flash show
+                var hdef: Dictionary = Data.species_def("Echo_Ashfang")
+                if not hdef.is_empty():
+                        var echo_script2 := load("res://scripts/creatures/echo.gd")
+                        var he: Node = echo_script2.new(hdef, RandomNumberGenerator.new())
+                        var hpp: Vector3 = player.global_position + fwd * 5.5
+                        he.position = Vector3(hpp.x, world.tile_height(hpp.x, hpp.z) + 0.3, hpp.z)
+                        world.creatures_root.add_child(he)
+                        await get_tree().create_timer(1.4).timeout
+                        player.look_at(Vector3(he.position.x, player.global_position.y, he.position.z), Vector3.UP)
+                        await get_tree().create_timer(0.9).timeout
+                        player._light_attack()
+                        await get_tree().create_timer(0.55).timeout
+                        player._light_attack()
+                        await get_tree().create_timer(0.35).timeout
+        if shot_name == "night":
+                # v1.3 gameplay gallery: night atmosphere — moon light, stars,
+                # campfire glow near the village plaza, HUD clock reads late
+                Game.time_minutes = 21.0 * 60.0
+                player.global_position = Vector3(-114.0, world.tile_height(-114.0, 0.0) + 1.5, 0.0)
+                await get_tree().create_timer(2.2).timeout
         if shot_name == "tierb":
                 # showcase of procedural Tier B species from different families
                 var gallery := [
@@ -901,10 +944,11 @@ func _screenshot_routine() -> void:
                         if gdef.is_empty():
                                 continue
                         var ge: Node = echo_script.new(gdef, RandomNumberGenerator.new())
-                        var gp: Vector3 = player.global_position + fwd * 9.0 + player.global_transform.basis.x * (float(gi) - 2.5) * 3.0
-                        ge.position = Vector3(gp.x, world.tile_height(gp.x, gp.z) + 0.3, gp.z)
+                        var gp: Vector3 = player.global_position + fwd * 5.5 + player.global_transform.basis.x * (float(gi) - 2.5) * 2.2
+                        ge.position = Vector3(gp.x, maxf(world.tile_height(gp.x, gp.z), player.global_position.y) + 0.35, gp.z)
                         ge.rotation.y = player.rotation.y + PI
                         world.creatures_root.add_child(ge)
+                        ge.set("ai_state", "Stay")
 
                 await get_tree().create_timer(1.5).timeout
         if shot_name == "gallery":
@@ -920,31 +964,59 @@ func _screenshot_routine() -> void:
                         if gdef.is_empty():
                                 continue
                         var ge: Node = echo_script.new(gdef, RandomNumberGenerator.new())
-                        var gp: Vector3 = player.global_position + fwd * 9.0 + player.global_transform.basis.x * (float(gi) - 2.5) * 3.0
-                        ge.position = Vector3(gp.x, world.tile_height(gp.x, gp.z) + 0.3, gp.z)
+                        var gp: Vector3 = player.global_position + fwd * 5.5 + player.global_transform.basis.x * (float(gi) - 2.5) * 2.2
+                        ge.position = Vector3(gp.x, maxf(world.tile_height(gp.x, gp.z), player.global_position.y) + 0.35, gp.z)
                         ge.rotation.y = player.rotation.y + PI
                         world.creatures_root.add_child(ge)
+                        ge.set("ai_state", "Stay")
                 await get_tree().create_timer(1.5).timeout
         if OS.get_cmdline_user_args().find("--creature") >= 0 or shot_name == "gallery" or shot_name == "tierb":
                 # aim the player camera at the nearest rigged Echo
+                # (v1.3: exclude captured followers — else the camera stares at
+                # the pet riding the player instead of the wild herd ahead)
                 var best: Node3D = null
                 var bd := INF
                 for c in get_tree().get_nodes_in_group("creatures"):
-                        if c is Echo and c._anim != null and is_instance_valid(c):
+                        if c is Echo and c._anim != null and is_instance_valid(c) and not c.captured and not c.defeated:
                                 var d: float = player.global_position.distance_to(c.global_position)
                                 if d < bd:
                                         bd = d
                                         best = c
                 if best:
                         player.look_at(Vector3(best.global_position.x, player.global_position.y, best.global_position.z), Vector3.UP)
+                if args.find("--creature") >= 0 and shot_name == "game":
+                        # v1.3 gallery: real wild echoes average ~160 m out — pull the
+                        # three nearest passives to 8-14 m in front of the player so the
+                        # frame shows living wildlife (their AI keeps running normally)
+                        var fwd_now: Vector3 = -player.global_transform.basis.z
+                        var pulled := 0
+                        var near_list: Array = []
+                        for c2 in get_tree().get_nodes_in_group("creatures"):
+                                if c2 is Echo and is_instance_valid(c2) and not c2.captured and not c2.defeated \
+                                                and not c2.def.get("hostile", false):
+                                        near_list.append(c2)
+                        near_list.sort_custom(func(a2, b2): return player.global_position.distance_to(a2.global_position) < player.global_position.distance_to(b2.global_position))
+                        for c2 in near_list:
+                                if pulled >= 3:
+                                        break
+                                var ang: float = (-0.5 + float(pulled) * 0.5)  # -0.5, 0, 0.5 rad-ish spread
+                                var off: Vector3 = (fwd_now * (9.0 + float(pulled) * 2.5)).rotated(Vector3.UP, ang * 0.8)
+                                var np: Vector3 = player.global_position + off
+                                c2.global_position = Vector3(np.x, world.tile_height(np.x, np.z) + 0.3, np.z)
+                                c2.look_at(Vector3(player.global_position.x, c2.global_position.y, player.global_position.z), Vector3.UP)
+                                pulled += 1
+                        await get_tree().create_timer(1.2).timeout
                 if shot_name == "gallery" or shot_name == "tierb":
                         # high 3/4 view of the line from behind the player
-                        # (v1.2: pulled back + up so the player body never blocks the frame)
-                        var cam: Camera3D = get_viewport().get_camera_3d()
-                        if cam:
-                                var mid: Vector3 = player.global_position + fwd * 9.0
-                                cam.position = player.global_position + Vector3(0, 6.5, 0) - fwd * 13.0
-                                cam.look_at(mid + Vector3(0, 1.0, 0), Vector3.UP)
+                        # (v1.3: pulled back to 18 m / 8 m up — the v1.2 framing lost
+                        # wanderers off-screen; Stay-frozen line + wide framing keeps
+                        # all six species readable in one shot)
+                        var cam: Camera3D = Camera3D.new()
+                        world.add_child(cam)
+                        var mid: Vector3 = player.global_position + fwd * 5.5
+                        cam.global_position = player.global_position + Vector3(0, 3.2, 0) - fwd * 8.5
+                        cam.look_at(mid + Vector3(0, 0.6, 0), Vector3.UP)
+                        cam.make_current()
         # v1.3 V12-e: UI screen captures — help / credits / inventory / map
         if shot_name in ["help", "credits", "inv", "map"]:
                 if shot_name == "inv":

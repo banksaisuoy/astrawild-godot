@@ -41,6 +41,7 @@ var _walk_phase := 0.0
 var _hit_flash := 0.0
 var _death_timer := 0.0
 var _stagger_timer := 0.0
+var _far_tick := 0.0   # v1.3: far-field LOD gate accumulator
 var _personalities := {
         "Brave": {"flee": 0.4, "aggro": 1.2}, "Timid": {"flee": 1.8, "aggro": 0.5},
         "Aggressive": {"flee": 0.5, "aggro": 1.5}, "Curious": {"flee": 1.0, "aggro": 1.0},
@@ -528,6 +529,10 @@ func _update_label() -> void:
         if captured:
                 col = Color(0.55, 0.85, 1.0)
         _label.modulate = col
+        # v1.3: nameplates fade out past 45 m — distant herds read as wildlife,
+        # not as a wall of floating text
+        var pl := get_tree().get_first_node_in_group("player")
+        _label.visible = pl == null or global_position.distance_to(pl.global_position) < 45.0
 
 
 func _add_hit_area() -> void:
@@ -590,6 +595,27 @@ func _process(delta: float) -> void:
                 if _death_timer <= 0.0 and not captured:
                         queue_free()
                 return
+        # v1.3 gallery pass: far-field LOD gate — wild echoes beyond 110 m of the
+        # player freeze their AI/wander/label updates (invisible in the fog) so
+        # doubled wildlife density stays free. Aggro'd, staggered, hit-flashed,
+        # boss, dormant-aura and follower echoes always run the full pass.
+        if not captured and not boss_mode and not dormant and _stagger_timer <= 0.0 \
+                        and _hit_flash <= 0.0 and ai_state != "Combat" and ai_state != "Flee":
+                var p := get_tree().get_first_node_in_group("player")
+                if p and global_position.distance_to(p.global_position) > 110.0:
+                        _far_tick -= delta
+                        if _far_tick > 0.0:
+                                return
+                        _far_tick = 0.5
+                        if _label != null:
+                                _label.visible = false
+                        # slow path: only keep the activity/sleep state honest
+                        think_timer -= 0.5
+                        if think_timer <= 0.0:
+                                think_timer = THINK_INTERVAL
+                                if not _in_activity_window():
+                                        ai_state = "Sleep"
+                        return
         _hit_flash = maxf(0.0, _hit_flash - delta * 3.0)
         if _stagger_timer > 0.0:
                 _stagger_timer -= delta

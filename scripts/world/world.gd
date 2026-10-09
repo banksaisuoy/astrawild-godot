@@ -110,8 +110,8 @@ func _build_water() -> void:
         var mat := StandardMaterial3D.new()
         mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
         mat.albedo_color = Color(0.16, 0.38, 0.52, 0.72)
-        mat.roughness = 0.12
-        mat.metallic = 0.1
+        mat.roughness = 0.3
+        mat.metallic = 0.0
         water.material_override = mat
         add_child(water)
 
@@ -234,7 +234,7 @@ func _dress_all_zones() -> void:
                         "conifer": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
                         "spore": tree_path = "res://assets/meshes/environment/SM_Tree_SporeCanopy.glb"
                         "dead": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
-                var tree_count := int(float(dressing.get("tree_density", 0.0)) * 240.0)
+                var tree_count := int(float(dressing.get("tree_density", 0.0)) * 430.0)
                 if tree_path != "" and tree_count > 0:
                         var tree_mat: Material = null
                         if String(dressing.get("trees", "")) == "dead":
@@ -251,7 +251,7 @@ func _dress_all_zones() -> void:
                                 _add_tree_collisions(trs)
 
                 # rocks
-                var rock_count := int(float(dressing.get("rocks", 0.0)) * 130.0)
+                var rock_count := int(float(dressing.get("rocks", 0.0)) * 200.0)
                 if rock_count > 0:
                         var rock_mat: Material = null
                         if dressing.get("char", false):
@@ -270,7 +270,7 @@ func _dress_all_zones() -> void:
                         _multimesh(rock_path, rtrs, rock_mat)
 
                 # grass
-                var grass_count := int(float(dressing.get("grass", 0.0)) * 700.0)
+                var grass_count := int(float(dressing.get("grass", 0.0)) * 1400.0)
                 if grass_count > 0:
                         var gtrs := []
                         for p in _scatter(rng, grass_count, zone, 0.5):
@@ -279,7 +279,7 @@ func _dress_all_zones() -> void:
                         _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false)
                         if dressing.get("muck", false):
                                 var ftrs := []
-                                for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 260.0), zone, 0.4):
+                                for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 520.0), zone, 0.4):
                                         ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
                                 _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs)
 
@@ -951,6 +951,10 @@ func _spawn_all_creatures() -> void:
                         var def: Dictionary = Data.species_def(species_id)
                         if def.is_empty():
                                 continue
+                        # v1.3 gallery pass: passive species ×2.2 so the world
+                        # visibly teems with life; hostiles keep their balance
+                        if not def.get("hostile", false):
+                                count = int(round(count * 2.2))
                         for p in _scatter(rng, count, zone, 0.5):
                                 _spawn_creature(def, p, rng)
         # Auroraling: exactly one, deep in Glimmerwood

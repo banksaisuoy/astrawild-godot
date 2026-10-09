@@ -28,7 +28,7 @@ func setup() -> void:
         sun.shadow_bias = 0.03
         sun.shadow_blur = 1.0
         sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-        sun.directional_shadow_max_distance = 180.0
+        sun.directional_shadow_max_distance = 240.0
         add_child(sun)
 
         sky_mat = ProceduralSkyMaterial.new()
@@ -36,20 +36,20 @@ func setup() -> void:
         sky_mat.sky_horizon_color = Color(0.75, 0.8, 0.85)
         sky_mat.ground_bottom_color = Color(0.15, 0.13, 0.12)
         sky_mat.ground_horizon_color = Color(0.55, 0.52, 0.5)
-        sky_mat.sun_angle_max = 20.0
+        sky_mat.sun_angle_max = 9.0
 
         var env_res := Environment.new()
         env_res.background_mode = Environment.BG_SKY
         env_res.sky = Sky.new()
         env_res.sky.sky_material = sky_mat
         env_res.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-        env_res.ambient_light_energy = 1.0
+        env_res.ambient_light_energy = 0.68
         env_res.tonemap_mode = Environment.TONE_MAPPER_ACES
-        env_res.tonemap_exposure = 1.0
+        env_res.tonemap_exposure = 0.95
         env_res.fog_enabled = true
         env_res.fog_light_color = NOON_FOG
         env_res.fog_density = 0.0007
-        env_res.fog_sky_affect = 0.4
+        env_res.fog_sky_affect = 0.28
 
         env = WorldEnvironment.new()
         env.environment = env_res
@@ -82,10 +82,10 @@ func _apply_atmosphere() -> void:
                 sun_col = NIGHT_SUN
                 fog_col = NIGHT_FOG
                 fog_density = NIGHT_FOG_DENSITY
-                ambient = 0.22
+                ambient = 0.16
                 sky_top = Color(0.03, 0.045, 0.10)
                 sky_horizon = Color(0.07, 0.09, 0.16)
-                sun.light_energy = 0.35
+                sun.light_energy = 0.22
         else:
                 # day arc: dawn (6) -> noon (12.5) -> dusk (19)
                 if h < 12.5:
@@ -99,8 +99,12 @@ func _apply_atmosphere() -> void:
                 var arc: float = clampf((h - 6.0) / 13.0, 0.0, 1.0)
                 var horizonness: float = 1.0 - sin(arc * PI)  # 1 at horizon, 0 at noon
                 fog_density = lerpf(0.0006, 0.0011, horizonness)
-                ambient = lerpf(1.05, 0.8, horizonness)
-                sun.light_energy = lerpf(1.3, 2.2, sin(arc * PI))
+                # v1.3 gallery pass: sun 1.7→1.15 / ambient 0.72→0.5 (was
+                # 1.3→2.2 / 1.05→0.8) — the old stack blew green terrain out to
+                # pure white under the tonemap; now the ground keeps its hue and
+                # hills keep their shaded relief
+                ambient = lerpf(0.45, 0.3, horizonness)
+                sun.light_energy = lerpf(0.9, 0.6, horizonness)
                 sky_top = Color(0.25, 0.42, 0.75).lerp(Color(0.4, 0.6, 0.9), sin(arc * PI))
                 sky_horizon = fog_col
 
