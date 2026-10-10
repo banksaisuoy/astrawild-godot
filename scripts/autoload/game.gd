@@ -492,36 +492,73 @@ func achievement_list() -> Array:
 
 
 # -------------------------------------------------------- PS-7 breeding --
-func nest_interact() -> String:
-        ## called by the Echo Nest building [E]. Auto-picks the two companions
-        ## with the highest trust (>= Familiar 30) across party + box, checks
-        ## pair cooldown (1 in-game day), lays an egg. Returns a status line
-        ## for the toast — honest feedback for every refusal reason.
+func nest_ready() -> String:
+        ## v1.5.1: gatekeeper for the nest screen. Returns "" when pairing may
+        ## open, else an honest refusal line for the toast/prompt.
         if eggs.size() >= EGG_MAX:
                 return "The nest is warm with %d eggs — let them hatch first." % eggs.size()
         if party.size() + echo_box.size() >= 12:
                 return "Your roster is full (12) — no room for chicks."
-        var pool: Array = []
+        var pool := 0
         for e in party + echo_box:
                 if float(e.get("trust", 0.0)) >= NEST_TRUST_MIN:
-                        pool.append(e)
-        if pool.size() < 2:
+                        pool += 1
+        if pool < 2:
                 return "Two companions at Familiar trust (30+) are needed to brood."
-        pool.sort_custom(func _t(a, b): return float(a.get("trust", 0.0)) > float(b.get("trust", 0.0)))
-        var pa: Dictionary = pool[0]
-        var pb: Dictionary = pool[1]
-        var sa: Dictionary = Data.species_def(str(pa["species_id"]))
-        var sb: Dictionary = Data.species_def(str(pb["species_id"]))
+        return ""
+
+
+func nest_candidates() -> Array:
+        ## v1.5.1: every companion eligible to brood (party first, then box),
+        ## highest trust first — the order the nest screen lists them.
+        var out: Array = []
+        for e in party + echo_box:
+                if float(e.get("trust", 0.0)) < NEST_TRUST_MIN:
+                        continue
+                var sid := str(e.get("species_id", ""))
+                var def := Data.species_def(sid)
+                out.append({
+                        "entry": e,
+                        "name": str(e.get("name", "Echo")),
+                        "species_id": sid,
+                        "species_name": str(def.get("name", sid)),
+                        "trust": float(e.get("trust", 0.0)),
+                        "level": int(e.get("level", 1)),
+                        "in_party": party.has(e),
+                })
+        out.sort_custom(func _t(a, b): return float(a.get("trust", 0.0)) > float(b.get("trust", 0.0)))
+        return out
+
+
+func nest_pair(pa: Dictionary, pb: Dictionary) -> String:
+        ## v1.5.1: brood two PLAYER-CHOSEN companions (candidate dicts from
+        ## nest_candidates()) into an egg. Returns a status line — refusals
+        ## are honest strings, success is the egg announcement.
+        if eggs.size() >= EGG_MAX:
+                return "The nest is warm with %d eggs — let them hatch first." % eggs.size()
+        if party.size() + echo_box.size() >= 12:
+                return "Your roster is full (12) — no room for chicks."
+        var ea: Dictionary = pa.get("entry", {})
+        var eb: Dictionary = pb.get("entry", {})
+        if ea.is_empty() or eb.is_empty() or ea == eb:
+                return "Choose two different companions to brood."
+        if float(ea.get("trust", 0.0)) < NEST_TRUST_MIN or float(eb.get("trust", 0.0)) < NEST_TRUST_MIN:
+                return "Both companions need Familiar trust (30+) to brood."
+        var sa: Dictionary = Data.species_def(str(ea["species_id"]))
+        var sb: Dictionary = Data.species_def(str(eb["species_id"]))
         if sa.is_empty() or sb.is_empty():
                 return "The Vale refuses this pairing."
-        var key := "".join([str(pa["species_id"]), "|", str(pb["species_id"])])
+        # cooldown key is order-normalised so A×B and B×A share the same clock
+        var ka := str(ea["species_id"])
+        var kb := str(eb["species_id"])
+        var key := "%s|%s" % [ka, kb] if ka <= kb else "%s|%s" % [kb, ka]
         if _nest_pairs.has(key) and float(_nest_pairs[key]) > float(day):
-                return "%s and %s already brooded today — rest till dawn." % [pa.get("name", "?"), pb.get("name", "?")]
+                return "%s and %s already brooded today — rest till dawn." % [ea.get("name", "?"), eb.get("name", "?")]
         _nest_pairs[key] = day + 1
         # child: 50/50 species from the parents
         var rng := RandomNumberGenerator.new()
         rng.seed = hash("%s-%s-%d-%d" % [key, str(day), Time.get_ticks_msec(), world_seed])
-        var child_sid: String = str(pa["species_id"]) if rng.randf() < 0.5 else str(pb["species_id"])
+        var child_sid: String = ka if rng.randf() < 0.5 else kb
         var child_def: Dictionary = Data.species_def(child_sid)
         # stat inheritance: 50–70% of the stronger parent's base per stat
         var stats := {}
@@ -530,16 +567,16 @@ func nest_interact() -> String:
                 var vb := float(sb.get("stats", {}).get(stat, 10))
                 stats[stat] = int(round(maxf(va, vb) * rng.randf_range(0.5, 0.7)))
         # name: syllable blend of the two parents
-        var child_name := _blend_names(str(pa.get("name", "Echo")), str(pb.get("name", "Echo")))
+        var child_name := _blend_names(str(ea.get("name", "Echo")), str(eb.get("name", "Echo")))
         eggs.append({
                 "species_id": child_sid,
                 "name": child_name,
-                "parents": [str(pa.get("name", "?")), str(pb.get("name", "?"))],
+                "parents": [str(ea.get("name", "?")), str(eb.get("name", "?"))],
                 "hatch_left": EGG_HATCH_SECONDS,
                 "stats": stats,
                 "trust0": 35.0,
         })
-        var line := "%s lays an egg with %s — %s sleeps inside." % [pa.get("name", "?"), pb.get("name", "?"), child_name]
+        var line := "%s lays an egg with %s — %s sleeps inside." % [ea.get("name", "?"), eb.get("name", "?"), child_name]
         toast.emit(line, Color(1.0, 0.87, 0.55))
         toast.emit("It hatches in about 90 seconds — keep exploring.", Color(0.8, 0.85, 0.9))
         Sfx.play_stinger("quest")

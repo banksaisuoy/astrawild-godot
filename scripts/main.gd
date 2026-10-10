@@ -954,23 +954,99 @@ func _run_smoke_checks() -> void:
         Game._check_achievements()
         ach_ok = Game.achievements.has("ach_first_capture") and Game.achievements.has("ach_partner")
         print("SMOKE: achievements unlock=", ach_ok, " count=", Game.achievements.size())
-        # PS-7: breeding → egg → hatch
+        # PS-7/v1.5.1: breeding — MANUAL pair selection → egg → hatch
         var breed_ok := false
         var hatch_name := ""
+        var cand_count := 0
+        var gate_line := ""
+        var refusal_same := ""
+        var swapped_cd := ""
         Game.eggs = []
         Game._nest_pairs = {}
-        var line := Game.nest_interact()
+        var cands: Array = Game.nest_candidates()
+        cand_count = cands.size()
+        var line: String = Game.nest_pair(cands[0], cands[1]) if cand_count >= 2 else "no candidates"
         if Game.eggs.size() == 1:
                 hatch_name = str(Game.eggs[0]["name"])
                 Game.eggs[0]["hatch_left"] = 0.05
                 var roster_before: int = Game.party.size() + Game.echo_box.size()
                 Game._tick_eggs(0.1)
                 breed_ok = Game.eggs.is_empty() and Game.party.size() + Game.echo_box.size() == roster_before + 1
+        if cand_count >= 2:
+                refusal_same = Game.nest_pair(cands[0], cands[0])
+                swapped_cd = Game.nest_pair(cands[1], cands[0])
         Game.party = keep_party
         Game.echo_box = keep_box
         Game.eggs = []
         Game._nest_pairs = {}
+        # nest_ready refusal with an empty roster
+        var keep_p2: Array = Game.party.duplicate()
+        var keep_b2: Array = Game.echo_box.duplicate()
+        Game.party = []
+        Game.echo_box = []
+        gate_line = Game.nest_ready()
+        Game.party = keep_p2
+        Game.echo_box = keep_b2
         print("SMOKE: breeding egg+hatch=", breed_ok, " child=", hatch_name, " nest_line=", line)
+        print("SMOKE: breeding manual candidates=", cand_count, " refusal_same=", refusal_same
+                , " swapped_cooldown=", swapped_cd != "" and swapped_cd.find("already brooded") >= 0
+                , " empty_gate=", gate_line.find("Two companions") >= 0)
+        # v1.5.1: spawn micro-relief — camp core flat, swells 30–110 m out, none far away
+        var relief_core: float = ZoneTerrain._micro_relief(-400.0, 0.0)
+        var relief_peak: float = ZoneTerrain._micro_relief(-354.0, -34.0)
+        var relief_far: float = ZoneTerrain._micro_relief(-100.0, 300.0)
+        var relief_ok: bool = is_equal_approx(relief_core, 0.0) and relief_peak > 2.0 and is_equal_approx(relief_far, 0.0)
+        var dh_relief: float = world.tile_height(-354.0, -34.0) - world.tile_height(-400.0, 0.0)
+        print("SMOKE: micro-relief=", relief_ok, " core=", relief_core, " peak=", relief_peak, " far=", relief_far, " dh=", dh_relief)
+        # PS-9: boss bar phase pips + smooth drain
+        var boss_pip_ok := false
+        var player_node := get_tree().get_first_node_in_group("player")
+        if player_node and hud.boss_pips.size() == 3:
+                var bdef: Dictionary = Data.species_def("Echo_Emberrunner")
+                if not bdef.is_empty():
+                        var boss_echo = load("res://scripts/creatures/echo.gd").new(bdef, RandomNumberGenerator.new())
+                        boss_echo.position = player_node.global_position + Vector3(6.0, 0.0, 0.0)
+                        boss_echo.boss_mode = true
+                        world.creatures_root.add_child(boss_echo)
+                        boss_echo._phase = 2
+                        hud._update_boss(0.016)
+                        boss_pip_ok = hud.boss_bar.visible and hud.boss_label.text.find("Phase 2") >= 0 \
+                                and (hud.boss_pips[2] as ColorRect).color == hud.BOSS_PIP_DIM \
+                                and (hud.boss_pips[0] as ColorRect).color != hud.BOSS_PIP_DIM
+                        hud._update_boss(0.016)
+                        boss_echo.queue_free()
+        print("SMOKE: boss pips+drain=", boss_pip_ok, " pips=", hud.boss_pips.size())
+        # v1.5.1 QA guard: every def.model species (ArtSource SK_Echo GLBs) must
+        # render at a believable size — the GLBs are authored ~0.3-0.9 m tall and
+        # species_models.json carries no scale for them, so the two Huge dungeon
+        # bosses shipped at 1.2 m (player-height "Colossus", label floating in
+        # empty sky 5 m above the body — VLM-caught in shot_boss.png).
+        var model_ok := true
+        var model_report := ""
+        var model_all := ""
+        var echo_script3 := load("res://scripts/creatures/echo.gd")
+        for sid in Data.species:
+                var sdef: Dictionary = Data.species[sid]
+                var mdl := str(sdef.get("model", ""))
+                if not mdl.begins_with("res://assets/meshes/echoes/"):
+                        continue
+                var inst = echo_script3.new(sdef, RandomNumberGenerator.new())
+                if sdef.get("boss", false):
+                        inst.boss_mode = true
+                world.creatures_root.add_child(inst)
+                var br = inst.get("_body_root")
+                var height := 0.0
+                if br and br.get_child_count() > 0:
+                        for mc in br.get_child(0).find_children("*", "MeshInstance3D"):
+                                height = maxf(height, (mc as MeshInstance3D).get_aabb().size.y * (br as Node3D).scale.y)
+                var want: float = 2.5 if sdef.get("boss", false) else 0.45
+                model_all += "%s=%.2f(%s%s) " % [sid, height, sdef.get("size_class", "?"), "+boss" if sdef.get("boss", false) else ""]
+                if height < want:
+                        model_ok = false
+                        model_report += "%s h=%.2f " % [sid, height]
+                inst.queue_free()
+        print("SMOKE: def-model species size=", model_ok, " offenders=", model_report)
+        print("SMOKE: def-model heights: ", model_all)
         # PS-4: fast travel plumbing exists on the map screen
         print("SMOKE: fast travel=", screens.has_method("_fast_travel_go") and screens.has_method("_map_click"))
         # PS-6: settings screen + rebind round-trip
@@ -1097,6 +1173,45 @@ func _screenshot_routine() -> void:
                 Game.time_minutes = 21.0 * 60.0
                 player.global_position = Vector3(-114.0, world.tile_height(-114.0, 0.0) + 1.5, 0.0)
                 await get_tree().create_timer(2.2).timeout
+        if shot_name == "boss":
+                # v1.5.1 PS-9: boss HP bar + phase pips + damage numbers mid-fight.
+                # Vault Colossus at 55% hp → phase 2 (2 pips lit, orange bar).
+                var boss_def_shot: Dictionary = Data.species_def("Creature_VaultColossus")
+                if boss_def_shot.is_empty():
+                        boss_def_shot = Data.species_def("Echo_Gloomfang")
+                if not boss_def_shot.is_empty():
+                        var be = load("res://scripts/creatures/echo.gd").new(boss_def_shot, RandomNumberGenerator.new())
+                        var bpos: Vector3 = player.global_position + fwd * 15.0
+                        be.position = Vector3(bpos.x, world.tile_height(bpos.x, bpos.z) + 0.2, bpos.z)
+                        be.boss_mode = true
+                        world.creatures_root.add_child(be)
+                        be.set("ai_state", "Stay")
+                        player.look_at(Vector3(be.global_position.x, player.global_position.y, be.global_position.z), Vector3.UP)
+                        await get_tree().create_timer(0.8).timeout
+                        be.hp = be.max_hp * 0.55
+                        # numbers last + capture inside the branch: the shared tail
+                        # waits 0.5 s more, by which time the numbers have faded
+                        DamageNumbers.spawn(world.creatures_root, be.global_position + Vector3(0, 3.2, 0), 87.0, "crit")
+                        DamageNumbers.spawn(world.creatures_root, be.global_position + Vector3(-1.6, 2.3, 0.6), 34.0, "weakness")
+                        DamageNumbers.spawn(world.creatures_root, be.global_position + Vector3(1.5, 2.7, -0.4), 21.0, "normal")
+                        await get_tree().create_timer(0.35).timeout
+                        var img_b: Image = get_viewport().get_texture().get_image()
+                        var err_b: int = img_b.save_png("res://shot_boss.png")
+                        print("SCREENSHOT saved=", err_b == OK, " path=res://shot_boss.png", " size=", img_b.get_size())
+                        get_tree().quit(0)
+                        return
+        if shot_name == "relief":
+                # v1.5.1: spawn micro-relief — low 2.8 m eye-height view sweeping
+                # NE across the hand-placed swells so the domes silhouette
+                # (the first 9.5 m aerial framing read as "flat" to VLM)
+                player.global_position = Vector3(-400.0, world.tile_height(-400.0, 0.0) + 1.6, 0.0)
+                await get_tree().create_timer(0.6).timeout
+                var rcam: Camera3D = Camera3D.new()
+                world.add_child(rcam)
+                rcam.global_position = Vector3(-410.0, world.tile_height(-410.0, -75.0) + 1.9, -75.0)
+                rcam.look_at(Vector3(-340.0, world.tile_height(-340.0, -20.0) + 0.6, -20.0), Vector3.UP)
+                rcam.make_current()
+                await get_tree().create_timer(1.4).timeout
         if shot_name == "tierb":
                 # showcase of procedural Tier B species from different families
                 var gallery := [
@@ -1183,8 +1298,8 @@ func _screenshot_routine() -> void:
                         cam.global_position = player.global_position + Vector3(0, 3.2, 0) - fwd * 8.5
                         cam.look_at(mid + Vector3(0, 0.6, 0), Vector3.UP)
                         cam.make_current()
-        # v1.3 V12-e: UI screen captures — help / credits / inventory / map
-        if shot_name in ["help", "credits", "inv", "map"]:
+        # v1.3 V12-e: UI screen captures — help / credits / inventory / map / nest
+        if shot_name in ["help", "credits", "inv", "map", "nest"]:
                 if shot_name == "inv":
                         # a varied, believable backpack so the icon grid shows its range
                         Game.add_item("Item_DawnwoodClub", 1)
@@ -1208,6 +1323,19 @@ func _screenshot_routine() -> void:
                         screens.open("help")
                 elif shot_name == "credits":
                         screens.open("credits")
+                elif shot_name == "nest":
+                        # v1.5.1: manual pair-selection screen — two bonded companions
+                        # pre-selected so the chick preview + confirm state show
+                        Game.party = [
+                                {"species_id": "Echo_Emberrunner", "name": "Emberkit", "trust": 95.0, "level": 3, "hp": 40},
+                                {"species_id": "Echo_Mosspaw", "name": "Mosspaw", "trust": 52.0, "level": 2, "hp": 30},
+                        ]
+                        Game.echo_box = []
+                        screens.open("nest")
+                        var cands_shot: Array = Game.nest_candidates()
+                        if cands_shot.size() >= 2:
+                                screens._nest_toggle(cands_shot[0])
+                                screens._nest_toggle(cands_shot[1])
                 await get_tree().create_timer(1.0).timeout
         await get_tree().create_timer(0.5).timeout
         var img: Image = get_viewport().get_texture().get_image()

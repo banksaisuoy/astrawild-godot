@@ -1,5 +1,5 @@
 {
- "_comment": "Phase V4 mesh-resolution overrides + v1.2 V11-c Tier-B expansion. Manual entries first (Tier S/A); every remaining bestiary species is mapped deterministically (md5 of id) to a Quaternius CC0 rig from its body_plan pool, scale calibrated = TARGET[size_class]/native (see tools/build_rig_maps.py + tools/measure_rigs.gd). v1.3 V12-a: +Echo_Petalume/Echo_Corallume (mod species) \u2014 every species now resolves to rig OR production model; species with def.model are deliberately NOT overridden.",
+ "_comment": "Phase V4 mesh-resolution overrides + v1.2 V11-c Tier-B expansion. Manual entries first (Tier S/A); every remaining bestiary species is mapped deterministically (md5 of id) to a Quaternius CC0 rig from its body_plan pool, scale calibrated = TARGET[size_class]/native (see tools/build_rig_maps.py + tools/measure_rigs.gd). v1.3 V12-a: +Echo_Petalume/Echo_Corallume (mod species) — every species now resolves to rig OR production model; species with def.model are deliberately NOT overridden. v1.5.1: scale-only entries for the 14 def.model SK_Echo species (GLBs authored miniature — the two Huge dungeon bosses shipped 1.2 m tall; scale-only entries keep def.model but resize).",
  "maps": {
   "Echo_Abyssfang": {
    "rig": "monsters_flying/Glub.gltf",
@@ -1128,6 +1128,27 @@
     "monsters_flying/Glub.gltf",
     "monsters_flying/Tribal.gltf"
    ]
+  },
+  "Echo_Mistmender": {
+   "scale": 2.6
+  },
+  "Echo_MistmenderRime": {
+   "scale": 3.0
+  },
+  "Echo_Deepdelver": {
+   "scale": 2.2
+  },
+  "Echo_DeepdelverAbyssal": {
+   "scale": 2.2
+  },
+  "Echo_BastionbeetleBulwark": {
+   "scale": 1.8
+  },
+  "Creature_UnderlightWarden": {
+   "scale": 2.2
+  },
+  "Creature_VaultColossus": {
+   "scale": 3.6
   }
  }
 }

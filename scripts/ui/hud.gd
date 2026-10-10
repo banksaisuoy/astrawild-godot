@@ -17,6 +17,18 @@ var crosshair: Control
 var observe_ring: Control
 var boss_bar: ProgressBar
 var boss_label: Label
+# PS-9: phase pips (3 diamonds under the bar) + smooth drain + phase colour
+var boss_pips: Array = []
+var _boss_id := 0
+var _boss_shown_hp := -1.0
+var _boss_phase_seen := 0
+const BOSS_PHASE_COLORS := [
+        Color(0.82, 0.32, 0.22),
+        Color(1.0, 0.45, 0.16),
+        Color(1.0, 0.16, 0.12),
+]
+const BOSS_PIP_LIT := [Color(1.0, 0.82, 0.35), Color(1.0, 0.62, 0.25), Color(1.0, 0.3, 0.22)]
+const BOSS_PIP_DIM := Color(0.16, 0.14, 0.12)
 var hint_label: Label
 var _toast_timers := []
 # PS-1: damage vignette (red edge flash when the player takes a hit)
@@ -236,8 +248,23 @@ func _build() -> void:
         boss_label.add_theme_font_size_override("font_size", 15)
         boss_label.add_theme_color_override("font_color", Color(1.0, 0.6, 0.5))
         root.add_child(boss_label)
+        # PS-9: three diamond pips — one gutters each time the boss phases
+        var pip_row := HBoxContainer.new()
+        pip_row.set_anchors_preset(Control.PRESET_CENTER_TOP)
+        pip_row.position = Vector2(-32, 144)
+        pip_row.add_theme_constant_override("separation", 10)
+        root.add_child(pip_row)
+        for i in 3:
+                var pip := ColorRect.new()
+                pip.custom_minimum_size = Vector2(13, 13)
+                pip.pivot_offset = Vector2(6.5, 6.5)
+                pip.rotation = PI / 4.0
+                pip.color = BOSS_PIP_DIM
+                pip_row.add_child(pip)
+                boss_pips.append(pip)
         boss_bar.visible = false
         boss_label.visible = false
+        pip_row.visible = false
 
         # --- toasts (bottom-center stack) ---
         toast_box = VBoxContainer.new()
@@ -421,7 +448,7 @@ func _refresh_party() -> void:
 
 func _process(delta: float) -> void:
         _update_prompt()
-        _update_boss()
+        _update_boss(delta)
         _update_onboarding()
         # PS-1: damage vignette fade-out
         if _dmg_vignette_a > 0.001 and _dmg_vignette:
@@ -594,7 +621,7 @@ func _update_prompt() -> void:
         capture_label.text = text
 
 
-func _update_boss() -> void:
+func _update_boss(delta: float) -> void:
         var boss: Echo = null
         for c in get_tree().get_nodes_in_group("creatures"):
                 if c is Echo and c.boss_mode and not c.is_defeated():
@@ -603,14 +630,36 @@ func _update_boss() -> void:
                                 boss = c
                                 break
         if boss:
+                var pid := boss.get_instance_id()
+                if pid != _boss_id:
+                        # a new boss steps up — snap the bar, no slow-fill theatre
+                        _boss_id = pid
+                        _boss_shown_hp = boss.hp
+                        _boss_phase_seen = boss._phase
+                        _style_progress(boss_bar, BOSS_PHASE_COLORS[clampi(boss._phase, 1, 3) - 1])
                 boss_bar.visible = true
                 boss_label.visible = true
                 boss_bar.max_value = boss.max_hp
-                boss_bar.value = boss.hp
+                # PS-9: smooth drain — the bar bleeds down instead of snapping
+                _boss_shown_hp = move_toward(_boss_shown_hp, boss.hp, delta * maxf(boss.max_hp * 0.5, 40.0))
+                boss_bar.value = maxf(_boss_shown_hp, boss.hp)
                 boss_label.text = "☠ %s — Phase %d" % [boss.def.get("name", "Boss"), boss._phase]
+                if boss._phase != _boss_phase_seen:
+                        _boss_phase_seen = boss._phase
+                        _style_progress(boss_bar, BOSS_PHASE_COLORS[clampi(boss._phase, 1, 3) - 1])
+                # pips: one per remaining phase (3 lit at phase 1 … 1 lit at phase 3)
+                var lit: int = clampi(4 - boss._phase, 1, 3)
+                for i in 3:
+                        (boss_pips[i] as ColorRect).color = BOSS_PIP_LIT[i] if i < lit else BOSS_PIP_DIM
+                if boss_pips.size() > 0 and boss_pips[0].get_parent() != null:
+                        (boss_pips[0].get_parent() as Control).visible = true
         else:
+                _boss_id = 0
+                _boss_shown_hp = -1.0
                 boss_bar.visible = false
                 boss_label.visible = false
+                if boss_pips.size() > 0 and boss_pips[0].get_parent() != null:
+                        (boss_pips[0].get_parent() as Control).visible = false
 
 
 func _draw_observe_ring() -> void:
@@ -708,8 +757,10 @@ func _draw_minimap() -> void:
                         var dia := PackedVector2Array([lp + Vector2(0, -4), lp + Vector2(4, 0), lp + Vector2(0, 4), lp + Vector2(-4, 0)])
                         minimap.draw_colored_polygon(dia, gold)
         # creature blips: party gold · hostile red · passive soft green
+        # (v1.5.1 fix: `is Echo` — damage-number Label3Ds also live in
+        # creatures_root and used to crash this draw every combat frame)
         for c in world.creatures_root.get_children():
-                if not (c is Node3D) or c.get("defeated"):
+                if not (c is Echo) or c.get("defeated"):
                         continue
                 var dxz := Vector2(c.global_position.x - player.global_position.x, c.global_position.z - player.global_position.z)
                 if dxz.length() > MINIMAP_RANGE:

@@ -26,7 +26,7 @@ func _ready() -> void:
         dim.color = Color(0.02, 0.03, 0.05, 0.68)
         dim.set_anchors_preset(Control.PRESET_FULL_RECT)
         root.add_child(dim)
-        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods", "help", "credits", "settings"]:
+        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods", "help", "credits", "settings", "nest"]:
                 var p := Control.new()
                 p.set_anchors_preset(Control.PRESET_FULL_RECT)
                 p.visible = false
@@ -45,6 +45,7 @@ func _ready() -> void:
         _build_help()
         _build_credits()
         _build_settings()
+        _build_nest()
 
 
 func is_open() -> bool:
@@ -75,6 +76,7 @@ func open(screen: String) -> void:
                 "research": _refresh_research()
                 "journal": _refresh_journal()
                 "map": _refresh_map()
+                "nest": _refresh_nest()
                 "mods": _refresh_mods()
                 "pause":
                         get_tree().paused = true
@@ -1792,3 +1794,148 @@ func _write_settings_file(data: Dictionary) -> void:
         var f := FileAccess.open("user://settings.json", FileAccess.WRITE)
         if f:
                 f.store_string(JSON.stringify(data, "\t"))
+
+
+# ------------------------------------------------------------------- nest --
+# v1.5.1 (PS-7 polish): manual pair selection for the Echo Nest — the player
+# clicks two bonded companions, reads the chick preview, then broods.
+# Replaces the v1.5 auto-pick (two highest trust) with a real choice.
+var _nest_list: VBoxContainer
+var _nest_sel: Array = []      # candidate dicts, max 2
+var _nest_preview: Label
+var _nest_status: Label
+var _nest_confirm: Button
+
+
+func _build_nest() -> void:
+        var p := _center_panel("nest", Vector2(620, 470))
+        var vb := VBoxContainer.new()
+        vb.add_theme_constant_override("separation", 8)
+        p.add_child(vb)
+        _title(vb, "Echo Nest", "Choose two bonded companions — a chick sleeps in every egg", "heart")
+        var scroll := ScrollContainer.new()
+        scroll.custom_minimum_size = Vector2(580, 210)
+        scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        vb.add_child(scroll)
+        _nest_list = VBoxContainer.new()
+        _nest_list.add_theme_constant_override("separation", 4)
+        _nest_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        scroll.add_child(_nest_list)
+        _nest_preview = Label.new()
+        _nest_preview.add_theme_font_size_override("font_size", 12)
+        _nest_preview.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
+        _nest_preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        _nest_preview.custom_minimum_size = Vector2(580, 42)
+        vb.add_child(_nest_preview)
+        _nest_status = Label.new()
+        _nest_status.add_theme_font_size_override("font_size", 12)
+        _nest_status.add_theme_color_override("font_color", Color(1.0, 0.75, 0.55))
+        _nest_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        _nest_status.custom_minimum_size = Vector2(580, 34)
+        vb.add_child(_nest_status)
+        var row := HBoxContainer.new()
+        row.add_theme_constant_override("separation", 10)
+        vb.add_child(row)
+        _nest_confirm = _btn("Brood the pair", _nest_confirm_pressed, Color(1.0, 0.85, 0.5))
+        _nest_confirm.disabled = true
+        row.add_child(_nest_confirm)
+        row.add_child(_btn("Close", func _c(): close(), Color(0.8, 0.85, 0.9)))
+
+
+func _refresh_nest() -> void:
+        _nest_sel = []
+        _nest_status.text = ""
+        if Game.eggs.size() > 0:
+                var soonest := 1e9
+                for eg in Game.eggs:
+                        soonest = minf(soonest, float(eg.get("hatch_left", 0.0)))
+                _nest_status.text = "%d egg(s) warming — first hatches in ~%ds" % [Game.eggs.size(), int(ceil(soonest))]
+        _refresh_nest_list()
+        _nest_update_preview()
+
+
+func _refresh_nest_list() -> void:
+        for c in _nest_list.get_children():
+                c.queue_free()
+        var cands: Array = Game.nest_candidates()
+        for cand in cands:
+                var selected := _nest_has(cand)
+                var b := Button.new()
+                b.text = "%s %s  ·  %s  ·  %s %d" % [
+                        "◆" if selected else "◇",
+                        str(cand.get("name", "Echo")),
+                        str(cand.get("species_name", "?")),
+                        Game.trust_stage(float(cand.get("trust", 0.0))),
+                        int(cand.get("trust", 0)),
+                ]
+                if cand.get("in_party", false):
+                        b.text += "  ·  in party"
+                b.add_theme_font_size_override("font_size", 13)
+                b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+                if selected:
+                        b.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+                        b.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.6))
+                else:
+                        b.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
+                        b.add_theme_color_override("font_hover_color", Color(0.95, 0.95, 1.0))
+                b.mouse_entered.connect(func _h(): Sfx.play("ui_hover", -16.0))
+                b.pressed.connect(func _pick(): _nest_toggle(cand))
+                _nest_list.add_child(b)
+
+
+func _nest_has(cand: Dictionary) -> bool:
+        for s in _nest_sel:
+                if s.get("entry", {}) == cand.get("entry", {}):
+                        return true
+        return false
+
+
+func _nest_toggle(cand: Dictionary) -> void:
+        Sfx.play("ui_click", -12.0)
+        for i in _nest_sel.size():
+                if _nest_sel[i].get("entry", {}) == cand.get("entry", {}):
+                        _nest_sel.remove_at(i)
+                        _refresh_nest_list()
+                        _nest_update_preview()
+                        return
+        if _nest_sel.size() >= 2:
+                _nest_sel.remove_at(0)  # oldest pick rolls off, newest stays
+        _nest_sel.append(cand)
+        _refresh_nest_list()
+        _nest_update_preview()
+
+
+func _nest_update_preview() -> void:
+        _nest_confirm.disabled = _nest_sel.size() != 2
+        if _nest_sel.size() < 2:
+                _nest_preview.text = "Selected %d of 2 — click companions to pair them." % _nest_sel.size()
+                return
+        var a: Dictionary = _nest_sel[0]
+        var b: Dictionary = _nest_sel[1]
+        var sa := Data.species_def(str(a.get("species_id", "")))
+        var sb := Data.species_def(str(b.get("species_id", "")))
+        var stat_line := ""
+        for stat in ["hp", "atk", "def", "spd"]:
+                var va := float(sa.get("stats", {}).get(stat, 10))
+                var vb := float(sb.get("stats", {}).get(stat, 10))
+                var strong := maxf(va, vb)
+                if stat_line != "":
+                        stat_line += " · "
+                stat_line += "%s %d–%d" % [stat, int(round(strong * 0.5)), int(round(strong * 0.7))]
+        _nest_preview.text = "Chick: %s × %s → %s or %s\nStats ~50–70%% of the stronger parent: %s" % [
+                str(a.get("name", "?")), str(b.get("name", "?")),
+                str(sa.get("name", "?")), str(sb.get("name", "?")),
+                stat_line,
+        ]
+
+
+func _nest_confirm_pressed() -> void:
+        if _nest_sel.size() != 2:
+                return
+        var eggs_before: int = Game.eggs.size()
+        var line: String = Game.nest_pair(_nest_sel[0], _nest_sel[1])
+        if Game.eggs.size() > eggs_before:
+                close()  # the egg toasts + quest stinger announce it
+                return
+        _nest_status.text = line
+        _refresh_nest_list()

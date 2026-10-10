@@ -209,7 +209,15 @@ func interact() -> bool:
                 Game.feed_party()
                 return true
         if def.get("id", "") == "Building_EchoNest":
-                Game.nest_interact()
+                # v1.5.1: manual pair selection — open the nest screen, or toast
+                # the honest refusal reason when the pair can't happen yet
+                var gate := Game.nest_ready()
+                if gate != "":
+                        Game.toast.emit(gate, Color(1.0, 0.7, 0.5))
+                else:
+                        var screens := get_tree().get_first_node_in_group("screens")
+                        if screens:
+                                screens.open("nest")
                 return true
         return false
 
@@ -229,7 +237,7 @@ func prompt() -> String:
                         for eg in Game.eggs:
                                 soonest = minf(soonest, float(eg.get("hatch_left", 0.0)))
                         egg_note = " · %d egg(s), first in %ds" % [Game.eggs.size(), int(ceil(soonest))]
-                return "Echo Nest — [E] brood%s" % egg_note
+                return "Echo Nest — [E] choose pair%s" % egg_note
         return ""
 
 

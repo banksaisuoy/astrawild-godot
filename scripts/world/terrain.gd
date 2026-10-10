@@ -5,6 +5,27 @@ extends Node3D
 
 const TILE_QUADS := 128          # 6.25 m spacing
 const HALF_SIZE := 400.0
+# v1.5.1 spawn micro-relief: hand-placed gentle swells around the Home Meadow
+# camp so the first frame of the world isn't a flat pad. Amplitude fades to
+# zero inside 24 m of camp (buildings/pads stay level) and by 165 m out.
+const CAMP_X := -400.0
+const CAMP_Z := 0.0
+const RELIEF_BUMPS := [
+        # [dx from camp, dz, radius, amplitude] — all 30 m+ off the camp core.
+        # v1.5.1: amplitudes raised ×1.9 after VLM read the first pass (1.0-1.6 m)
+        # as "completely flat" at gameplay framing — 2-3 m swells read as rolling
+        # meadow while staying under ~12% grade (buildable, walkable).
+        [46.0, -34.0, 24.0, 2.60],
+        [-52.0, 40.0, 28.0, 3.00],
+        [78.0, 22.0, 20.0, 2.10],
+        [-70.0, -58.0, 26.0, 2.75],
+        [30.0, 84.0, 22.0, 1.90],
+        [96.0, -66.0, 18.0, 1.70],
+        [-104.0, 14.0, 23.0, 2.40],
+        [8.0, -102.0, 21.0, 2.00],
+        [142.0, -30.0, 40.0, 1.60],
+        [-36.0, 148.0, 42.0, 1.50],
+]
 
 var zone: Dictionary = {}
 var noise: WorldNoise = null
@@ -33,6 +54,30 @@ static func zone_weights(x: float, z: float) -> Dictionary:
         return weights
 
 
+static func _micro_relief(x: float, z: float) -> float:
+        ## v1.5.1: smooth domes around the camp — deterministic (no seed
+        ## plumbing needed, the world seed itself is fixed). Zero inside the
+        ## 24 m camp core, zero beyond 165 m.
+        var dx: float = x - CAMP_X
+        var dz: float = z - CAMP_Z
+        var d2 := dx * dx + dz * dz
+        if d2 > 165.0 * 165.0:
+                return 0.0
+        var total := 0.0
+        for b in RELIEF_BUMPS:
+                var bx: float = dx - b[0]
+                var bz: float = dz - b[1]
+                var r2: float = b[2] * b[2]
+                var q := (bx * bx + bz * bz) / r2
+                if q < 1.0:
+                        total += b[3] * (1.0 - q) * (1.0 - q)
+        if total == 0.0:
+                return 0.0
+        # blend ring: 0 at 24 m from camp → 1 at 34 m+
+        var edge := clampf((sqrt(d2) - 24.0) / 10.0, 0.0, 1.0)
+        return total * edge
+
+
 static func eval_world_height(x: float, z: float, noise: WorldNoise) -> float:
         var weights := zone_weights(x, z)
         var base := noise.fbm(x, z, 512.0, 4)
@@ -43,6 +88,7 @@ static func eval_world_height(x: float, z: float, noise: WorldNoise) -> float:
                 var shaped := lerpf(base, 1.0 - 2.0 * absf(base), ridge)
                 height += weights[zid] * (zone.get("base", 0.0) + zone.get("amp", 0.0) * shaped)
         height += 0.7 * noise.fbm(x, z, 90.0, 2)
+        height += _micro_relief(x, z)
         return height
 
 
