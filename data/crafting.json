@@ -1388,6 +1388,22 @@
       "battery_capacity": 0.0
     },
     {
+      "id": "Building_EchoNest",
+      "name": "Echo Nest",
+      "cost": [
+        {
+          "item": "Item_Wood",
+          "qty": 8
+        },
+        {
+          "item": "Item_Fiber",
+          "qty": 4
+        }
+      ],
+      "tech": "Tech_Husbandry",
+      "desc": "Bonded companions brood here — eggs hatch into new Echoes."
+    },
+    {
       "id": "Building_Sawmill",
       "name": "Sawmill",
       "cost": [

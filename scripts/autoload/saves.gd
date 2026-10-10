@@ -42,6 +42,10 @@ func save_game(world_root: Node = null, player: Node = null) -> bool:
                         "current_zone_id": Game.current_zone_id,
                         "opened_chests": Game.opened_chests.keys(),
                         "charted_locations": Game.charted_locations.keys(),
+                        "difficulty_id": Game.difficulty_id,
+                        "achievements": Game.achievements.keys(),
+                        "eggs": Game.eggs,
+                        "nest_pairs": Game._nest_pairs,
                 },
         }
         if player and player is Node3D:
@@ -126,6 +130,20 @@ func _apply(data: Dictionary) -> void:
         Game.charted_locations = {}
         for loc in g.get("charted_locations", []):
                 Game.charted_locations[loc] = true
+        # PS-3/PS-5: difficulty + achievements survive save/load
+        Game.difficulty_id = str(g.get("difficulty_id", "standard"))
+        Game.achievements = {}
+        for a in g.get("achievements", []):
+                Game.achievements[a] = true
+        # PS-7: eggs + pair cooldowns survive save/load
+        Game.eggs = []
+        for e in g.get("eggs", []):
+                if e is Dictionary and e.has("species_id"):
+                        Game.eggs.append(e)
+        Game._nest_pairs = {}
+        var np: Variant = g.get("nest_pairs", {})
+        if np is Dictionary:
+                Game._nest_pairs = np
         Game.current_zone_id = str(g.get("current_zone_id", ""))
         Game.equip("body", Game.equipment.get("body", ""))
         Game.equip("head", Game.equipment.get("head", ""))

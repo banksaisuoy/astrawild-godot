@@ -97,7 +97,7 @@ func _start_event(e: Dictionary) -> void:
                 for drop in e["loot"]:
                         Game.add_item(drop["item"], int(drop["qty"]))
         if e.has("species_boost"):
-                _spawn_boost_creatures(str(e["species_boost"]), int(e.get("boost_count", 2)), str(e.get("zone", "")))
+                _spawn_boost_creatures(str(e["species_boost"]), int(round(int(e.get("boost_count", 2)) * Game.difficulty().get("raid", 1.0))), str(e.get("zone", "")))
         if e.has("bonus_nodes"):
                 _spawn_bonus_nodes(e["bonus_nodes"])
 

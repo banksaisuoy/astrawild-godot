@@ -1,5 +1,9 @@
 class_name GameWorld
 extends Node3D
+
+## PS-2 staged loading: (honest stage name, fraction 0..1) — the main scene
+## turns these into the loading bar; worldgen yields frames between stages.
+signal build_progress(stage_text: String, fraction: float)
 ## World bootstrapper: terrain, water, props, resource nodes, camp, NPCs,
 ## POIs, creature spawner, day/night + weather FX, party followers, buildings.
 
@@ -41,8 +45,12 @@ func seed_rng(world_seed: int) -> void:
 func build() -> void:
         if noise == null:
                 noise = WorldNoise.new(Game.world_seed)
+        _bp("Carving the terrain…", 0.04)
         _build_terrain()
+        await _breathe()
+        _bp("Filling the waters…", 0.08)
         _build_water()
+        _bp("Raising sky and weather…", 0.12)
         daynight = DayNightCycle.new()
         daynight.setup()
         add_child(daynight)
@@ -50,6 +58,7 @@ func build() -> void:
         weather_fx.setup()
         add_child(weather_fx)
 
+        _bp("Rooting the world…", 0.14)
         props_root = Node3D.new()
         props_root.name = "Props"
         add_child(props_root)
@@ -74,19 +83,42 @@ func build() -> void:
         world_events.name = "WorldEvents"
         add_child(world_events)
 
-        _dress_all_zones()
+        # PS-2: the two heavy loops report per-zone progress and yield frames
+        # so even web builds keep rendering the loading screen (no 1-3 min freeze)
+        await _dress_all_zones()
+        _bp("Seeding resources…", 0.64)
         _spawn_resource_nodes()
+        await _breathe()
+        _bp("Raising the home camp…", 0.68)
         _build_camp()
+        await _breathe()
+        _bp("Founding villages…", 0.72)
         _build_villages()
         _dress_village_paths()
         _spawn_skiffs()
+        await _breathe()
+        _bp("Placing locations…", 0.80)
         _build_locations()
         _build_landmarks()
+        await _breathe()
+        _bp("Opening dungeons…", 0.86)
         _build_dungeons()
         _build_work_sites()
-        _spawn_all_creatures()
+        await _breathe()
+        await _spawn_all_creatures()
+        _bp("The Vale is ready.", 1.0)
         Game.party_changed.connect(_sync_party)
         Game.party_changed.emit()
+
+
+func _bp(stage_text: String, fraction: float) -> void:
+        ## PS-2 loading progress broadcast (staged, honest stage names).
+        build_progress.emit(stage_text, fraction)
+
+
+func _breathe() -> void:
+        ## yield one frame so the loading screen renders between heavy stages.
+        await get_tree().process_frame
 
 
 func _build_terrain() -> void:
@@ -221,7 +253,12 @@ func _scatter(rng: RandomNumberGenerator, count: int, zone: Dictionary, max_slop
 
 
 func _dress_all_zones() -> void:
+        var zones_total: int = Data.zones.size()
+        var zi := 0
         for zone in Data.zones:
+                _bp("Dressing %s…" % zone.get("name", zone["id"]), 0.16 + 0.44 * float(zi) / float(maxi(1, zones_total)))
+                await _breathe()
+                zi += 1
                 var zid: String = zone["id"]
                 var rng := RandomNumberGenerator.new()
                 rng.seed = hash("dress-%s-%d" % [zid, Game.world_seed])
@@ -989,7 +1026,13 @@ func _spawn_boss(species_id: String, pos: Vector3) -> void:
 
 # -------------------------------------------------------------- creatures --
 func _spawn_all_creatures() -> void:
+        var zones_total: int = Data.zones.size()
+        var zi := 0
         for zone in Data.zones:
+                _bp("Waking echoes — %s…" % zone.get("name", zone["id"]), 0.90 + 0.09 * float(zi) / float(maxi(1, zones_total)))
+                if zi % 3 == 2:
+                        await _breathe()
+                zi += 1
                 var zid: String = zone["id"]
                 var rng := RandomNumberGenerator.new()
                 rng.seed = hash("wild-%s-%d" % [zid, Game.world_seed])
@@ -1022,6 +1065,10 @@ func _spawn_creature(def: Dictionary, pos: Vector3, rng: RandomNumberGenerator) 
 
 
 func _process(delta: float) -> void:
+        # PS-2: staged build is async — the world enters the tree before its
+        # roots exist; skip sweeping until the Vale is fully built
+        if creatures_root == null:
+                return
         _hostile_sweep -= delta
         if _hostile_sweep <= 0.0:
                 _hostile_sweep = 25.0

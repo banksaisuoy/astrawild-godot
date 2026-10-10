@@ -881,19 +881,29 @@ func take_hit(raw: float, element: String = "None") -> void:
         if dormant:
                 _wake()
         var damage := raw
+        var hit_kind := "normal"
         var weakness: String = def.get("weakness", "")
         var own: String = def.get("element", "None")
         if element == weakness and weakness != "":
                 damage *= 1.5
+                hit_kind = "weakness"
         elif element == own and own != "None":
                 damage *= 0.8
+                hit_kind = "resist"
         if boss_mode and _weak_orb and is_instance_valid(_weak_orb) and _weak_orb.visible:
                 damage *= 2.0
+                hit_kind = "crit"
                 Game.toast.emit("Weak point struck!", Color(1.0, 0.9, 0.4))
         damage = maxf(0.0, damage - float(def["stats"]["def"]))
         hp -= damage
         _hit_flash = 1.0
         _update_label()
+        # PS-1: floating damage number at the hit point (world-space billboard)
+        if damage > 0.5:
+                var num_h := 1.6
+                if _label and is_instance_valid(_label):
+                        num_h = maxf(1.2, _label.position.y + 0.35)
+                DamageNumbers.spawn(get_parent(), global_position + Vector3(0.0, num_h, 0.0), damage, hit_kind)
         if damage > 0.0:
                 # impact feedback: energy weapons for elemental hits, kinetic otherwise
                 var impact_ev := "impact_energy" if element not in ["", "None"] else "impact_kinetic"

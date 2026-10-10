@@ -1,7 +1,7 @@
 extends Node
 ## Main entry: title screen → world build (loading) → gameplay.
 
-const GAME_VERSION := "v1.3"
+const GAME_VERSION := "v1.5"
 
 var title_layer: CanvasLayer
 var loading_layer: CanvasLayer
@@ -51,7 +51,9 @@ func _ready() -> void:
                         # title-only capture: never start the world
                         _screenshot_routine()
                 else:
-                        _start_game(OS.get_cmdline_user_args().find("--cont") >= 0)
+                        # PS-2: staged build is async — await it so the settle
+                        # timer never races an unfinished world
+                        await _start_game(OS.get_cmdline_user_args().find("--cont") >= 0)
                         _screenshot_routine()
 
 
@@ -174,6 +176,25 @@ func _build_title() -> void:
                 cont_btn.pressed.connect(func _c(): _start_game(true))
                 menu.add_child(cont_btn)
 
+        # PS-3: difficulty selector (cycles Explorer → Standard → Veteran)
+        var diff_btn := _menu_button("Challenge: %s" % Game.difficulty()["name"], false)
+        diff_btn.add_theme_font_size_override("font_size", 15)
+        var diff_desc := Label.new()
+        diff_desc.text = Game.difficulty()["desc"]
+        diff_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        diff_desc.custom_minimum_size = Vector2(300, 30)
+        diff_desc.add_theme_font_size_override("font_size", 12)
+        diff_desc.add_theme_color_override("font_color", Color(0.66, 0.7, 0.78))
+        diff_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        diff_btn.pressed.connect(func _d():
+                var order := ["explorer", "standard", "veteran"]
+                var idx: int = order.find(Game.difficulty_id)
+                Game.difficulty_id = order[(idx + 1) % order.size()]
+                diff_btn.text = "Challenge: %s" % Game.difficulty()["name"]
+                diff_desc.text = Game.difficulty()["desc"])
+        menu.add_child(diff_btn)
+        menu.add_child(diff_desc)
+
         var start_btn := _menu_button("Begin Expedition", false)
         start_btn.pressed.connect(func _s(): _start_game(false))
         menu.add_child(start_btn)
@@ -185,6 +206,13 @@ func _build_title() -> void:
                 title_layer.visible = false
                 screens.open("credits"))
         menu.add_child(credits_btn)
+
+        # v1.5 PS-6: settings (graphics + key binds) before the expedition
+        var settings_btn := _menu_button("Settings", false)
+        settings_btn.pressed.connect(func _sb():
+                title_layer.visible = false
+                screens.open("settings"))
+        menu.add_child(settings_btn)
 
         if not OS.has_feature("web"):
                 var quit_btn := _menu_button("Quit", false)
@@ -322,7 +350,7 @@ func _start_game(continue_save: bool) -> void:
         print("ASTRAWILD: starting expedition (continue=%s)" % str(continue_save))
         if title_layer:
                 title_layer.queue_free()
-        # loading layer
+        # loading layer — PS-2: staged progress bar + rotating survival tips
         loading_layer = CanvasLayer.new()
         loading_layer.layer = 30
         add_child(loading_layer)
@@ -330,15 +358,69 @@ func _start_game(continue_save: bool) -> void:
         lbg.color = Color(0.04, 0.05, 0.09)
         lbg.set_anchors_preset(Control.PRESET_FULL_RECT)
         loading_layer.add_child(lbg)
-        var label := Label.new()
-        label.text = "Shaping the Shattered Vale..."
-        label.set_anchors_preset(Control.PRESET_CENTER)
-        label.position = Vector2(-150, -20)
-        label.custom_minimum_size = Vector2(300, 40)
-        label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-        label.add_theme_font_size_override("font_size", 22)
-        label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.6))
-        loading_layer.add_child(label)
+        var vp_size := get_viewport().get_visible_rect().size
+        var lcol := VBoxContainer.new()
+        lcol.position = Vector2(vp_size.x * 0.5 - 240, vp_size.y * 0.5 - 90)
+        lcol.custom_minimum_size = Vector2(480, 0)
+        lcol.add_theme_constant_override("separation", 10)
+        loading_layer.add_child(lcol)
+        var ltitle := Label.new()
+        ltitle.text = "Shaping the Shattered Vale"
+        ltitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        ltitle.custom_minimum_size = Vector2(480, 34)
+        ltitle.add_theme_font_size_override("font_size", 24)
+        ltitle.add_theme_color_override("font_color", Color(1.0, 0.88, 0.6))
+        lcol.add_child(ltitle)
+        var stage_label := Label.new()
+        stage_label.text = "Carving the terrain…"
+        stage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        stage_label.custom_minimum_size = Vector2(480, 24)
+        stage_label.add_theme_font_size_override("font_size", 15)
+        stage_label.add_theme_color_override("font_color", Color(0.85, 0.87, 0.92))
+        lcol.add_child(stage_label)
+        var lbar := ProgressBar.new()
+        lbar.custom_minimum_size = Vector2(480, 14)
+        lbar.min_value = 0.0
+        lbar.max_value = 1.0
+        lbar.value = 0.0
+        lbar.show_percentage = false
+        var lbg_style := StyleBoxFlat.new()
+        lbg_style.bg_color = Color(0.1, 0.11, 0.16)
+        lbg_style.set_corner_radius_all(7)
+        var lfill_style := StyleBoxFlat.new()
+        lfill_style.bg_color = Color(0.95, 0.78, 0.42)
+        lfill_style.set_corner_radius_all(7)
+        lbar.add_theme_stylebox_override("background", lbg_style)
+        lbar.add_theme_stylebox_override("fill", lfill_style)
+        lcol.add_child(lbar)
+        var tip_label := Label.new()
+        tip_label.text = ""
+        tip_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        tip_label.custom_minimum_size = Vector2(480, 44)
+        tip_label.add_theme_font_size_override("font_size", 13)
+        tip_label.add_theme_color_override("font_color", Color(0.62, 0.66, 0.74))
+        tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        lcol.add_child(tip_label)
+        var loading_tips := [
+                "Weaken a creature before [F] capture — a healthy Echo will shrug off the Resonator.",
+                "Element matters: match a creature's weakness for ×1.5 damage.",
+                "Feed captured companions their favourite food — trust unlocks commands.",
+                "Night falls fast. Gloomfang raids test camps — keep fires high.",
+                "Chart landmarks on the map to unlock fast travel waypoints.",
+                "Dawnstead village lies 280 m east of the home camp — Trader Tam buys relics.",
+                "Board a Dawn Skiff [E] to cross the Shattered Vale quickly.",
+                "Research unlocks buildings, automation and better gear — spend points early.",
+        ]
+        var tip_idx := 0
+        tip_label.text = loading_tips[0]
+        var tip_timer := Timer.new()
+        tip_timer.wait_time = 2.4
+        tip_timer.autostart = true
+        tip_timer.timeout.connect(func _t():
+                tip_idx = (tip_idx + 1) % loading_tips.size()
+                if is_instance_valid(tip_label):
+                        tip_label.text = loading_tips[tip_idx])
+        loading_layer.add_child(tip_timer)
         # let the loading frame render first
         await get_tree().process_frame
         await get_tree().process_frame
@@ -350,7 +432,12 @@ func _start_game(continue_save: bool) -> void:
         world = GameWorld.new()
         world.add_to_group("world")
         game_layer.add_child(world)
-        world.build()
+        world.build_progress.connect(func _bp(stage_text: String, fraction: float):
+                if is_instance_valid(stage_label):
+                        stage_label.text = stage_text
+                if is_instance_valid(lbar):
+                        lbar.value = clampf(fraction, 0.0, 1.0))
+        await world.build()
 
         hud = Hud.new()
         hud.add_to_group("hud")
@@ -363,6 +450,9 @@ func _start_game(continue_save: bool) -> void:
         player = PlayerCharacter.new()
         player.position = Vector3(-400, world.tile_height(-400, 0) + 1.2, 0)
         game_layer.add_child(player)
+        # PS-6: apply the persisted FOV to the fresh camera
+        if Game._pending_fov >= 60.0 and player.camera:
+                player.camera.fov = Game._pending_fov
 
         # AW.CheatManager console (UE5 15 commands) — toggle with `
         var cheats := CheatConsole.new()
@@ -826,6 +916,69 @@ func _run_smoke_checks() -> void:
                 break
         screens.close()
         print("SMOKE: inventory icons=", inv_icon_ok)
+        # ---- v1.5 Production Pass assertions (PS-1..PS-8) ----
+        # PS-1: damage numbers spawn as world-space labels
+        var dmg_ok := false
+        if world.creatures_root:
+                var before: int = world.creatures_root.get_child_count()
+                DamageNumbers.spawn(world.creatures_root, Vector3(-400, 4, 0), 42.0, "weakness")
+                DamageNumbers.spawn(world.creatures_root, Vector3(-400, 4, 0), 0.1, "normal")
+                dmg_ok = world.creatures_root.get_child_count() == before + 1
+        print("SMOKE: damage numbers=", dmg_ok)
+        # PS-3: difficulty presets affect damage + needs math
+        var diff_ok := false
+        var hp_before: float = Game.hp
+        Game.difficulty_id = "veteran"
+        Game.hp = 100.0
+        var taken: float = Game.take_damage(100.0, "None", false)
+        # veteran 1.35 × day-1 grace 0.65 = 87.75
+        diff_ok = is_equal_approx(taken, 87.75) and is_equal_approx(Game.hp, 12.25)
+        Game.difficulty_id = "standard"
+        Game.hp = hp_before
+        print("SMOKE: difficulty math=", diff_ok, " taken=", taken)
+        # PS-5: achievements unlock from live state
+        var ach_ok := false
+        var keep_party: Array = Game.party.duplicate()
+        var keep_box: Array = Game.echo_box.duplicate()
+        Game.party = [
+                {"species_id": "Echo_Emberrunner", "name": "Emberkit", "trust": 95.0, "level": 1},
+                {"species_id": "Echo_Mosspaw", "name": "Mosspaw", "trust": 40.0, "level": 1},
+        ]
+        Game.echo_box = []
+        Game._check_achievements()
+        ach_ok = Game.achievements.has("ach_first_capture") and Game.achievements.has("ach_partner")
+        print("SMOKE: achievements unlock=", ach_ok, " count=", Game.achievements.size())
+        # PS-7: breeding → egg → hatch
+        var breed_ok := false
+        var hatch_name := ""
+        Game.eggs = []
+        Game._nest_pairs = {}
+        var line := Game.nest_interact()
+        if Game.eggs.size() == 1:
+                hatch_name = str(Game.eggs[0]["name"])
+                Game.eggs[0]["hatch_left"] = 0.05
+                var roster_before: int = Game.party.size() + Game.echo_box.size()
+                Game._tick_eggs(0.1)
+                breed_ok = Game.eggs.is_empty() and Game.party.size() + Game.echo_box.size() == roster_before + 1
+        Game.party = keep_party
+        Game.echo_box = keep_box
+        Game.eggs = []
+        Game._nest_pairs = {}
+        print("SMOKE: breeding egg+hatch=", breed_ok, " child=", hatch_name, " nest_line=", line)
+        # PS-4: fast travel plumbing exists on the map screen
+        print("SMOKE: fast travel=", screens.has_method("_fast_travel_go") and screens.has_method("_map_click"))
+        # PS-6: settings screen + rebind round-trip
+        var rebind_ok := false
+        if screens.has_method("_assign_bind"):
+                screens._assign_bind("interact", KEY_P)
+                var evs := InputMap.action_get_events("interact")
+                for ev in evs:
+                        if ev is InputEventKey and ev.keycode == KEY_P:
+                                rebind_ok = true
+                screens._assign_bind("interact", KEY_E)
+        print("SMOKE: settings rebind=", rebind_ok, " panel=", screens.panels.has("settings"))
+        # PS-8: minimap built
+        print("SMOKE: minimap=", hud.minimap != null and hud.minimap_zone != null)
         print("SMOKE COMPLETE")
 
 func _smoke_find_anim(n: Node) -> AnimationPlayer:

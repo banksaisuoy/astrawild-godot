@@ -88,8 +88,19 @@ func _ready() -> void:
                 "Building_Composter":
                         _add_box(Vector3(1.4, 1.0, 1.4), Vector3(0, 0.5, 0), Color(0.35, 0.3, 0.22))
                         _add_box(Vector3(1.5, 0.12, 1.5), Vector3(0, 1.05, 0), Color(0.3, 0.45, 0.2))
+                "Building_EchoNest":
+                        # PS-7: woven nest — stacked fibre rings + a warm glowing egg
+                        _add_box(Vector3(1.6, 0.16, 1.6), Vector3(0, 0.08, 0), Color(0.42, 0.33, 0.22))
+                        _add_box(Vector3(1.5, 0.2, 1.5), Vector3(0, 0.28, 0), Color(0.5, 0.4, 0.26))
+                        _add_box(Vector3(1.1, 0.2, 1.1), Vector3(0, 0.5, 0), Color(0.56, 0.45, 0.3))
+                        _add_box(Vector3(0.8, 0.16, 0.8), Vector3(0, 0.68, 0), Color(0.62, 0.5, 0.34))
+                        # the egg itself — soft gold, emissive so it reads at night
+                        _add_box(Vector3(0.44, 0.56, 0.44), Vector3(0, 0.85, 0), Color(1.0, 0.9, 0.62), true)
+                        _add_light(Vector3(0, 1.0, 0), Color(1.0, 0.82, 0.5), 5.0, 0.8)
+                        color = Color(0.62, 0.5, 0.34)
+                        emissive = Color(0.35, 0.28, 0.12)
 
-        if _station_id != "" or def.get("id", "") in ["Building_ResearchDesk", "Building_FeedTrough"]:
+        if _station_id != "" or def.get("id", "") in ["Building_ResearchDesk", "Building_FeedTrough", "Building_EchoNest"]:
                 _label = Label3D.new()
                 _label.text = def.get("name", "")
                 _label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -197,6 +208,9 @@ func interact() -> bool:
         if def.get("id", "") == "Building_FeedTrough":
                 Game.feed_party()
                 return true
+        if def.get("id", "") == "Building_EchoNest":
+                Game.nest_interact()
+                return true
         return false
 
 
@@ -208,6 +222,14 @@ func prompt() -> String:
                 return "Research Desk — [E] research"
         if def.get("id", "") == "Building_FeedTrough":
                 return "Feed Trough — [E] feed party"
+        if def.get("id", "") == "Building_EchoNest":
+                var egg_note := ""
+                if Game.eggs.size() > 0:
+                        var soonest := 1e9
+                        for eg in Game.eggs:
+                                soonest = minf(soonest, float(eg.get("hatch_left", 0.0)))
+                        egg_note = " · %d egg(s), first in %ds" % [Game.eggs.size(), int(ceil(soonest))]
+                return "Echo Nest — [E] brood%s" % egg_note
         return ""
 
 

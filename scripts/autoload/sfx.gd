@@ -258,12 +258,22 @@ func get_bus_volume(bus_name: String) -> float:
 
 
 func save_settings() -> void:
-        var data := {}
+        # v1.5 PS-6: merge-safe — keep gfx/binds keys written by the settings screen
+        var data := _read_settings_file()
         for bus_name in ["Master"] + BUSES:
                 data[bus_name] = get_bus_volume(bus_name)
         var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
         if f:
                 f.store_string(JSON.stringify(data))
+
+
+func _read_settings_file() -> Dictionary:
+        var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+        if f:
+                var parsed: Variant = JSON.parse_string(f.get_as_text())
+                if parsed is Dictionary:
+                        return parsed
+        return {}
 
 
 # ------------------------------------------------------------------ buses --

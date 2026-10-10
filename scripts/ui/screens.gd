@@ -26,7 +26,7 @@ func _ready() -> void:
         dim.color = Color(0.02, 0.03, 0.05, 0.68)
         dim.set_anchors_preset(Control.PRESET_FULL_RECT)
         root.add_child(dim)
-        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods", "help", "credits"]:
+        for key in ["inventory", "crafting", "research", "journal", "map", "pause", "dialogue", "shop", "mods", "help", "credits", "settings"]:
                 var p := Control.new()
                 p.set_anchors_preset(Control.PRESET_FULL_RECT)
                 p.visible = false
@@ -44,6 +44,7 @@ func _ready() -> void:
         _build_mods()
         _build_help()
         _build_credits()
+        _build_settings()
 
 
 func is_open() -> bool:
@@ -80,6 +81,9 @@ func open(screen: String) -> void:
                         _refresh_pause()
                 "help":
                         get_tree().paused = true
+                "settings":
+                        get_tree().paused = true
+                        _refresh_settings()
                 "credits":
                         pass
         if screen == "dialogue" or screen == "shop":
@@ -97,6 +101,14 @@ func close() -> void:
 
 
 func _input(event: InputEvent) -> void:
+        # PS-6: rebind capture swallows the next key press (Esc = cancel)
+        if _rebind_action != "" and event is InputEventKey and event.pressed and not event.echo:
+                if event.keycode != KEY_ESCAPE:
+                        _assign_bind(_rebind_action, event.keycode)
+                _rebind_action = ""
+                _refresh_bind_buttons()
+                get_viewport().set_input_as_handled()
+                return
         if event.is_action_pressed("pause") and is_open():
                 close()
                 get_viewport().set_input_as_handled()
@@ -728,6 +740,8 @@ func _build_journal() -> void:
                 zone_names.append(z["name"])
         for n in zone_names:
                 tabs.add_tab(n)
+        # PS-5: achievements tab — 18 field achievements with unlock state
+        tabs.add_tab("★ Awards")
         tabs.tab_changed.connect(func i(i: int): _journal_tab = i; _refresh_journal())
         vb.add_child(tabs)
         var scroll := ScrollContainer.new()
@@ -750,7 +764,34 @@ func _refresh_journal() -> void:
                 _journal_stats.text = "Field notes — species observed: %d/%d · landmarks charted: %d/15 · zones discovered: %d/12" % [observed, Data.species.size(), Game.charted_locations.size(), Game.discovered_zones.size()]
         for c in _journal_list.get_children():
                 c.queue_free()
+        # PS-5: the Awards tab — full achievement list
         if _journal_tab >= Data.zones.size():
+                var unlocked := 0
+                for entry in Game.achievement_list():
+                        if entry["unlocked"]:
+                                unlocked += 1
+                        var ah := Label.new()
+                        ah.text = "FIELD ACHIEVEMENTS — %d / %d unlocked" % [unlocked, Game.ACHIEVEMENTS.size()]
+                        ah.add_theme_font_size_override("font_size", 16)
+                        ah.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+                        _journal_list.add_child(ah)
+                        for a in Game.achievement_list():
+                                var row := HBoxContainer.new()
+                                row.add_theme_constant_override("separation", 10)
+                                var star := Label.new()
+                                star.text = "★" if a["unlocked"] else "·"
+                                star.custom_minimum_size = Vector2(22, 0)
+                                star.add_theme_font_size_override("font_size", 15)
+                                star.add_theme_color_override("font_color", Color(1.0, 0.82, 0.35) if a["unlocked"] else Color(0.45, 0.48, 0.52))
+                                row.add_child(star)
+                                var txt := Label.new()
+                                txt.text = "%s — %s" % [a["name"], a["desc"]]
+                                txt.add_theme_font_size_override("font_size", 13)
+                                txt.add_theme_color_override("font_color", Color(0.95, 0.92, 0.82) if a["unlocked"] else Color(0.55, 0.58, 0.62))
+                                txt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+                                txt.custom_minimum_size = Vector2(700, 0)
+                                row.add_child(txt)
+                                _journal_list.add_child(row)
                 return
         var zone: Dictionary = Data.zones[_journal_tab]
         var zone_id: String = zone["id"]
@@ -825,6 +866,8 @@ func _refresh_journal() -> void:
 # --------------------------------------------------------------------- map --
 var _map_draw: Control
 var _map_legend: Label         # v1.3 V12-e: live charted counter (was stale)
+var _fast_travel_dlg: ConfirmationDialog
+var _fast_travel_dest: Dictionary
 
 
 func _build_map() -> void:
@@ -836,6 +879,8 @@ func _build_map() -> void:
         _map_draw = Control.new()
         _map_draw.custom_minimum_size = Vector2(720, 480)
         _map_draw.draw.connect(_draw_map)
+        # PS-4: click a charted ★ landmark (or the campfire) to fast travel
+        _map_draw.gui_input.connect(_map_click)
         vb.add_child(_map_draw)
         var legend := Label.new()
         legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home" % Game.charted_locations.size()
@@ -847,9 +892,72 @@ func _build_map() -> void:
 
 func _refresh_map() -> void:
         if _map_legend:
-                _map_legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home" % Game.charted_locations.size()
+                _map_legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home · CLICK ★/campfire = fast travel (3 Dawn Shards)" % Game.charted_locations.size()
         if _map_draw:
                 _map_draw.queue_redraw()
+
+
+# ------------------------------------------------------- PS-4 fast travel --
+func _map_click(event: InputEvent) -> void:
+        if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+                return
+        var world := get_tree().get_first_node_in_group("world")
+        var player := get_tree().get_first_node_in_group("player")
+        if world == null or player == null or not world.has_method("landmark_list"):
+                return
+        # combat guard: no travel while a hostile has you engaged
+        for c in world.creatures_root.get_children():
+                if c is Node3D and c.get("ai_state") == "Combat" and c.global_position.distance_to(player.global_position) < 30.0:
+                        Game.toast.emit("Cannot travel — a creature still has your scent!", Color(1.0, 0.55, 0.4))
+                        return
+        # nearest clickable destination within 26 px: camp (free) + charted landmarks
+        var candidates := [{"pos": _map_xy(-400, 0), "world_pos": Vector3(-400, 0, 0), "name": "Home Camp", "free": true}]
+        for lm in world.landmark_list():
+                if Game.charted_locations.has(str(lm["id"])):
+                        candidates.append({"pos": _map_xy(float(lm["pos"].x), float(lm["pos"].z)), "world_pos": Vector3(lm["pos"].x, 0, lm["pos"].z), "name": str(lm["name"]), "free": false})
+        var best: Dictionary = {}
+        var best_d := 26.0
+        for cand in candidates:
+                var d: float = (cand["pos"] as Vector2).distance_to(event.position)
+                if d < best_d:
+                        best = cand
+                        best_d = d
+        if best.is_empty():
+                return
+        var cost := 0 if best["free"] else 3
+        if not best["free"] and Game.count_item("Item_DawnShard") < cost:
+                Game.toast.emit("Fast travel needs %d Dawn Shards — chart more landmarks." % cost, Color(1.0, 0.6, 0.4))
+                return
+        if _fast_travel_dlg == null:
+                _fast_travel_dlg = ConfirmationDialog.new()
+                _fast_travel_dlg.ok_button_text = "Travel"
+                _fast_travel_dlg.cancel_button_text = "Stay"
+                # connect ONCE — the pending destination travels via _fast_travel_dest
+                _fast_travel_dlg.confirmed.connect(_fast_travel_go)
+                root.add_child(_fast_travel_dlg)
+        _fast_travel_dest = best
+        _fast_travel_dlg.dialog_text = "Fast travel to %s?\n%s" % [best["name"], "Free — the camp fire always calls you home." if best["free"] else "Cost: 3 Dawn Shards"]
+        _fast_travel_dlg.popup_centered()
+
+
+func _fast_travel_go() -> void:
+        var best := _fast_travel_dest
+        if best.is_empty():
+                return
+        if not best["free"]:
+                if Game.count_item("Item_DawnShard") < 3:
+                        Game.toast.emit("Not enough Dawn Shards.", Color(1.0, 0.6, 0.4))
+                        return
+                Game.remove_item("Item_DawnShard", 3)
+        var w := get_tree().get_first_node_in_group("world")
+        var p := get_tree().get_first_node_in_group("player")
+        if w == null or p == null:
+                return
+        var dest: Vector3 = best["world_pos"]
+        p.global_position = Vector3(dest.x, w.tile_height(dest.x, dest.z) + 1.2, dest.z)
+        Game.toast.emit("The Vale folds — you arrive at %s." % best["name"], Color(0.85, 1.0, 0.8))
+        Sfx.play_stinger("landmark")
+        close()
 
 
 func _map_rect(w: float, h: float) -> Rect2:
@@ -1150,6 +1258,8 @@ func _refresh_pause() -> void:
                 get_tree().paused = false
                 get_tree().reload_current_scene()))
         _pause_box.add_child(_btn("Echo Mods [F7]", func _m(): open("mods")))
+        # v1.5 PS-6: full settings (graphics + key binds) from pause
+        _pause_box.add_child(_btn("Settings (graphics + keys)", func _st(): open("settings")))
         # v1.3 V12-c: field manual, credits and fullscreen reachable from pause
         _pause_box.add_child(_btn("Controls & Help [F1]", func _h(): open("help")))
         _pause_box.add_child(_btn("Credits & Licenses", func _cr(): open("credits")))
@@ -1411,3 +1521,271 @@ func _refresh_shop() -> void:
                                 _refresh_shop())
                 b.add_theme_font_size_override("font_size", 12)
                 row.add_child(b)
+
+
+# ------------------------------------------------------------------ PS-6 settings --
+const REBIND_ACTIONS := [
+        ["move_forward", "Move forward"], ["move_back", "Move back"], ["move_left", "Strafe left"], ["move_right", "Strafe right"],
+        ["sprint", "Sprint"], ["jump", "Jump"], ["dodge", "Dodge roll"],
+        ["interact", "Interact / use"], ["capture", "Capture echo"], ["feed", "Feed companion"],
+        ["inventory", "Inventory"], ["crafting", "Crafting"], ["research", "Research"], ["journal", "Journal"],
+        ["build", "Build"], ["map", "Map"],
+        ["party_cycle", "Cycle party command"], ["party_follow", "Order: follow"],
+        ["equip_best", "Equip best gear"], ["smart_consume", "Smart eat/drink"],
+        ["deploy_drone", "Deploy drone"], ["deploy_robot", "Deploy robot"], ["dismantle", "Dismantle item"],
+]
+var _rebind_action := ""
+var _rebind_buttons := {}       # action -> Button
+var _gfx_vsync: OptionButton
+var _gfx_msaa: OptionButton
+var _gfx_scale: HSlider
+var _gfx_scale_lbl: Label
+var _gfx_fov: HSlider
+var _gfx_fov_lbl: Label
+
+
+func _build_settings() -> void:
+        var p := _center_panel("settings", Vector2(900, 600))
+        var vb := VBoxContainer.new()
+        vb.add_theme_constant_override("separation", 10)
+        p.add_child(vb)
+        _title(vb, "SETTINGS", "[Esc] close · graphics + key binds persist to your machine", "star")
+
+        var cols := HBoxContainer.new()
+        cols.add_theme_constant_override("separation", 18)
+        vb.add_child(cols)
+
+        # ---- graphics column ----
+        var left := VBoxContainer.new()
+        left.custom_minimum_size = Vector2(330, 0)
+        left.add_theme_constant_override("separation", 10)
+        cols.add_child(left)
+        var gh := Label.new()
+        gh.text = "Graphics"
+        gh.add_theme_font_size_override("font_size", 16)
+        gh.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+        left.add_child(gh)
+
+        var vsync_row := HBoxContainer.new()
+        vsync_row.add_theme_constant_override("separation", 10)
+        var vsync_lbl := Label.new()
+        vsync_lbl.text = "VSync"
+        vsync_lbl.custom_minimum_size = Vector2(110, 0)
+        vsync_row.add_child(vsync_lbl)
+        _gfx_vsync = OptionButton.new()
+        _gfx_vsync.add_item("On")
+        _gfx_vsync.add_item("Off")
+        _gfx_vsync.selected = 0
+        if OS.get_name() == "Web":
+                _gfx_vsync.disabled = true
+        _gfx_vsync.item_selected.connect(func _v(_i: int): _apply_gfx())
+        vsync_row.add_child(_gfx_vsync)
+        left.add_child(vsync_row)
+
+        var msaa_row := HBoxContainer.new()
+        msaa_row.add_theme_constant_override("separation", 10)
+        var msaa_lbl := Label.new()
+        msaa_lbl.text = "Anti-alias"
+        msaa_lbl.custom_minimum_size = Vector2(110, 0)
+        msaa_row.add_child(msaa_lbl)
+        _gfx_msaa = OptionButton.new()
+        for t in ["Off", "MSAA 2x", "MSAA 4x", "MSAA 8x"]:
+                _gfx_msaa.add_item(t)
+        _gfx_msaa.selected = 0
+        _gfx_msaa.item_selected.connect(func _m(_i: int): _apply_gfx())
+        msaa_row.add_child(_gfx_msaa)
+        left.add_child(msaa_row)
+
+        var scale_row := HBoxContainer.new()
+        scale_row.add_theme_constant_override("separation", 10)
+        var scale_lbl := Label.new()
+        scale_lbl.text = "Render scale"
+        scale_lbl.custom_minimum_size = Vector2(110, 0)
+        scale_row.add_child(scale_lbl)
+        _gfx_scale = HSlider.new()
+        _gfx_scale.min_value = 0.6
+        _gfx_scale.max_value = 1.0
+        _gfx_scale.step = 0.05
+        _gfx_scale.value = 1.0
+        _gfx_scale.custom_minimum_size = Vector2(140, 20)
+        _gfx_scale.value_changed.connect(func _s(v: float):
+                if _gfx_scale_lbl:
+                        _gfx_scale_lbl.text = "%d%%" % int(round(v * 100.0))
+                _apply_gfx())
+        scale_row.add_child(_gfx_scale)
+        _gfx_scale_lbl = Label.new()
+        _gfx_scale_lbl.text = "100%"
+        _gfx_scale_lbl.custom_minimum_size = Vector2(48, 0)
+        scale_row.add_child(_gfx_scale_lbl)
+        left.add_child(scale_row)
+
+        var fov_row := HBoxContainer.new()
+        fov_row.add_theme_constant_override("separation", 10)
+        var fov_lbl := Label.new()
+        fov_lbl.text = "Field of view"
+        fov_lbl.custom_minimum_size = Vector2(110, 0)
+        fov_row.add_child(fov_lbl)
+        _gfx_fov = HSlider.new()
+        _gfx_fov.min_value = 60.0
+        _gfx_fov.max_value = 90.0
+        _gfx_fov.step = 1.0
+        _gfx_fov.value = 75.0
+        _gfx_fov.custom_minimum_size = Vector2(140, 20)
+        _gfx_fov.value_changed.connect(func _f(v: float):
+                if _gfx_fov_lbl:
+                        _gfx_fov_lbl.text = "%d°" % int(v)
+                _apply_gfx())
+        fov_row.add_child(_gfx_fov)
+        _gfx_fov_lbl = Label.new()
+        _gfx_fov_lbl.text = "75°"
+        _gfx_fov_lbl.custom_minimum_size = Vector2(48, 0)
+        fov_row.add_child(_gfx_fov_lbl)
+        left.add_child(fov_row)
+
+        var note := Label.new()
+        note.text = "Audio sliders live in the pause menu.\nChanges apply instantly and persist."
+        note.add_theme_font_size_override("font_size", 11)
+        note.add_theme_color_override("font_color", Color(0.6, 0.65, 0.72))
+        left.add_child(note)
+
+        # ---- controls column ----
+        var right := VBoxContainer.new()
+        right.custom_minimum_size = Vector2(430, 0)
+        right.add_theme_constant_override("separation", 6)
+        cols.add_child(right)
+        var ch := Label.new()
+        ch.text = "Controls — click a key, then press the new one"
+        ch.add_theme_font_size_override("font_size", 16)
+        ch.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
+        right.add_child(ch)
+        var scroll := ScrollContainer.new()
+        scroll.custom_minimum_size = Vector2(430, 400)
+        var sv := scroll.get_v_scroll_bar()
+        sv.add_theme_stylebox_override("grabber", _scroll_grabber_style())
+        right.add_child(scroll)
+        var list := VBoxContainer.new()
+        list.add_theme_constant_override("separation", 4)
+        list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        scroll.add_child(list)
+        for entry in REBIND_ACTIONS:
+                var action: String = entry[0]
+                var row := HBoxContainer.new()
+                row.add_theme_constant_override("separation", 10)
+                var nm := Label.new()
+                nm.text = entry[1]
+                nm.custom_minimum_size = Vector2(240, 0)
+                nm.add_theme_font_size_override("font_size", 13)
+                row.add_child(nm)
+                var kb := Button.new()
+                kb.custom_minimum_size = Vector2(110, 30)
+                kb.add_theme_font_size_override("font_size", 13)
+                kb.pressed.connect(func _b():
+                        _rebind_action = action
+                        _refresh_bind_buttons())
+                row.add_child(kb)
+                _rebind_buttons[action] = kb
+                list.add_child(row)
+
+        # ---- footer ----
+        var foot := HBoxContainer.new()
+        foot.add_theme_constant_override("separation", 12)
+        foot.alignment = BoxContainer.ALIGNMENT_CENTER
+        vb.add_child(foot)
+        foot.add_child(_btn("Reset defaults", func _rd(): _reset_settings()))
+        foot.add_child(_btn("Done", func _dn(): close()))
+
+
+func _scroll_grabber_style() -> StyleBoxFlat:
+        var sb := StyleBoxFlat.new()
+        sb.bg_color = Color(0.85, 0.75, 0.5, 0.85)
+        sb.set_corner_radius_all(4)
+        return sb
+
+
+func _refresh_settings() -> void:
+        var data := _read_settings_file()
+        var gfx: Dictionary = data.get("gfx", {})
+        _gfx_vsync.selected = clampi(int(gfx.get("vsync", 1)), 0, 1)
+        _gfx_msaa.selected = clampi(int(gfx.get("msaa", 0)), 0, 3)
+        var sc := clampf(float(gfx.get("scale", 1.0)), 0.6, 1.0)
+        _gfx_scale.set_value_no_signal(sc)
+        _gfx_scale_lbl.text = "%d%%" % int(round(sc * 100.0))
+        var fov := clampf(float(gfx.get("fov", 75.0)), 60.0, 90.0)
+        _gfx_fov.set_value_no_signal(fov)
+        _gfx_fov_lbl.text = "%d°" % int(fov)
+        _refresh_bind_buttons()
+
+
+func _refresh_bind_buttons() -> void:
+        for action in _rebind_buttons:
+                var btn: Button = _rebind_buttons[action]
+                if action == _rebind_action:
+                        btn.text = "press…"
+                        btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.35))
+                        continue
+                btn.add_theme_color_override("font_color", Color(0.92, 0.88, 0.78))
+                var evs := InputMap.action_get_events(action)
+                var label := "—"
+                for ev in evs:
+                        if ev is InputEventKey:
+                                label = ev.as_text().replace(" (Physical)", "")
+                                break
+                btn.text = label
+
+
+func _assign_bind(action: String, keycode: int) -> void:
+        InputMap.action_erase_events(action)
+        var ev := InputEventKey.new()
+        ev.keycode = keycode
+        InputMap.action_add_event(action, ev)
+        var data := _read_settings_file()
+        var binds: Dictionary = data.get("binds", {})
+        binds[action] = keycode
+        data["binds"] = binds
+        _write_settings_file(data)
+        Sfx.play("ui_select", -14.0)
+
+
+func _apply_gfx() -> void:
+        var data := _read_settings_file()
+        data["gfx"] = {"vsync": _gfx_vsync.selected, "msaa": _gfx_msaa.selected, "scale": _gfx_scale.value, "fov": _gfx_fov.value}
+        _write_settings_file(data)
+        if OS.get_name() == "Web" or DisplayServer.get_name() == "headless":
+                return
+        var win := get_window()
+        if win == null:
+                return
+        win.vsync_mode = DisplayServer.VSYNC_DISABLED if _gfx_vsync.selected == 1 else DisplayServer.VSYNC_ENABLED
+        win.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_4X, Viewport.MSAA_8X][_gfx_msaa.selected]
+        win.scaling_3d_scale = clampf(_gfx_scale.value, 0.5, 1.0)
+        var player := get_tree().get_first_node_in_group("player")
+        if player and player.get("camera"):
+                player.camera.fov = _gfx_fov.value
+
+
+func _reset_settings() -> void:
+        var data := _read_settings_file()
+        data.erase("binds")
+        data.erase("gfx")
+        _write_settings_file(data)
+        for entry in REBIND_ACTIONS:
+                var action: String = entry[0]
+                InputMap.action_erase_events(action)
+        Game._setup_input_actions()
+        _refresh_settings()
+        Game.toast.emit("Controls and graphics reset to defaults.", Color(0.8, 1.0, 0.85))
+
+
+func _read_settings_file() -> Dictionary:
+        var f := FileAccess.open("user://settings.json", FileAccess.READ)
+        if f:
+                var parsed: Variant = JSON.parse_string(f.get_as_text())
+                if parsed is Dictionary:
+                        return parsed
+        return {}
+
+
+func _write_settings_file(data: Dictionary) -> void:
+        var f := FileAccess.open("user://settings.json", FileAccess.WRITE)
+        if f:
+                f.store_string(JSON.stringify(data, "\t"))

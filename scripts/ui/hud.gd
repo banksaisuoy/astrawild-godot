@@ -19,6 +19,10 @@ var boss_bar: ProgressBar
 var boss_label: Label
 var hint_label: Label
 var _toast_timers := []
+# PS-1: damage vignette (red edge flash when the player takes a hit)
+var _dmg_vignette: ColorRect
+var _dmg_vignette_a := 0.0
+var _last_hp_seen := -1.0
 # v1.1 Phase V7: onboarding + compass
 var onboarding_box: VBoxContainer
 var onboarding_items := {}
@@ -26,6 +30,11 @@ var onboarding_icons := {}
 var onboarding_done := false
 var compass: Control
 var compass_width := 340.0
+# PS-8: corner radar minimap (blips + landmarks + zone name)
+var minimap: Control
+var minimap_zone: Label
+const MINIMAP_R := 92.0
+const MINIMAP_RANGE := 70.0
 
 
 func _ready() -> void:
@@ -34,6 +43,12 @@ func _ready() -> void:
         root.set_anchors_preset(Control.PRESET_FULL_RECT)
         root.mouse_filter = Control.MOUSE_FILTER_IGNORE
         add_child(root)
+        # PS-1: full-screen damage vignette (edge flash), fades in _process
+        _dmg_vignette = ColorRect.new()
+        _dmg_vignette.color = Color(0.55, 0.04, 0.04, 0.0)
+        _dmg_vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+        _dmg_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        root.add_child(_dmg_vignette)
         Game.toast.connect(_add_toast)
         Game.stats_changed.connect(_refresh_bars)
         Game.inventory_changed.connect(func _s(): pass)
@@ -201,6 +216,8 @@ func _build() -> void:
         observe_ring.draw.connect(_draw_observe_ring)
         root.add_child(observe_ring)
 
+        _build_minimap()
+
         # --- boss bar (upper-center) ---
         boss_bar = ProgressBar.new()
         boss_bar.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -307,6 +324,16 @@ func _style_progress(bar: ProgressBar, color: Color) -> void:
 func _refresh_bars() -> void:
         if bars.is_empty():
                 return
+        # PS-1: red edge flash on hp loss (heals flash soft green instead)
+        if _last_hp_seen >= 0.0 and Game.hp < _last_hp_seen - 0.5:
+                _dmg_vignette_a = 0.4
+                if _dmg_vignette:
+                        _dmg_vignette.color = Color(0.55, 0.04, 0.04, 0.4)
+        elif _last_hp_seen >= 0.0 and Game.hp > _last_hp_seen + 2.0:
+                _dmg_vignette_a = 0.22
+                if _dmg_vignette:
+                        _dmg_vignette.color = Color(0.25, 0.5, 0.3, 0.22)
+        _last_hp_seen = Game.hp
         bars["hp"].value = Game.hp
         bars["stamina"].value = Game.stamina
         bars["hunger"].value = Game.hunger
@@ -392,12 +419,25 @@ func _refresh_party() -> void:
                 party_box.add_child(card)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
         _update_prompt()
         _update_boss()
         _update_onboarding()
+        # PS-1: damage vignette fade-out
+        if _dmg_vignette_a > 0.001 and _dmg_vignette:
+                _dmg_vignette_a = maxf(0.0, _dmg_vignette_a - delta * 1.6)
+                _dmg_vignette.color.a = _dmg_vignette_a
         if compass:
                 compass.queue_redraw()
+        # PS-8: live minimap redraw + zone chip
+        if minimap:
+                minimap.queue_redraw()
+                if minimap_zone:
+                        var zname := "—"
+                        if Game.current_zone_id != "":
+                                zname = str(Data.zone(Game.current_zone_id).get("name", "—"))
+                        if minimap_zone.text != zname:
+                                minimap_zone.text = zname
 
 
 func _update_onboarding() -> void:
@@ -611,3 +651,75 @@ func _on_capture_flash(_species_id: String, success: bool) -> void:
         var tw := flash.create_tween()
         tw.tween_property(flash, "color:a", 0.0, 0.5)
         tw.tween_callback(flash.queue_free)
+
+
+# --------------------------------------------------------------- PS-8 map --
+func _build_minimap() -> void:
+        ## corner radar: north-locked circle, player arrow up, live blips,
+        ## landmark diamonds, zone-name chip underneath.
+        minimap = Control.new()
+        minimap.custom_minimum_size = Vector2(MINIMAP_R * 2.0 + 8.0, MINIMAP_R * 2.0 + 8.0)
+        minimap.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+        minimap.position = Vector2(-MINIMAP_R * 2.0 - 26.0, -MINIMAP_R * 2.0 - 30.0)
+        minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        minimap.draw.connect(_draw_minimap)
+        root.add_child(minimap)
+        minimap_zone = Label.new()
+        minimap_zone.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+        minimap_zone.position = Vector2(-MINIMAP_R * 2.0 - 26.0, -34.0)
+        minimap_zone.custom_minimum_size = Vector2(MINIMAP_R * 2.0 + 8.0, 20)
+        minimap_zone.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        minimap_zone.add_theme_font_size_override("font_size", 12)
+        minimap_zone.add_theme_color_override("font_color", Color(0.92, 0.9, 0.82))
+        minimap_zone.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+        minimap_zone.add_theme_constant_override("shadow_offset_y", 1)
+        minimap_zone.text = "—"
+        root.add_child(minimap_zone)
+
+
+func _draw_minimap() -> void:
+        var player := get_tree().get_first_node_in_group("player") as Node3D
+        var world := get_tree().get_first_node_in_group("world")
+        if player == null or world == null:
+                return
+        var center := Vector2(MINIMAP_R + 4.0, MINIMAP_R + 4.0)
+        # disc + rings
+        minimap.draw_circle(center, MINIMAP_R + 3.0, Color(0.04, 0.05, 0.08, 0.82))
+        minimap.draw_arc(center, MINIMAP_R + 3.0, 0.0, TAU, 40, Color(0.75, 0.7, 0.55, 0.55), 1.5)
+        minimap.draw_arc(center, MINIMAP_R * 0.55, 0.0, TAU, 32, Color(0.6, 0.62, 0.6, 0.18), 1.0)
+        # heading: rotate world offsets so the player's facing points UP
+        var f3 := -player.global_transform.basis.z
+        var phi := atan2(f3.z, f3.x)
+        var rot := -PI / 2.0 - phi
+        # north marker (true north = -Z)
+        var north := Vector2(0.0, -1.0).rotated(rot) * (MINIMAP_R - 10.0)
+        var font := minimap.get_theme_default_font()
+        minimap.draw_string(font, center + north + Vector2(-4.0, 4.0), "N", HORIZONTAL_ALIGNMENT_LEFT, 10, 11, Color(0.85, 0.9, 1.0, 0.9))
+        # landmark diamonds (chartable, gold)
+        if world.has_method("landmark_list"):
+                for lm in world.landmark_list():
+                        var d := Vector2(float(lm["pos"].x) - player.global_position.x, float(lm["pos"].z) - player.global_position.z)
+                        if d.length() > MINIMAP_RANGE * 2.0:
+                                continue
+                        var lp := center + d.rotated(rot).limit_length(MINIMAP_R - 4.0) * (MINIMAP_R / maxf(1.0, MINIMAP_RANGE)) * (1.0 if d.length() <= MINIMAP_RANGE else 1.0)
+                        var dd: float = minf(1.0, d.length() / MINIMAP_RANGE)
+                        var gold := Color(1.0, 0.84, 0.35, 0.35 + 0.6 * dd)
+                        var dia := PackedVector2Array([lp + Vector2(0, -4), lp + Vector2(4, 0), lp + Vector2(0, 4), lp + Vector2(-4, 0)])
+                        minimap.draw_colored_polygon(dia, gold)
+        # creature blips: party gold · hostile red · passive soft green
+        for c in world.creatures_root.get_children():
+                if not (c is Node3D) or c.get("defeated"):
+                        continue
+                var dxz := Vector2(c.global_position.x - player.global_position.x, c.global_position.z - player.global_position.z)
+                if dxz.length() > MINIMAP_RANGE:
+                        continue
+                var bp := center + dxz.rotated(rot) * (MINIMAP_R / MINIMAP_RANGE)
+                if c.get("captured"):
+                        minimap.draw_circle(bp, 3.5, Color(1.0, 0.85, 0.35))
+                elif c.def.get("hostile", false):
+                        minimap.draw_circle(bp, 3.0, Color(1.0, 0.32, 0.28))
+                else:
+                        minimap.draw_circle(bp, 2.5, Color(0.55, 0.85, 0.6, 0.9))
+        # player arrow (always up)
+        var arrow := PackedVector2Array([center + Vector2(0, -7), center + Vector2(5, 6), center + Vector2(0, 3), center + Vector2(-5, 6)])
+        minimap.draw_colored_polygon(arrow, Color(1.0, 0.95, 0.75))

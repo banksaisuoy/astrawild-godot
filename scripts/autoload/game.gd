@@ -20,11 +20,22 @@ signal screen_requested(screen: String)
 signal crafting_done(recipe_id: String)
 signal game_saved
 signal game_loaded
+signal achievements_changed
 
 const MINUTES_PER_REAL_SECOND := 1.0
 const MAX_PARTY := 3
 const CAPTURE_COOLDOWN := 1.0
 const AUTOSAVE_INTERVAL := 300.0
+# PS-3 (Production Systems Plan): difficulty presets — chosen at New Expedition,
+# persisted in the save. Multipliers: damage taken / vital needs drain /
+# night-raid pressure. Standard = the v1.4 balance exactly.
+const DIFFICULTY_PRESETS := {
+        "explorer": {"name": "Explorer", "dmg_taken": 0.70, "needs": 0.85, "raid": 0.70, "desc": "Story-first — softer hits, slower hunger, calm nights."},
+        "standard": {"name": "Standard", "dmg_taken": 1.00, "needs": 1.00, "raid": 1.00, "desc": "The intended Vale — the balance the world was tuned around."},
+        "veteran": {"name": "Veteran", "dmg_taken": 1.35, "needs": 1.15, "raid": 1.33, "desc": "The Vale bites back — harder hits, faster needs, fierce raids."},
+}
+var difficulty_id := "standard"
+var _pending_fov := 0.0   # PS-6: applied to the player camera on spawn
 const PARTY_COMMANDS := ["Follow", "Stay", "Attack", "Defend", "Work"]
 const TRUST_STAGES := [
         {"name": "Stranger", "min": 0.0},
@@ -72,6 +83,38 @@ var active_quest := ""
 var completed_quests := {}
 var god_mode := false      # cheat AW.God — damage disabled
 var forced_weather := ""   # world-event / cheat override (Storm Surge etc.)
+# PS-5 (Production Systems Plan): achievements — checked centrally every 2 s
+# from live state (journal/party/zones/chests/quests/day/crafted_count) plus
+# event hooks (boss defeats via echo_defeated). Persisted in the save.
+var achievements := {}     # id -> true
+var _ach_timer := 0.0
+# PS-7: breeding & eggs — the Echo Nest broods two bonded companions into
+# an egg; the child inherits blended stats and hatches after EGG_HATCH_SECONDS.
+var eggs := []              # [{species_id, name, parents:[a,b], hatch_left, stats:{hp,atk,def,spd}, trust0}]
+var _nest_pairs := {}       # "sidA|sidB" -> day when the pair can brood again
+const EGG_HATCH_SECONDS := 90.0
+const EGG_MAX := 3
+const NEST_TRUST_MIN := 30.0
+const ACHIEVEMENTS := [
+        {"id": "ach_first_capture", "name": "First Echo", "desc": "Capture your first creature."},
+        {"id": "ach_first_evolve", "name": "Metamorphosis", "desc": "Evolve an Echo companion."},
+        {"id": "ach_partner", "name": "Partner", "desc": "Raise an Echo to Partner trust (90)."},
+        {"id": "ach_party_full", "name": "Full Pack", "desc": "Run a party of three Echoes."},
+        {"id": "ach_craft_50", "name": "Field Smith", "desc": "Craft 50 items."},
+        {"id": "ach_zones_all", "name": "Cartographer", "desc": "Discover all 12 zones."},
+        {"id": "ach_landmarks_5", "name": "Wayfinder", "desc": "Chart 5 landmarks."},
+        {"id": "ach_landmarks_15", "name": "Loremaster", "desc": "Chart all 15 landmarks."},
+        {"id": "ach_chests_15", "name": "Treasure Hunter", "desc": "Open all 15 landmark chests."},
+        {"id": "ach_boss_warden", "name": "Deep Light", "desc": "Defeat the Underlight Warden."},
+        {"id": "ach_boss_colossus", "name": "Vault Breaker", "desc": "Defeat the Vault Colossus."},
+        {"id": "ach_solaris", "name": "Sun Slayer", "desc": "Defeat Solaris the Radiant."},
+        {"id": "ach_bestiary_half", "name": "Naturalist", "desc": "Log 114 species in the bestiary."},
+        {"id": "ach_bestiary_all", "name": "The Vale Knows", "desc": "Log every species (100% bestiary)."},
+        {"id": "ach_day10", "name": "Ten Dawns", "desc": "Survive to day 10."},
+        {"id": "ach_day10_veteran", "name": "Ten Hard Dawns", "desc": "Survive to day 10 on Veteran."},
+        {"id": "ach_quests_all", "name": "Vanguard", "desc": "Complete the 11-quest campaign."},
+        {"id": "ach_alloy", "name": "Ancient Gifts", "desc": "Hold Ancient Alloy in your pack."},
+]
 
 # ---- party ----
 var party := []            # array of echo state dicts (active field team)
@@ -90,9 +133,41 @@ var crafted_count := 0     # v1.1 Phase V7 onboarding counter
 
 func _enter_tree() -> void:
         _setup_input_actions()
+        _apply_saved_settings()
+
+
+func _apply_saved_settings() -> void:
+        ## PS-6: rebinds + graphics settings persisted in user://settings.json,
+        ## applied at boot (before the world exists). FOV is stored pending and
+        ## stamped onto the player camera when it spawns.
+        var f := FileAccess.open("user://settings.json", FileAccess.READ)
+        if f == null:
+                return
+        var parsed: Variant = JSON.parse_string(f.get_as_text())
+        if not (parsed is Dictionary):
+                return
+        var data: Dictionary = parsed
+        var binds: Dictionary = data.get("binds", {})
+        for action in binds:
+                if InputMap.has_action(action):
+                        InputMap.action_erase_events(action)
+                        var ev := InputEventKey.new()
+                        ev.keycode = int(binds[action])
+                        InputMap.action_add_event(action, ev)
+        var gfx: Dictionary = data.get("gfx", {})
+        if gfx.is_empty():
+                return
+        _pending_fov = float(gfx.get("fov", 0.0))
+        if DisplayServer.get_name() != "headless":
+                var win := get_window()
+                if win != null:
+                        win.vsync_mode = DisplayServer.VSYNC_DISABLED if int(gfx.get("vsync", 1)) == 0 else DisplayServer.VSYNC_ENABLED
+                        win.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_4X, Viewport.MSAA_8X][clampi(int(gfx.get("msaa", 0)), 0, 3)]
+                        win.scaling_3d_scale = clampf(float(gfx.get("scale", 1.0)), 0.5, 1.0)
 
 
 func _ready() -> void:
+        echo_defeated.connect(_on_echo_defeated_ach)
         reset_run()
 
 
@@ -118,6 +193,9 @@ func reset_run() -> void:
         research_points = 0
         unlocked_tech = {"Tech_BasicCrafting": true}
         journal = {}
+        achievements = {}
+        eggs = []
+        _nest_pairs = {}
         quest_states = {}
         active_quest = ""
         completed_quests = {}
@@ -170,6 +248,12 @@ func _process(delta: float) -> void:
         _tick_autosave(delta)
         if _capture_cooldown > 0.0:
                 _capture_cooldown -= delta
+        # PS-5: periodic achievement sweep (cheap state reads)
+        _ach_timer += delta
+        if _ach_timer >= 2.0:
+                _ach_timer = 0.0
+                _check_achievements()
+        _tick_eggs(delta)
 
 
 # ------------------------------------------------------------- automation --
@@ -336,6 +420,182 @@ func _roll_weather() -> void:
                         return
 
 
+func difficulty() -> Dictionary:
+        ## PS-3: active difficulty preset (safe lookup — unknown ids fall back to Standard).
+        if DIFFICULTY_PRESETS.has(difficulty_id):
+                return DIFFICULTY_PRESETS[difficulty_id]
+        return DIFFICULTY_PRESETS["standard"]
+
+
+# ----------------------------------------------------------- achievements --
+func _on_echo_defeated_ach(species_id: String, _loot: Array) -> void:
+        if species_id == "Creature_UnderlightWarden":
+                _unlock_achievement("ach_boss_warden")
+        elif species_id == "Creature_VaultColossus":
+                _unlock_achievement("ach_boss_colossus")
+        elif species_id == "Creature_Solaris":
+                _unlock_achievement("ach_solaris")
+
+
+func _check_achievements() -> void:
+        if not party.is_empty() or not echo_box.is_empty():
+                _unlock_achievement("ach_first_capture")
+        for e in party + echo_box:
+                if str(e.get("name", "")).contains("✦"):
+                        _unlock_achievement("ach_first_evolve")
+                if float(e.get("trust", 0.0)) >= 90.0:
+                        _unlock_achievement("ach_partner")
+        if party.size() >= MAX_PARTY:
+                _unlock_achievement("ach_party_full")
+        if crafted_count >= 50:
+                _unlock_achievement("ach_craft_50")
+        if discovered_zones.size() >= 12:
+                _unlock_achievement("ach_zones_all")
+        if charted_locations.size() >= 5:
+                _unlock_achievement("ach_landmarks_5")
+        if charted_locations.size() >= 15:
+                _unlock_achievement("ach_landmarks_15")
+        if opened_chests.size() >= 15:
+                _unlock_achievement("ach_chests_15")
+        if journal.size() >= int(ceil(float(Data.species.size()) * 0.5)):
+                _unlock_achievement("ach_bestiary_half")
+        if journal.size() >= Data.species.size():
+                _unlock_achievement("ach_bestiary_all")
+        if day >= 10:
+                _unlock_achievement("ach_day10")
+                if difficulty_id == "veteran":
+                        _unlock_achievement("ach_day10_veteran")
+        if completed_quests.size() >= 11:
+                _unlock_achievement("ach_quests_all")
+        if inventory.get("AncientAlloy", 0) > 0 or equipment.values().has("AncientAlloy"):
+                _unlock_achievement("ach_alloy")
+
+
+func _unlock_achievement(id: String) -> void:
+        if achievements.has(id):
+                return
+        achievements[id] = true
+        for a in ACHIEVEMENTS:
+                if a["id"] == id:
+                        toast.emit("★ Achievement — %s" % a["name"], Color(1.0, 0.85, 0.4))
+                        break
+        Sfx.play_stinger("quest")
+        achievements_changed.emit()
+
+
+func achievement_list() -> Array:
+        ## ordered copy with unlocked flags, for the journal tab / pause menu.
+        var out := []
+        for a in ACHIEVEMENTS:
+                out.append({"id": a["id"], "name": a["name"], "desc": a["desc"], "unlocked": achievements.has(a["id"])})
+        return out
+
+
+# -------------------------------------------------------- PS-7 breeding --
+func nest_interact() -> String:
+        ## called by the Echo Nest building [E]. Auto-picks the two companions
+        ## with the highest trust (>= Familiar 30) across party + box, checks
+        ## pair cooldown (1 in-game day), lays an egg. Returns a status line
+        ## for the toast — honest feedback for every refusal reason.
+        if eggs.size() >= EGG_MAX:
+                return "The nest is warm with %d eggs — let them hatch first." % eggs.size()
+        if party.size() + echo_box.size() >= 12:
+                return "Your roster is full (12) — no room for chicks."
+        var pool: Array = []
+        for e in party + echo_box:
+                if float(e.get("trust", 0.0)) >= NEST_TRUST_MIN:
+                        pool.append(e)
+        if pool.size() < 2:
+                return "Two companions at Familiar trust (30+) are needed to brood."
+        pool.sort_custom(func _t(a, b): return float(a.get("trust", 0.0)) > float(b.get("trust", 0.0)))
+        var pa: Dictionary = pool[0]
+        var pb: Dictionary = pool[1]
+        var sa: Dictionary = Data.species_def(str(pa["species_id"]))
+        var sb: Dictionary = Data.species_def(str(pb["species_id"]))
+        if sa.is_empty() or sb.is_empty():
+                return "The Vale refuses this pairing."
+        var key := "".join([str(pa["species_id"]), "|", str(pb["species_id"])])
+        if _nest_pairs.has(key) and float(_nest_pairs[key]) > float(day):
+                return "%s and %s already brooded today — rest till dawn." % [pa.get("name", "?"), pb.get("name", "?")]
+        _nest_pairs[key] = day + 1
+        # child: 50/50 species from the parents
+        var rng := RandomNumberGenerator.new()
+        rng.seed = hash("%s-%s-%d-%d" % [key, str(day), Time.get_ticks_msec(), world_seed])
+        var child_sid: String = str(pa["species_id"]) if rng.randf() < 0.5 else str(pb["species_id"])
+        var child_def: Dictionary = Data.species_def(child_sid)
+        # stat inheritance: 50–70% of the stronger parent's base per stat
+        var stats := {}
+        for stat in ["hp", "atk", "def", "spd"]:
+                var va := float(sa.get("stats", {}).get(stat, 10))
+                var vb := float(sb.get("stats", {}).get(stat, 10))
+                stats[stat] = int(round(maxf(va, vb) * rng.randf_range(0.5, 0.7)))
+        # name: syllable blend of the two parents
+        var child_name := _blend_names(str(pa.get("name", "Echo")), str(pb.get("name", "Echo")))
+        eggs.append({
+                "species_id": child_sid,
+                "name": child_name,
+                "parents": [str(pa.get("name", "?")), str(pb.get("name", "?"))],
+                "hatch_left": EGG_HATCH_SECONDS,
+                "stats": stats,
+                "trust0": 35.0,
+        })
+        var line := "%s lays an egg with %s — %s sleeps inside." % [pa.get("name", "?"), pb.get("name", "?"), child_name]
+        toast.emit(line, Color(1.0, 0.87, 0.55))
+        toast.emit("It hatches in about 90 seconds — keep exploring.", Color(0.8, 0.85, 0.9))
+        Sfx.play_stinger("quest")
+        return line
+
+
+func _blend_names(a: String, b: String) -> String:
+        ## first chunk of parent A + last chunk of parent B, Title-cased.
+        var va := a.strip_edges()
+        var vb := b.strip_edges()
+        if va.is_empty() or vb.is_empty():
+                return "Echochick"
+        var cut_a := maxi(3, int(ceil(float(va.length()) * 0.5)))
+        var head := va.substr(0, clampi(cut_a, 3, 6))
+        var cut_b := maxi(3, int(ceil(float(vb.length()) * 0.4)))
+        var tail := vb.substr(clampi(vb.length() - cut_b, 2, vb.length() - 1))
+        var out := (head + tail).to_lower()
+        return out.capitalize()
+
+
+func _tick_eggs(delta: float) -> void:
+        if eggs.is_empty():
+                return
+        for i in range(eggs.size() - 1, -1, -1):
+                var e: Dictionary = eggs[i]
+                e["hatch_left"] = float(e.get("hatch_left", EGG_HATCH_SECONDS)) - delta
+                if float(e["hatch_left"]) <= 0.0:
+                        eggs.remove_at(i)
+                        _hatch_egg(e)
+
+
+func _hatch_egg(e: Dictionary) -> void:
+        var sid := str(e.get("species_id", ""))
+        var def := Data.species_def(sid)
+        if def.is_empty():
+                # safety: unknown species (e.g. mod removed) — drop with a note
+                toast.emit("The egg grows cold... the Vale keeps its secret.", Color(1.0, 0.7, 0.5))
+                return
+        var stats: Dictionary = e.get("stats", {})
+        var entry := {
+                "species_id": sid, "name": str(e.get("name", "Echochick")),
+                "level": 1, "xp": 0.0, "trust": float(e.get("trust0", 35.0)), "bond": 10.0,
+                "mood": 85.0, "hunger": 70.0, "energy": 90.0,
+                "hp": int(stats.get("hp", def.get("stats", {}).get("hp", 30))),
+                "passive": str(def.get("passive", "")),
+                "born": "nest",
+        }
+        if party.size() < MAX_PARTY:
+                party.append(entry)
+        else:
+                echo_box.append(entry)
+        toast.emit("✦ %s hatched — a nest-born %s joins your roster!" % [entry["name"], def.get("name", sid)], Color(0.7, 1.0, 0.8))
+        Sfx.play_stinger("evolve")
+        party_changed.emit()
+
+
 func weather() -> Dictionary:
         for w in Data.weather_states:
                 if w["id"] == weather_id:
@@ -355,9 +615,10 @@ func _tick_survival(delta: float) -> void:
                         revive()
                 return
         temperature = 20.0 + weather().get("temp", 0)
-        # hunger / thirst decay (0.083/s)
-        hunger = max(0.0, hunger - 0.083 * delta)
-        thirst = max(0.0, thirst - 0.083 * delta)
+        # hunger / thirst decay (0.083/s base, scaled by difficulty PS-3)
+        var need_mult := difficulty().get("needs", 1.0)
+        hunger = max(0.0, hunger - 0.083 * need_mult * delta)
+        thirst = max(0.0, thirst - 0.083 * need_mult * delta)
         # starvation / dehydration damage
         var empty_vitals := 0
         if hunger <= 0.0:
@@ -409,7 +670,9 @@ func take_damage(amount: float, element: String = "None", check_dodge: bool = tr
         if check_dodge and get_meta("dodging", false):
                 return 0.0
         var mitigated := amount
-        # v1.1 Phase V7 solo grace: the first three days cushion incoming damage
+        # PS-3 difficulty multiplier (Explorer/Veteran)...
+        mitigated *= difficulty().get("dmg_taken", 1.0)
+        # ...then v1.1 Phase V7 solo grace: the first three days cushion incoming damage
         # so no early encounter can two-shot a lone player (the raid math and
         # predator stats stay untouched — the shield fades on day 4).
         if day <= 3:
@@ -422,11 +685,17 @@ func take_damage(amount: float, element: String = "None", check_dodge: bool = tr
         if element != "None" and _player_elemental(element) > 1.0:
                 mitigated *= _player_elemental(element)
         mitigated -= armor_rating() * mitigated / (armor_rating() + 100.0)
-        hp = max(0.0, hp - max(0.0, mitigated))
+        var applied := maxf(0.0, mitigated)
+        hp = max(0.0, hp - applied)
+        # PS-1: floating red damage number over the player (world-space billboard)
+        if applied > 0.5 and get_tree() != null:
+                var player_node := get_tree().get_first_node_in_group("player") as Node3D
+                if player_node and is_instance_valid(player_node):
+                        DamageNumbers.spawn(player_node.get_parent(), player_node.global_position + Vector3(0.0, 2.1, 0.0), applied, "player")
         if hp <= 0.0:
                 die()
         stats_changed.emit()
-        return max(0.0, mitigated)
+        return applied
 
 
 func _player_elemental(_element: String) -> float:
