@@ -660,21 +660,22 @@ func _build_minimap() -> void:
         minimap = Control.new()
         minimap.custom_minimum_size = Vector2(MINIMAP_R * 2.0 + 8.0, MINIMAP_R * 2.0 + 8.0)
         minimap.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-        minimap.position = Vector2(-MINIMAP_R * 2.0 - 26.0, -MINIMAP_R * 2.0 - 30.0)
+        minimap.position = Vector2(-MINIMAP_R * 2.0 - 26.0, -MINIMAP_R * 2.0 - 52.0)
         minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
         minimap.draw.connect(_draw_minimap)
         root.add_child(minimap)
+        # zone chip rides directly under the radar — child of the minimap so
+        # they can never drift apart regardless of anchor math
         minimap_zone = Label.new()
-        minimap_zone.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-        minimap_zone.position = Vector2(-MINIMAP_R * 2.0 - 26.0, -34.0)
+        minimap_zone.position = Vector2(0, MINIMAP_R * 2.0 + 10.0)
         minimap_zone.custom_minimum_size = Vector2(MINIMAP_R * 2.0 + 8.0, 20)
         minimap_zone.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         minimap_zone.add_theme_font_size_override("font_size", 12)
-        minimap_zone.add_theme_color_override("font_color", Color(0.92, 0.9, 0.82))
-        minimap_zone.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+        minimap_zone.add_theme_color_override("font_color", Color(0.95, 0.92, 0.8))
+        minimap_zone.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
         minimap_zone.add_theme_constant_override("shadow_offset_y", 1)
         minimap_zone.text = "—"
-        root.add_child(minimap_zone)
+        minimap.add_child(minimap_zone)
 
 
 func _draw_minimap() -> void:

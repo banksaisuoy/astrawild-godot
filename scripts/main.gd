@@ -50,6 +50,10 @@ func _ready() -> void:
                 if shot_mode == "title":
                         # title-only capture: never start the world
                         _screenshot_routine()
+                elif shot_mode == "loading":
+                        # PS-2 proof: capture the staged loading screen mid-build
+                        _start_game(false)
+                        _screenshot_routine()
                 else:
                         # PS-2: staged build is async — await it so the settle
                         # timer never races an unfinished world
@@ -184,7 +188,9 @@ func _build_title() -> void:
         diff_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         diff_desc.custom_minimum_size = Vector2(300, 30)
         diff_desc.add_theme_font_size_override("font_size", 12)
-        diff_desc.add_theme_color_override("font_color", Color(0.66, 0.7, 0.78))
+        diff_desc.add_theme_color_override("font_color", Color(0.22, 0.24, 0.3))
+        diff_desc.add_theme_color_override("font_shadow_color", Color(0.92, 0.94, 0.98, 0.9))
+        diff_desc.add_theme_constant_override("shadow_offset_y", 1)
         diff_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         diff_btn.pressed.connect(func _d():
                 var order := ["explorer", "standard", "veteran"]
@@ -999,6 +1005,7 @@ func _screenshot_routine() -> void:
         var args := OS.get_cmdline_user_args()
         var shot_name := "game"
         var delay := 7.0
+        var open_screen := ""
         for a in args:
                 if a.begins_with("--shot="):
                         shot_name = a.trim_prefix("--shot=")
@@ -1007,7 +1014,13 @@ func _screenshot_routine() -> void:
                 if a.begins_with("--hour="):
                         # gallery/tuning override: jump the clock before the wait
                         Game.time_minutes = float(a.trim_prefix("--hour=")) * 60.0
+                if a.begins_with("--open="):
+                        open_screen = a.trim_prefix("--open=")
         await get_tree().create_timer(delay).timeout
+        # --open=X: capture a UI screen (settings/map/help...) instead of the world
+        if open_screen != "" and is_instance_valid(screens):
+                screens.open(open_screen)
+                await get_tree().create_timer(0.4).timeout
         # --clean: hide HUD/panels for pure world-showcase captures
         if args.find("--clean") >= 0 and is_instance_valid(hud):
                 hud.root.visible = false

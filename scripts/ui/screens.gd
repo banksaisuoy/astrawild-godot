@@ -883,16 +883,19 @@ func _build_map() -> void:
         _map_draw.gui_input.connect(_map_click)
         vb.add_child(_map_draw)
         var legend := Label.new()
-        legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home" % Game.charted_locations.size()
+        legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home\nCLICK a ★ or the campfire to fast travel (3 Dawn Shards)" % Game.charted_locations.size()
         legend.add_theme_font_size_override("font_size", 11)
         legend.add_theme_color_override("font_color", Color(0.6, 0.65, 0.72))
+        legend.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        legend.custom_minimum_size = Vector2(720, 0)
+        legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         vb.add_child(legend)
         _map_legend = legend
 
 
 func _refresh_map() -> void:
         if _map_legend:
-                _map_legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home · CLICK ★/campfire = fast travel (3 Dawn Shards)" % Game.charted_locations.size()
+                _map_legend.text = "Zone tint = biome · ★ landmarks charted (%d/15) · faint dots = rumours · campfire = home\nCLICK a ★ or the campfire to fast travel (3 Dawn Shards)" % Game.charted_locations.size()
         if _map_draw:
                 _map_draw.queue_redraw()
 
