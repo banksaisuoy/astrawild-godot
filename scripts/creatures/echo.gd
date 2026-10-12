@@ -58,6 +58,84 @@ var _weak_timer := 12.0
 var _weak_orb: MeshInstance3D
 var _phase := 1
 
+# ---- v1.5.2 Wild Diversity: per-individual variation ---------------------
+# Every wild Echo rolls its own tint jitter (hue + brightness), size jitter
+# and stat jitter at spawn — no two individuals of the same species look or
+# fight alike any more. ~9.5% additionally surface as NAMED variants with
+# bigger tells: Radiant (gold shimmer, stronger), Dusk (shadow-touched),
+# Colossal (much larger, tanky). Identity is persisted on capture and
+# re-applied when the follower body spawns.
+var variant_id := ""
+var _vj := {"scale": 1.0, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0}
+var _identity_applied := false
+const VARIANT_TAGS := {"radiant": "✦", "dusk": "✧", "colossal": "◈"}
+
+func apply_identity(p_variant: String, p_vj: Dictionary) -> void:
+        ## called BEFORE add_child (world spawn / party follower sync) so
+        ## _ready builds the body with the persisted identity. (Name avoids
+        ## Node3D's native set_identity.)
+        variant_id = p_variant
+        _identity_applied = true
+        if p_vj is Dictionary and p_vj.size() >= 5:
+                _vj = {
+                        "scale": float(p_vj.get("scale", 1.0)),
+                        "hp": float(p_vj.get("hp", 1.0)),
+                        "atk": float(p_vj.get("atk", 1.0)),
+                        "hue": float(p_vj.get("hue", 0.0)),
+                        "bright": float(p_vj.get("bright", 0.0)),
+                }
+
+func identity() -> Dictionary:
+        ## persisted on capture (entry["vj"]) so followers keep their look.
+        return _vj.duplicate(true)
+
+func variant_tag() -> String:
+        ## prefix glyph for labels / roster names ("" when plain).
+        if variant_id != "" and VARIANT_TAGS.has(variant_id):
+                return String(VARIANT_TAGS[variant_id])
+        return ""
+
+func _rgb_to_hsv(c: Color) -> Vector3:
+        ## Color.to_hsv() does not exist in this Godot build — manual conversion
+        ## (h in 0..1, s in 0..1, v in 0..1).
+        var mx: float = maxf(c.r, maxf(c.g, c.b))
+        var mn: float = minf(c.r, minf(c.g, c.b))
+        var delta: float = mx - mn
+        var h := 0.0
+        if delta > 0.0001:
+                if mx == c.r:
+                        h = fposmod((c.g - c.b) / delta, 6.0) / 6.0
+                elif mx == c.g:
+                        h = ((c.b - c.r) / delta + 2.0) / 6.0
+                else:
+                        h = ((c.r - c.g) / delta + 4.0) / 6.0
+        var s := 0.0 if mx <= 0.0 else delta / mx
+        return Vector3(h, s, mx)
+
+func _roll_identity() -> void:
+        if boss_mode or legendary or _identity_applied:
+                return
+        var roll := rng.randf()
+        if roll < 0.030:
+                variant_id = "radiant"
+                _vj = {"scale": rng.randf_range(1.04, 1.12), "hp": rng.randf_range(1.10, 1.25),
+                        "atk": rng.randf_range(1.10, 1.22), "hue": rng.randf_range(-0.02, 0.02),
+                        "bright": rng.randf_range(0.05, 0.12)}
+        elif roll < 0.055:
+                variant_id = "dusk"
+                _vj = {"scale": rng.randf_range(0.92, 1.00), "hp": rng.randf_range(0.95, 1.10),
+                        "atk": rng.randf_range(1.05, 1.18), "hue": rng.randf_range(-0.045, -0.010),
+                        "bright": rng.randf_range(-0.18, -0.10)}
+        elif roll < 0.095:
+                variant_id = "colossal"
+                _vj = {"scale": rng.randf_range(1.28, 1.45), "hp": rng.randf_range(1.30, 1.55),
+                        "atk": rng.randf_range(1.00, 1.10), "hue": rng.randf_range(-0.015, 0.015),
+                        "bright": rng.randf_range(-0.06, 0.0)}
+        else:
+                _vj = {"scale": rng.randf_range(0.88, 1.14), "hp": rng.randf_range(0.90, 1.12),
+                        "atk": rng.randf_range(0.90, 1.12), "hue": rng.randf_range(-0.055, 0.055),
+                        "bright": rng.randf_range(-0.13, 0.13)}
+
 
 func _init(p_def: Dictionary, p_rng: RandomNumberGenerator) -> void:
         def = p_def
@@ -66,9 +144,12 @@ func _init(p_def: Dictionary, p_rng: RandomNumberGenerator) -> void:
 
 
 func _ready() -> void:
-        max_hp = float(def["stats"]["hp"])
+        _roll_identity()
+        max_hp = float(def["stats"]["hp"]) * float(_vj["hp"])
         hp = max_hp
         move_speed = float(def["stats"]["spd"]) / 100.0
+        if variant_id == "colossal":
+                move_speed *= 0.88
         if boss_mode:
                 max_hp = max_hp
                 hp = max_hp
@@ -119,14 +200,20 @@ func _build_body() -> void:
                         var visual := scene.instantiate()
                         _body_root.add_child(visual)
                         # tint only when requested (shared rigs across species);
-                        # unique rigs keep their original Quaternius colours
-                        if rig.get("tint", false) or model_path.begins_with("res://assets/meshes/echoes/"):
+                        # unique rigs keep their original Quaternius colours.
+                        # v1.5.2: NAMED variants (Radiant/Dusk) always tint — a
+                        # golden/blue individual must read even on no-tint rigs
+                        # (Mosspaw/Fox ships tint:false — a shot caught its herd
+                        # rendering as identical plain clones)
+                        if (rig.get("tint", false) or model_path.begins_with("res://assets/meshes/echoes/")
+                                        or variant_id == "radiant" or variant_id == "dusk"):
                                 _apply_model_tint(visual)
                         _anim = _find_anim(visual)
                         if _anim:
                                 _anim.play(_anim_name("Idle"))
                         var s: float = Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0)
                         s *= float(rig.get("scale", 1.0))
+                        s *= float(_vj["scale"])
                         _body_root.scale = Vector3(s, s, s)
                         if def.get("body_plan", "") in ["Floating", "Amorphous"]:
                                 _body_root.position.y = 1.0
@@ -173,11 +260,28 @@ func _apply_model_tint(root: Node) -> void:
         # shared imported resources are never mutated globally. Textured rigs
         # (Quaternius monster atlas) get a partial blend that keeps their art;
         # untextured rigs get the full species palette.
+        # v1.5.2: every individual ALSO gets its own hue/brightness jitter and
+        # named-variant palette overrides — same-species herds no longer read
+        # as clones of one another.
         var prim: Array = def["colors"]["primary"]
         var sec: Array = def["colors"]["secondary"]
         var idx := 0
         for mi in _all_meshes(root):
                 var want: Color = Color(prim[0], prim[1], prim[2]) if idx % 2 == 0 else Color(sec[0], sec[1], sec[2])
+                var hsv: Vector3 = _rgb_to_hsv(want)
+                want = Color.from_hsv(
+                        fposmod(hsv.x + float(_vj["hue"]), 1.0),
+                        clampf(hsv.y, 0.0, 1.0),
+                        clampf(hsv.z * (1.0 + float(_vj["bright"])), 0.05, 1.0))
+                # v1.5.2 VLM pass: named variants must read AT A GLANCE — a hue
+                # swap (not a subtle lerp) so Radiant is unmistakably gold and
+                # Dusk unmistakably deep blue regardless of the species base
+                if variant_id == "radiant":
+                        want = Color.from_hsv(0.11, maxf(hsv.y, 0.55), clampf(hsv.z * 1.3 + 0.15, 0.0, 1.0))
+                elif variant_id == "dusk":
+                        # 0.70 = unmistakable blue (0.62 read as "darker green"
+                        # on green-base species in VLM pass 6) + forced sat
+                        want = Color.from_hsv(0.70, maxf(hsv.y, 0.65), clampf(hsv.z * 0.55, 0.20, 0.45))
                 var mat := StandardMaterial3D.new()
                 var base_mat: Material = null
                 var mesh_res: Mesh = (mi as MeshInstance3D).mesh
@@ -186,8 +290,17 @@ func _apply_model_tint(root: Node) -> void:
                 if base_mat is StandardMaterial3D:
                         var bm := (base_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
                         if bm.albedo_texture != null:
-                                # v1.2 V11-c: soft blend only — atlas faces/eyes stay visible
-                                bm.albedo_color = Color(1, 1, 1).lerp(want, 0.32)
+                                # v1.2 V11-c: soft blend only — atlas faces/eyes stay
+                                # visible. v1.5.2: named variants REPLACE the atlas tint
+                                # instead of blending — the Quaternius atlas art is
+                                # pre-coloured (orange × blue multiply = mud brown;
+                                # VLM pass 2 caught Dusk drowning). Solid variant
+                                # colour wins over atlas detail for at-a-glance reads.
+                                if variant_id == "radiant" or variant_id == "dusk":
+                                        bm.albedo_texture = null
+                                        bm.albedo_color = want
+                                else:
+                                        bm.albedo_color = Color(1, 1, 1).lerp(want, 0.32)
                         else:
                                 bm.albedo_color = want
                         bm.roughness = 0.8
@@ -200,6 +313,14 @@ func _apply_model_tint(root: Node) -> void:
                         mat.emission_enabled = true
                         mat.emission = el * 0.5
                         mat.emission_energy_multiplier = 0.8
+                if variant_id == "radiant":
+                        mat.emission_enabled = true
+                        mat.emission = Color(1.0, 0.72, 0.28)
+                        mat.emission_energy_multiplier = 1.4
+                elif variant_id == "dusk":
+                        mat.emission_enabled = true
+                        mat.emission = Color(0.25, 0.35, 0.85)
+                        mat.emission_energy_multiplier = 0.55
                 mi.material_override = mat
                 idx += 1
 
@@ -471,7 +592,7 @@ func _build_label() -> void:
         _label = Label3D.new()
         _label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
         _label.no_depth_test = true
-        var h: float = 2.2 * Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0)
+        var h: float = 2.2 * Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0) * float(_vj["scale"])
         _label.position = Vector3(0, h, 0)
         _label.font_size = 34
         _label.outline_size = 8
@@ -508,6 +629,8 @@ func _update_label() -> void:
         if _label == null:
                 return
         var txt: String = def.get("name", "Echo")
+        if variant_id != "" and VARIANT_TAGS.has(variant_id):
+                txt = "%s %s" % [String(VARIANT_TAGS[variant_id]), txt]
         if boss_mode:
                 txt = "☠ " + txt
         elif dormant:
@@ -541,7 +664,7 @@ func _add_hit_area() -> void:
         area.collision_mask = 2
         var col := CollisionShape3D.new()
         var cap := CapsuleShape3D.new()
-        var s: float = Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0)
+        var s: float = Data.size_scale(def.get("size_class", "Medium")) * (1.6 if boss_mode else 1.0) * float(_vj["scale"])
         cap.radius = 0.55 * s
         cap.height = 1.6 * s
         col.shape = cap
@@ -829,7 +952,7 @@ func _dir_to(pos: Vector3) -> Vector3:
 
 # ----------------------------------------------------------------- combat --
 func _perform_attack(target: Node3D) -> void:
-        var atk: float = def["stats"]["atk"]
+        var atk: float = def["stats"]["atk"] * float(_vj["atk"])
         var mult := 1.0
         if boss_mode:
                 mult = [1.0, 1.15, 1.4][_phase - 1]
@@ -932,8 +1055,13 @@ func _die() -> void:
         # loot
         var loot: Array = def.get("loot", [])
         for drop in loot:
-                Game.add_item(drop["item"], int(drop["qty"]))
-                Game.toast.emit("+%d %s" % [int(drop["qty"]), Data.item_name(drop["item"])], Color(1.0, 0.85, 0.6))
+                var qty := int(drop["qty"])
+                if variant_id == "radiant":
+                        qty *= 2
+                Game.add_item(drop["item"], qty)
+                Game.toast.emit("+%d %s" % [qty, Data.item_name(drop["item"])], Color(1.0, 0.85, 0.6))
+        if variant_id == "radiant":
+                Game.toast.emit("Radiant bounty — double loot!", Color(1.0, 0.85, 0.4))
         if not captured:
                 Game.echo_defeated.emit(def["id"])
                 Game.notify_event("DefeatCreature", def["id"])
@@ -1044,7 +1172,8 @@ func bind_entry(p_entry: Dictionary) -> void:
         trust = float(entry.get("trust", 0.0))
         var sdef := Data.species_def(entry.get("species_id", ""))
         if not sdef.is_empty():
-                max_hp = float(sdef["stats"]["hp"]) * (1.0 + 0.1 * float(entry.get("level", 1) - 1))
+                max_hp = float(sdef["stats"]["hp"]) * (1.0 + 0.1 * float(entry.get("level", 1) - 1)) * float(_vj["hp"])
+                hp = minf(hp, max_hp)
         # v1.3 V12-a: evolution swaps the species — rebuild the body so the
         # companion VISIBLY becomes its evolved form (was: stats/label only).
         if not sdef.is_empty() and str(sdef.get("id", "")) != str(def.get("id", "")):

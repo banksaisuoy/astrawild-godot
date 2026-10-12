@@ -1230,6 +1230,446 @@
    "rarity": "Epic",
    "boss": true,
    "model": "res://assets/meshes/echoes/SK_Echo_Deepdelver.glb"
+  },
+  {
+   "id": "Creature_CindermawApex",
+   "name": "Cindermaw",
+   "family": "Apex",
+   "body_plan": "Quadruped",
+   "size_class": "Huge",
+   "element": "Ember",
+   "weakness": "Frost",
+   "role": "Combat",
+   "home_zone": "EmberRidge",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 620,
+    "atk": 38,
+    "def": 18,
+    "spd": 320
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.55,
+     0.16,
+     0.1
+    ],
+    "secondary": [
+     1.0,
+     0.45,
+     0.12
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_EmberAsh",
+     "qty": 8
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 6
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_EmberRidge"
+  },
+  {
+   "id": "Creature_GlaciarchApex",
+   "name": "Glaciarch",
+   "family": "Apex",
+   "body_plan": "Biped",
+   "size_class": "Huge",
+   "element": "Frost",
+   "weakness": "Ember",
+   "role": "Combat",
+   "home_zone": "Frostveil",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 580,
+    "atk": 34,
+    "def": 20,
+    "spd": 300
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.78,
+     0.88,
+     1.0
+    ],
+    "secondary": [
+     0.35,
+     0.55,
+     0.85
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_Frostbloom",
+     "qty": 6
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 6
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_Frostveil"
+  },
+  {
+   "id": "Creature_VoltrexApex",
+   "name": "Voltrex",
+   "family": "Apex",
+   "body_plan": "Quadruped",
+   "size_class": "Huge",
+   "element": "Pulse",
+   "weakness": "Flora",
+   "role": "Combat",
+   "home_zone": "Glimmerwood",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 540,
+    "atk": 36,
+    "def": 14,
+    "spd": 380
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.45,
+     0.25,
+     0.95
+    ],
+    "secondary": [
+     0.85,
+     0.9,
+     1.0
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_VoltCore",
+     "qty": 6
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 6
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_Glimmerwood"
+  },
+  {
+   "id": "Creature_DunetyrantApex",
+   "name": "Dunetyrant",
+   "family": "Apex",
+   "body_plan": "Quadruped",
+   "size_class": "Huge",
+   "element": "Ash",
+   "weakness": "Pulse",
+   "role": "Combat",
+   "home_zone": "Sunscar",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 500,
+    "atk": 32,
+    "def": 22,
+    "spd": 280
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.85,
+     0.68,
+     0.35
+    ],
+    "secondary": [
+     0.55,
+     0.4,
+     0.22
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_DuneGlass",
+     "qty": 8
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 5
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_Sunscar"
+  },
+  {
+   "id": "Creature_MireboundApex",
+   "name": "Mirebound Matriarch",
+   "family": "Apex",
+   "body_plan": "Amorphous",
+   "size_class": "Huge",
+   "element": "Flora",
+   "weakness": "Ember",
+   "role": "Combat",
+   "home_zone": "DuskMarsh",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 660,
+    "atk": 33,
+    "def": 24,
+    "spd": 240
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.3,
+     0.45,
+     0.3
+    ],
+    "secondary": [
+     0.55,
+     0.35,
+     0.65
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_Fertilizer",
+     "qty": 6
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 6
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_DuskMarsh"
+  },
+  {
+   "id": "Creature_ThorncallerApex",
+   "name": "Thorncaller",
+   "family": "Apex",
+   "body_plan": "Quadruped",
+   "size_class": "Huge",
+   "element": "Flora",
+   "weakness": "Frost",
+   "role": "Combat",
+   "home_zone": "VerdantReach",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 560,
+    "atk": 35,
+    "def": 19,
+    "spd": 340
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.16,
+     0.5,
+     0.24
+    ],
+    "secondary": [
+     0.85,
+     0.55,
+     0.65
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_Dawnbloom",
+     "qty": 8
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 5
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_VerdantReach"
+  },
+  {
+   "id": "Creature_TempestSovereignApex",
+   "name": "Tempest Sovereign",
+   "family": "Apex",
+   "body_plan": "Biped",
+   "size_class": "Huge",
+   "element": "Pulse",
+   "weakness": "Ash",
+   "role": "Combat",
+   "home_zone": "Stormcrest",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 700,
+    "atk": 40,
+    "def": 26,
+    "spd": 300
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.55,
+     0.6,
+     0.72
+    ],
+    "secondary": [
+     0.3,
+     0.85,
+     1.0
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_StormSilver",
+     "qty": 8
+    },
+    {
+     "item": "Item_DawnShard",
+     "qty": 7
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 2
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_Stormcrest"
+  },
+  {
+   "id": "Creature_ReefSovereignApex",
+   "name": "Reef Sovereign",
+   "family": "Apex",
+   "body_plan": "Floating",
+   "size_class": "Huge",
+   "element": "Light",
+   "weakness": "Pulse",
+   "role": "Combat",
+   "home_zone": "PearlseaReef",
+   "personality": "Aggressive",
+   "activity": "Diurnal",
+   "stats": {
+    "hp": 520,
+    "atk": 37,
+    "def": 15,
+    "spd": 360
+   },
+   "capture_difficulty": 0.98,
+   "hostile": true,
+   "colors": {
+    "primary": [
+     0.95,
+     0.55,
+     0.6
+    ],
+    "secondary": [
+     0.35,
+     0.85,
+     0.9
+    ]
+   },
+   "foods": [],
+   "loot": [
+    {
+     "item": "Item_SeaPearl",
+     "qty": 8
+    },
+    {
+     "item": "Item_CoralShard",
+     "qty": 6
+    },
+    {
+     "item": "Item_AncientCore",
+     "qty": 1
+    }
+   ],
+   "work": [],
+   "work_affinity": 1.0,
+   "sight_radius": 1900,
+   "passive": null,
+   "rarity": "Legendary",
+   "boss": true,
+   "apex_of": "Zone_PearlseaReef"
   }
  ]
 }

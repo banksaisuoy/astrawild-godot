@@ -68,6 +68,18 @@ all data is JSON-driven and every asset is in-repo.
 
 ## Gameplay loop
 
+> **v1.5.2 "Wild Diversity"** — every wild Echo now rolls its own tint, size and
+> stat jitter at spawn (no two individuals of a species look or fight alike),
+> ~9.5% surface as named variants: **✦ Radiant** (gold shimmer, +stats, double
+> loot), **✧ Dusk** (deep-blue shadow-touched), **◈ Colossal** (much larger,
+> tanky) — variant identity persists through capture into your roster. **8 new
+> zone Apex bosses** roam the deep zones (Cindermaw, Glaciarch, Voltrex,
+> Dunetyrant, the Mirebound Matriarch, Thorncaller, the Tempest Sovereign and
+> the Reef Sovereign — 4.2–5.2 m, full boss bar / phases / weak-point kit, own
+> achievements and loot) on top of the 2 dungeon bosses. Forests are now
+> **mixed-species** (5–7 tree silhouettes per biome with random lean, was: one
+> cloned model ×820).
+
 `gather → observe → weaken & capture → feed & bond → craft → build → research → push into higher-threat zones → clear the two dungeons`
 
 - **Survival**: HP / stamina / hunger / thirst / temperature with the UE5 decay rates.

@@ -114,6 +114,16 @@ const ACHIEVEMENTS := [
         {"id": "ach_day10_veteran", "name": "Ten Hard Dawns", "desc": "Survive to day 10 on Veteran."},
         {"id": "ach_quests_all", "name": "Vanguard", "desc": "Complete the 11-quest campaign."},
         {"id": "ach_alloy", "name": "Ancient Gifts", "desc": "Hold Ancient Alloy in your pack."},
+        {"id": "ach_apex_cindermaw", "name": "Ashen Bane", "desc": "Defeat Cindermaw, Apex of Ember Ridge."},
+        {"id": "ach_apex_glaciarch", "name": "Pale Bane", "desc": "Defeat Glaciarch, Apex of Frostveil."},
+        {"id": "ach_apex_voltrex", "name": "Storm Bane", "desc": "Defeat Voltrex, Apex of Glimmerwood."},
+        {"id": "ach_apex_dunetyrant", "name": "Dune Bane", "desc": "Defeat Dunetyrant, Apex of Sunscar Desert."},
+        {"id": "ach_apex_mirebound", "name": "Mire Bane", "desc": "Defeat the Mirebound Matriarch, Apex of Dusk Marsh."},
+        {"id": "ach_apex_thorncaller", "name": "Thorn Bane", "desc": "Defeat Thorncaller, Apex of Verdant Reach."},
+        {"id": "ach_apex_tempest", "name": "Gale Bane", "desc": "Defeat the Tempest Sovereign, Apex of Stormcrest Highlands."},
+        {"id": "ach_apex_reef", "name": "Tide Bane", "desc": "Defeat the Reef Sovereign, Apex of Pearlsea Reef."},
+        {"id": "ach_apex_hunter", "name": "Apex Hunter", "desc": "Defeat 4 different zone Apexes."},
+        {"id": "ach_radiant", "name": "Shimmer Hunter", "desc": "Capture a ✦ Radiant variant Echo."},
 ]
 
 # ---- party ----
@@ -435,6 +445,23 @@ func _on_echo_defeated_ach(species_id: String, _loot: Array) -> void:
                 _unlock_achievement("ach_boss_colossus")
         elif species_id == "Creature_Solaris":
                 _unlock_achievement("ach_solaris")
+        # v1.5.2: the 8 zone Apex bosses each carry their own achievement
+        elif species_id == "Creature_CindermawApex":
+                _unlock_achievement("ach_apex_cindermaw")
+        elif species_id == "Creature_GlaciarchApex":
+                _unlock_achievement("ach_apex_glaciarch")
+        elif species_id == "Creature_VoltrexApex":
+                _unlock_achievement("ach_apex_voltrex")
+        elif species_id == "Creature_DunetyrantApex":
+                _unlock_achievement("ach_apex_dunetyrant")
+        elif species_id == "Creature_MireboundApex":
+                _unlock_achievement("ach_apex_mirebound")
+        elif species_id == "Creature_ThorncallerApex":
+                _unlock_achievement("ach_apex_thorncaller")
+        elif species_id == "Creature_TempestSovereignApex":
+                _unlock_achievement("ach_apex_tempest")
+        elif species_id == "Creature_ReefSovereignApex":
+                _unlock_achievement("ach_apex_reef")
 
 
 func _check_achievements() -> void:
@@ -445,6 +472,17 @@ func _check_achievements() -> void:
                         _unlock_achievement("ach_first_evolve")
                 if float(e.get("trust", 0.0)) >= 90.0:
                         _unlock_achievement("ach_partner")
+                # v1.5.2: a captured Radiant variant joins the roster
+                if str(e.get("variant", "")) == "radiant":
+                        _unlock_achievement("ach_radiant")
+        # v1.5.2: Apex Hunter — 4 different zone Apexes felled
+        var apex_wins := 0
+        for aid in ["ach_apex_cindermaw", "ach_apex_glaciarch", "ach_apex_voltrex", "ach_apex_dunetyrant",
+                        "ach_apex_mirebound", "ach_apex_thorncaller", "ach_apex_tempest", "ach_apex_reef"]:
+                if achievements.has(aid):
+                        apex_wins += 1
+        if apex_wins >= 4:
+                _unlock_achievement("ach_apex_hunter")
         if party.size() >= MAX_PARTY:
                 _unlock_achievement("ach_party_full")
         if crafted_count >= 50:
@@ -1208,17 +1246,25 @@ func try_capture(echo) -> bool:
         if party.size() + echo_box.size() >= 12:
                 toast.emit("Your roster is full (12).", Color(1, 0.7, 0.5))
                 return false
+        # v1.5.2: bosses (dungeon + zone Apex) shrug off resonators — they are
+        # fight content, not catch content (was: captureable at 0.95+ difficulty)
+        if bool(echo.get("boss_mode")):
+                toast.emit("Apex echoes shrug off resonators — defeat them for their bounty.", Color(1, 0.7, 0.5))
+                return false
         remove_item("Item_Resonator", 1)
         _capture_cooldown = CAPTURE_COOLDOWN
         var chance: float = capture_chance(echo)
         var success := randf() <= chance
         capture_attempt.emit(echo.def["id"], success)
         if success:
+                var vt: String = echo.variant_tag() if echo.has_method("variant_tag") else ""
                 var entry := {
-                        "species_id": echo.def["id"], "name": echo.def["name"],
+                        "species_id": echo.def["id"], "name": (vt + " " if vt != "" else "") + echo.def["name"],
                         "level": 1, "xp": 0.0, "trust": 10.0, "bond": 0.0,
                         "mood": 70.0, "hunger": 60.0, "energy": 80.0,
-                        "hp": echo.def["stats"]["hp"], "passive": str(echo.def.get("passive", "")),
+                        "hp": float(echo.get("max_hp")), "passive": str(echo.def.get("passive", "")),
+                        "variant": "" if echo.get("variant_id") == null else str(echo.get("variant_id")),
+                        "vj": echo.identity() if echo.has_method("identity") else {},
                 }
                 if party.size() < MAX_PARTY:
                         party.append(entry)

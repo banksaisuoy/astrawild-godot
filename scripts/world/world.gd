@@ -22,6 +22,8 @@ var skiffs := []                # DawnSkiff aircraft (2 per world)
 var dungeons := []              # DungeonGenerator instances
 var worksites := []             # WorkSite actors
 var villages := []              # Village actors
+var apexes := []                # v1.5.2: zone Apex boss Echoes (8)
+var prop_mesh_paths := {}       # v1.5.2 smoke telemetry: path -> instances
 var landmark_count := 0        # v1.1 Phase V6 named landmarks placed
 var followers := {}             # party index -> Echo creature node
 var _hostile_sweep := 0.0
@@ -220,6 +222,8 @@ func _multimesh(mesh_path: String, transforms: Array, mat: Material = null, shad
         var mesh: Mesh = _mesh_for(mesh_path)
         if mesh == null:
                 return
+        # v1.5.2 smoke telemetry: distinct prop meshes actually instanced
+        prop_mesh_paths[mesh_path] = int(prop_mesh_paths.get(mesh_path, 0)) + transforms.size()
         var mmi := MultiMeshInstance3D.new()
         var mm := MultiMesh.new()
         mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -265,29 +269,31 @@ func _dress_all_zones() -> void:
                 var dressing: Dictionary = zone.get("dressing", {})
 
                 # trees
-                var tree_path := ""
-                match String(dressing.get("trees", "none")):
-                        "broadleaf": tree_path = "res://assets/meshes/environment/SM_Tree_Broadleaf.glb"
-                        "conifer": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
-                        "spore": tree_path = "res://assets/meshes/environment/SM_Tree_SporeCanopy.glb"
-                        "dead": tree_path = "res://assets/meshes/environment/SM_Tree_Conifer.glb"
+                # v1.5.2 Wild Diversity: mixed-species forests. Each zone used to
+                # clone ONE tree model ×820 — every forest in the world read as
+                # a mirror of the same tree. Zones now draw from a weighted pool
+                # (SM originals + Kenney CC0 species, understory + canopy mix).
+                var tree_pool: Array = _tree_pool(String(dressing.get("trees", "none")))
                 # v1.4 world-dress pass: density × ~2.3 (perf guard allows 22k instances,
                 # v1.3 used only ~6.7k — the world read as empty at this scale)
                 var tree_count := int(float(dressing.get("tree_density", 0.0)) * 820.0)
-                if tree_path != "" and tree_count > 0:
-                        var tree_mat: Material = null
-                        if String(dressing.get("trees", "")) == "dead":
-                                tree_mat = StandardMaterial3D.new()
-                                tree_mat.albedo_color = Color(0.28, 0.24, 0.22)
-                                tree_mat.roughness = 1.0
-                        var trs := []
-                        for p in _scatter(rng, tree_count, zone, 0.55):
-                                var s := rng.randf_range(0.75, 1.5)
-                                var t := Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * (0.85 if dressing.get("trees") == "dead" else 1.15), s)), p)
-                                trs.append(t)
-                        _multimesh(tree_path, trs, tree_mat)
-                        if zid == "Zone_DawnFields":
-                                _add_tree_collisions(trs)
+                if tree_pool.size() > 0 and tree_count > 0:
+                        var stretch := 0.85 if String(dressing.get("trees", "")) == "dead" else 1.15
+                        for member in tree_pool:
+                                var mpath: String = String(member["path"])
+                                var share := int(round(float(tree_count) * float(member["weight"])))
+                                var trs := []
+                                for p in _scatter(rng, share, zone, 0.55):
+                                        var s := rng.randf_range(float(member["s_lo"]), float(member["s_hi"]))
+                                        # v1.5.2 VLM pass: random lean ±6° breaks the cloned-tree
+                                        # grid read — forests get organic, non-repeating postures
+                                        var rot := Quaternion(Vector3.UP, rng.randf() * TAU)
+                                        var tilt := Quaternion(Vector3(rng.randf_range(-1.0, 1.0), 0.0, rng.randf_range(-1.0, 1.0)).normalized(), rng.randf_range(-0.15, 0.15))
+                                        var basis := Basis(rot * tilt).scaled(Vector3(s, s * stretch, s))
+                                        trs.append(Transform3D(basis, p))
+                                _multimesh(mpath, trs, member.get("mat", null))
+                                if zid == "Zone_DawnFields":
+                                        _add_tree_collisions(trs)
 
                 # rocks
                 var rock_count := int(float(dressing.get("rocks", 0.0)) * 420.0)
@@ -330,6 +336,52 @@ func _dress_all_zones() -> void:
                 # first frame a new player sees reads as alive, not empty
                 if dressing.get("camp", false):
                         _dress_camp_richness(rng)
+
+
+func _tree_pool(kind: String) -> Array:
+        ## v1.5.2 Wild Diversity: per-forest-type weighted tree pools. Native
+        ## heights were measured (tools/measure script): SM trees 5.6–8.0 m,
+        ## Kenney trees 1.2–1.7 m, Kenney mushrooms 0.25 m — scales below land
+        ## every member at a believable canopy/understory height (3.5–8 m).
+        ## Returns [{path, s_lo, s_hi, weight, mat?}].
+        var sm := "res://assets/meshes/environment/"
+        match kind:
+                "broadleaf":
+                        return [
+                                {"path": sm + "SM_Tree_Broadleaf.glb", "s_lo": 0.75, "s_hi": 1.5, "weight": 0.18},
+                                {"path": KENNEY + "tree_oak.glb", "s_lo": 3.8, "s_hi": 6.4, "weight": 0.19},
+                                {"path": KENNEY + "tree_detailed.glb", "s_lo": 3.6, "s_hi": 6.0, "weight": 0.17},
+                                {"path": KENNEY + "tree_default.glb", "s_lo": 3.0, "s_hi": 5.2, "weight": 0.12},
+                                {"path": KENNEY + "tree_fat.glb", "s_lo": 3.8, "s_hi": 6.2, "weight": 0.12},
+                                {"path": KENNEY + "tree_thin.glb", "s_lo": 3.2, "s_hi": 5.4, "weight": 0.11},
+                                {"path": KENNEY + "tree_small.glb", "s_lo": 2.8, "s_hi": 4.4, "weight": 0.11},
+                        ]
+                "conifer":
+                        return [
+                                {"path": sm + "SM_Tree_Conifer.glb", "s_lo": 0.75, "s_hi": 1.5, "weight": 0.26},
+                                {"path": KENNEY + "tree_pineTallA.glb", "s_lo": 3.2, "s_hi": 5.8, "weight": 0.17},
+                                {"path": KENNEY + "tree_pineRoundB.glb", "s_lo": 3.4, "s_hi": 5.8, "weight": 0.16},
+                                {"path": KENNEY + "tree_cone.glb", "s_lo": 3.4, "s_hi": 5.6, "weight": 0.14},
+                                {"path": KENNEY + "tree_plateau.glb", "s_lo": 3.2, "s_hi": 5.0, "weight": 0.11},
+                                {"path": KENNEY + "tree_pineSmallA.glb", "s_lo": 2.6, "s_hi": 4.2, "weight": 0.08},
+                                {"path": KENNEY + "tree_pineTallC.glb", "s_lo": 3.0, "s_hi": 5.2, "weight": 0.08},
+                        ]
+                "dead":
+                        var dead_mat := StandardMaterial3D.new()
+                        dead_mat.albedo_color = Color(0.28, 0.24, 0.22)
+                        dead_mat.roughness = 1.0
+                        return [
+                                {"path": sm + "SM_Tree_Conifer.glb", "s_lo": 0.75, "s_hi": 1.5, "weight": 0.44, "mat": dead_mat},
+                                {"path": KENNEY + "tree_thin_dark.glb", "s_lo": 3.4, "s_hi": 5.6, "weight": 0.30},
+                                {"path": KENNEY + "tree_blocks_dark.glb", "s_lo": 3.6, "s_hi": 6.0, "weight": 0.26},
+                        ]
+                "spore":
+                        return [
+                                {"path": sm + "SM_Tree_SporeCanopy.glb", "s_lo": 0.75, "s_hi": 1.5, "weight": 0.52},
+                                {"path": KENNEY + "mushroom_tanTall.glb", "s_lo": 14.0, "s_hi": 24.0, "weight": 0.27},
+                                {"path": KENNEY + "mushroom_redTall.glb", "s_lo": 12.0, "s_hi": 20.0, "weight": 0.21},
+                        ]
+        return []
 
 
 func _add_tree_collisions(trs: Array) -> void:
@@ -1048,6 +1100,16 @@ func _spawn_all_creatures() -> void:
                                 count = int(round(count * 2.2))
                         for p in _scatter(rng, count, zone, 0.5):
                                 _spawn_creature(def, p, rng)
+                # v1.5.2 Wild Diversity: the zone Apex — ONE boss-mode individual
+                # planted deep in the zone (furthest scatter point), full boss
+                # kit: boss bar + phases + weak orb + telegraphs. 8 zones now
+                # carry a roaming Apex on top of the 2 dungeon bosses.
+                var apex_def: Dictionary = Data.apex_for_zone(zid)
+                if not apex_def.is_empty():
+                        var apex_pts := _scatter(rng, 12, zone, 0.8)
+                        if apex_pts.size() > 0:
+                                var apex: Node = _spawn_creature(apex_def, apex_pts[apex_pts.size() - 1], rng, true)
+                                apexes.append(apex)
         # Auroraling: exactly one, deep in Glimmerwood
         var aura_def: Dictionary = Data.species_def("Echo_Auroraling")
         if not aura_def.is_empty():
@@ -1056,9 +1118,12 @@ func _spawn_all_creatures() -> void:
                 _spawn_creature(aura_def, p, _rng)
 
 
-func _spawn_creature(def: Dictionary, pos: Vector3, rng: RandomNumberGenerator) -> Node:
+func _spawn_creature(def: Dictionary, pos: Vector3, rng: RandomNumberGenerator, boss: bool = false) -> Node:
         var echo_script := load("res://scripts/creatures/echo.gd")
         var echo: Node = echo_script.new(def, rng)
+        # boss flag must land BEFORE add_child — _ready builds the body with
+        # the boss 1.6× scale and rolls no random variant identity for bosses
+        echo.boss_mode = boss
         echo.position = pos
         creatures_root.add_child(echo)
         return echo
@@ -1118,6 +1183,9 @@ func _sync_party() -> void:
                 spawn_pos.y = tile_height(spawn_pos.x, spawn_pos.z)
                 var echo_script := load("res://scripts/creatures/echo.gd")
                 var follower: Node = echo_script.new(def, _rng)
+                # v1.5.2: persisted individual identity (variant + jitters) so
+                # the follower body matches the captured wild individual
+                follower.apply_identity(str(wanted[idx].get("variant", "")), wanted[idx].get("vj", {}))
                 follower.position = spawn_pos
                 follower.become_captured(player)
                 follower.bind_entry(wanted[idx])

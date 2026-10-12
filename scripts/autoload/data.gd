@@ -121,6 +121,24 @@ func species_def(id: String) -> Dictionary:
         return species.get(id, {})
 
 
+func apex_for_zone(zone_id: String) -> Dictionary:
+        ## v1.5.2 Wild Diversity: the zone's Apex boss species (boss + apex_of).
+        for sid in species:
+                var s: Dictionary = species[sid]
+                if s.get("apex_of", "") == zone_id and s.get("boss", false):
+                        return s
+        return {}
+
+
+func apex_species() -> Array:
+        ## every Apex species id (achievement sweeps / smoke checks).
+        var out: Array = []
+        for sid in species:
+                if species[sid].get("apex_of", "") != "":
+                        out.append(sid)
+        return out
+
+
 func element_color(el: String) -> Color:
         match el:
                 "Light": return Color(1.0, 0.95, 0.72)

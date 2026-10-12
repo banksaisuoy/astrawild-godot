@@ -1,7 +1,7 @@
 extends Node
 ## Main entry: title screen → world build (loading) → gameplay.
 
-const GAME_VERSION := "v1.5"
+const GAME_VERSION := "v1.5.2"
 
 var title_layer: CanvasLayer
 var loading_layer: CanvasLayer
@@ -1047,6 +1047,84 @@ func _run_smoke_checks() -> void:
                 inst.queue_free()
         print("SMOKE: def-model species size=", model_ok, " offenders=", model_report)
         print("SMOKE: def-model heights: ", model_all)
+        # ---- v1.5.2 Wild Diversity guards ----
+        # (a) zone Apex bosses: exactly 8, all boss-mode, all distinct species,
+        # each body at a real boss height (world-space AABB >= 3.5 m — the
+        # v1.5.1 lesson: bosses that render at player height are broken)
+        var apex_ok := world.apexes.size() == 8
+        var apex_ids := {}
+        var apex_heights := ""
+        for ap in world.apexes:
+                if not is_instance_valid(ap):
+                        apex_ok = false
+                        continue
+                apex_ids[ap.def.get("id", "")] = true
+                if not ap.boss_mode or ap.variant_id != "":
+                        apex_ok = false
+                var br = ap.get("_body_root")
+                var aheight := 0.0
+                if br and br.get_child_count() > 0:
+                        for mc in br.get_child(0).find_children("*", "MeshInstance3D"):
+                                var ami := mc as MeshInstance3D
+                                if ami.mesh == null:
+                                        continue
+                                # world-space AABB over all 8 corners (rigs have
+                                # rotated limbs/wings — 2-corner math inflates)
+                                var lbox: AABB = ami.get_aabb()
+                                var mn := Vector3(INF, INF, INF)
+                                var mx := Vector3(-INF, -INF, -INF)
+                                for ci in 8:
+                                        var corner := Vector3(
+                                                lbox.position.x + (lbox.size.x if ci & 1 else 0.0),
+                                                lbox.position.y + (lbox.size.y if ci & 2 else 0.0),
+                                                lbox.position.z + (lbox.size.z if ci & 4 else 0.0))
+                                        var wp: Vector3 = ami.global_transform * corner
+                                        mn = mn.min(wp)
+                                        mx = mx.max(wp)
+                                aheight = maxf(aheight, mx.y - mn.y)
+                apex_heights += "%s=%.1fm " % [ap.def.get("name", "?"), aheight]
+                if aheight < 3.5:
+                        apex_ok = false
+        if apex_ids.size() != 8:
+                apex_ok = false
+        print("SMOKE: apex bosses=", apex_ok, " count=", world.apexes.size(), " heights: ", apex_heights)
+        # (b) per-individual variation: named variants present in the wild
+        # population AND a wide spread of unique identities (jitter working)
+        var v_counts := {"radiant": 0, "dusk": 0, "colossal": 0, "plain": 0}
+        var uniq_jit := {}
+        for c in get_tree().get_nodes_in_group("creatures"):
+                if c is Echo and not c.captured and not c.boss_mode and not c.defeated:
+                        if c.variant_id == "":
+                                v_counts["plain"] += 1
+                                var jj: Dictionary = c.identity()
+                                uniq_jit["%.3f|%.3f|%.3f" % [float(jj["scale"]), float(jj["hue"]), float(jj["bright"])]] = true
+                        elif v_counts.has(c.variant_id):
+                                v_counts[c.variant_id] += 1
+        var var_total := int(v_counts["radiant"]) + int(v_counts["dusk"]) + int(v_counts["colossal"])
+        var variants_ok := var_total > 0 and uniq_jit.size() > 50
+        print("SMOKE: wild variants=", variants_ok, " radiant=", v_counts["radiant"], " dusk=", v_counts["dusk"], " colossal=", v_counts["colossal"], " unique-identities=", uniq_jit.size())
+        # (b2) applied identity honored at build time (follower look persistence
+        # + shot herds): variant_id + _vj survive add_child/_ready
+        var idv: Dictionary = Data.species_def("Echo_Mosspaw")
+        if not idv.is_empty():
+                var es2 := load("res://scripts/creatures/echo.gd")
+                var ve2 = es2.new(idv, RandomNumberGenerator.new())
+                ve2.apply_identity("dusk", {"scale": 1.05, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0})
+                world.creatures_root.add_child(ve2)
+                var vok: bool = str(ve2.get("variant_id")) == "dusk" and absf(float(ve2.identity()["scale"]) - 1.05) < 0.001
+                var brv = ve2.get("_body_root")
+                if brv:
+                        # body scale = size_scale × rig scale × vj.scale (rig 0.33 for Mosspaw/Fox)
+                        var rigs2: Dictionary = Data.species_rigs.get("Echo_Mosspaw", {})
+                        var expect2: float = Data.size_scale(str(idv.get("size_class", "Medium"))) * float(rigs2.get("scale", 1.0)) * 1.05
+                        vok = vok and absf((brv as Node3D).scale.x - expect2) < 0.02
+                        print("SMOKE: applied identity honored=", vok, " variant=", ve2.get("variant_id"), " scale=", (brv as Node3D).scale.x, " expect=", expect2)
+                if not brv:
+                        print("SMOKE: applied identity honored=", vok, " (no body root)")
+                ve2.queue_free()
+        # (c) mixed-species forests: distinct prop meshes actually instanced
+        # (was ~25 cloned prop meshes world-wide; pools push it far higher)
+        print("SMOKE: distinct dressing meshes=", world.prop_mesh_paths.size(), " pool_broadleaf=", world._tree_pool("broadleaf").size(), " pool_conifer=", world._tree_pool("conifer").size(), " pool_dead=", world._tree_pool("dead").size(), " pool_spore=", world._tree_pool("spore").size())
         # PS-4: fast travel plumbing exists on the map screen
         print("SMOKE: fast travel=", screens.has_method("_fast_travel_go") and screens.has_method("_map_click"))
         # PS-6: settings screen + rebind round-trip
@@ -1200,6 +1278,57 @@ func _screenshot_routine() -> void:
                         print("SCREENSHOT saved=", err_b == OK, " path=res://shot_boss.png", " size=", img_b.get_size())
                         get_tree().quit(0)
                         return
+        if shot_name == "variants":
+                # v1.5.2 Wild Diversity: ONE species, SIX individuals — three
+                # plain (each jittered differently), Radiant ✦, Dusk ✧ and
+                # Colossal ◈. Bramblethorn (Orc rig, ~2 m, tinted) — foxes
+                # proved too small for size/colour reads at 5 m in VLM passes.
+                var vdef: Dictionary = Data.species_def("Echo_Bramblethorn")
+                if vdef.is_empty():
+                        vdef = Data.species_def("Echo_Mosspaw")
+                if not vdef.is_empty():
+                        var vscript := load("res://scripts/creatures/echo.gd")
+                        var identities := [
+                                ["", {"scale": 1.0, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0}],
+                                ["", {"scale": 0.90, "hp": 1.0, "atk": 1.0, "hue": -0.055, "bright": -0.13}],
+                                ["", {"scale": 1.13, "hp": 1.0, "atk": 1.0, "hue": 0.055, "bright": 0.13}],
+                                ["radiant", {"scale": 1.08, "hp": 1.18, "atk": 1.15, "hue": 0.0, "bright": 0.10}],
+                                ["dusk", {"scale": 0.96, "hp": 1.0, "atk": 1.1, "hue": -0.03, "bright": -0.15}],
+                                ["colossal", {"scale": 1.38, "hp": 1.4, "atk": 1.05, "hue": 0.0, "bright": -0.03}],
+                        ]
+                        for vi in identities.size():
+                                var ve: Node = vscript.new(vdef, RandomNumberGenerator.new())
+                                ve.apply_identity(identities[vi][0], identities[vi][1])
+                                var vp: Vector3 = player.global_position + fwd * 6.0 + player.global_transform.basis.x * (float(vi) - 2.5) * 2.6
+                                ve.position = Vector3(vp.x, maxf(world.tile_height(vp.x, vp.z), player.global_position.y) + 0.3, vp.z)
+                                ve.rotation.y = player.rotation.y + PI
+                                ve.set("ai_state", "Stay")
+                                ve.set("think_timer", 999.0)
+                                world.creatures_root.add_child(ve)
+                        await get_tree().create_timer(0.6).timeout
+                        # re-pin: slow llvmpipe frames give AI ticks room to wander
+                        for c in world.creatures_root.get_children():
+                                if c is Echo and c.ai_state == "Stay" and not c.captured:
+                                        var cp: Vector3 = c.global_position
+                                        c.global_position = Vector3(cp.x, world.tile_height(cp.x, cp.z) + 0.3, cp.z)
+                        player.look_at(player.global_position + fwd * 6.0, Vector3.UP)
+                        await get_tree().create_timer(0.4).timeout
+        if shot_name == "apex":
+                # v1.5.2: a zone Apex in its home biome — teleport beside the
+                # real spawned Cindermaw (Ember Ridge), hold it at 70% so the
+                # boss bar + phase pips + ☠ nameplate all show at combat range
+                var apex_shot: Node = null
+                for ap in world.apexes:
+                        if is_instance_valid(ap) and str(ap.def.get("id", "")) == "Creature_CindermawApex":
+                                apex_shot = ap
+                                break
+                if apex_shot:
+                        var apos: Vector3 = apex_shot.global_position
+                        player.global_position = Vector3(apos.x - 13.0, world.tile_height(apos.x - 13.0, apos.z + 2.0) + 0.4, apos.z + 2.0)
+                        player.look_at(Vector3(apos.x, player.global_position.y, apos.z), Vector3.UP)
+                        apex_shot.set("ai_state", "Stay")
+                        apex_shot.hp = apex_shot.max_hp * 0.7
+                        await get_tree().create_timer(1.6).timeout
         if shot_name == "relief":
                 # v1.5.1: spawn micro-relief — low 2.8 m eye-height view sweeping
                 # NE across the hand-placed swells so the domes silhouette
