@@ -1063,7 +1063,9 @@ func _die() -> void:
         if variant_id == "radiant":
                 Game.toast.emit("Radiant bounty — double loot!", Color(1.0, 0.85, 0.4))
         if not captured:
-                Game.echo_defeated.emit(def["id"])
+                # v1.5.2 fix: the signal declares (species_id, loot) — emitting
+                # with one arg raised a runtime error on every creature death
+                Game.echo_defeated.emit(def["id"], loot)
                 Game.notify_event("DefeatCreature", def["id"])
         # XP to party
         for e in Game.party:
