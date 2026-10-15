@@ -216,10 +216,18 @@ func _find_mesh(node: Node) -> MeshInstance3D:
         return null
 
 
-func _multimesh(mesh_path: String, transforms: Array, mat: Material = null, shadow: bool = true) -> void:
+func _multimesh(mesh_path: String, transforms: Array, mat: Material = null, shadow: bool = true, wind_mode: String = "") -> void:
         if transforms.is_empty():
                 return
-        var mesh: Mesh = _mesh_for(mesh_path)
+        var mesh: Mesh
+        if mat != null:
+                mesh = _mesh_for(mesh_path)
+        else:
+                # v1.6 Radiant Dawn: wind-mode batches swap the shared mesh for a
+                # windified copy (per-surface sway shader preserving each
+                # surface's texture + albedo) and carry per-instance tint
+                # jitter in INSTANCE_CUSTOM — alive forests, zero extra draws.
+                mesh = _windified_mesh(mesh_path, wind_mode) if wind_mode != "" else _mesh_for(mesh_path)
         if mesh == null:
                 return
         # v1.5.2 smoke telemetry: distinct prop meshes actually instanced
@@ -228,14 +236,75 @@ func _multimesh(mesh_path: String, transforms: Array, mat: Material = null, shad
         var mm := MultiMesh.new()
         mm.transform_format = MultiMesh.TRANSFORM_3D
         mm.mesh = mesh
+        if wind_mode != "" and mat == null:
+                mm.set_use_custom_data(true)
         mm.instance_count = transforms.size()
         for i in transforms.size():
                 mm.set_instance_transform(i, transforms[i])
+                if mm.is_using_custom_data():
+                        mm.set_instance_custom_data(i, _instance_tint(transforms[i].origin))
         mmi.multimesh = mm
         if mat:
                 mmi.material_override = mat
         mmi.cast_shadow = 1 if shadow else 0
         props_root.add_child(mmi)
+
+
+var _wind_shader: Shader
+var _wind_mesh_cache := {}
+
+
+func _windified_mesh(mesh_path: String, mode: String) -> Mesh:
+        ## v1.6 Radiant Dawn: duplicate the shared mesh and attach a wind-sway
+        ## ShaderMaterial per surface, copying each surface's original albedo
+        ## texture + color so textured trees keep their look while swaying.
+        if _wind_shader == null:
+                _wind_shader = load("res://shaders/wind_sway.gdshader")
+        var key := "%s|%s" % [mesh_path, mode]
+        if _wind_mesh_cache.has(key):
+                return _wind_mesh_cache[key]
+        var base: Mesh = _mesh_for(mesh_path)
+        if base == null:
+                return null
+        var mesh: Mesh = base.duplicate() as Mesh
+        var aabb: AABB = mesh.get_aabb()
+        var h_lo: float = maxf(aabb.size.y * 0.16, 0.04)
+        var h_hi: float = maxf(aabb.size.y * 0.78, 0.12)
+        var sway: float = 0.08
+        var speed: float = 1.35
+        if mode == "grass":
+                h_lo = maxf(aabb.size.y * 0.04, 0.02)
+                h_hi = maxf(aabb.size.y * 0.55, 0.08)
+                sway = 0.055
+                speed = 1.9
+        for i in mesh.get_surface_count():
+                var smat: ShaderMaterial = ShaderMaterial.new()
+                smat.shader = _wind_shader
+                var src: Material = mesh.surface_get_material(i)
+                var col := Color.WHITE
+                var tex: Texture2D = null
+                if src is StandardMaterial3D:
+                        col = src.albedo_color
+                        tex = src.albedo_texture
+                smat.set_shader_parameter("surface_col", col)
+                smat.set_shader_parameter("base_tex", tex)
+                smat.set_shader_parameter("sway_world", sway)
+                smat.set_shader_parameter("sway_speed", speed)
+                smat.set_shader_parameter("h_lo", h_lo)
+                smat.set_shader_parameter("h_hi", h_hi)
+                mesh.surface_set_material(i, smat)
+        _wind_mesh_cache[key] = mesh
+        return mesh
+
+
+func _instance_tint(origin: Vector3) -> Color:
+        ## deterministic per-instance warm/cool tint jitter (0.5 = neutral,
+        ## shader doubles it) — breaks the "one flat forest color" read.
+        var h: int = absi(hash("%.2f|%.2f" % [origin.x, origin.z]))
+        var r: float = 0.5 + float(h % 17) / 17.0 * 0.10 - 0.05
+        var g: float = 0.5 + float((h / 17) % 13) / 13.0 * 0.08 - 0.04
+        var b: float = 0.5 + float((h / 221) % 11) / 11.0 * 0.10 - 0.05
+        return Color(r, g, b, 1.0)
 
 
 func _scatter(rng: RandomNumberGenerator, count: int, zone: Dictionary, max_slope: float = 0.6, above_water: bool = true) -> Array:
@@ -291,7 +360,7 @@ func _dress_all_zones() -> void:
                                         var tilt := Quaternion(Vector3(rng.randf_range(-1.0, 1.0), 0.0, rng.randf_range(-1.0, 1.0)).normalized(), rng.randf_range(-0.15, 0.15))
                                         var basis := Basis(rot * tilt).scaled(Vector3(s, s * stretch, s))
                                         trs.append(Transform3D(basis, p))
-                                _multimesh(mpath, trs, member.get("mat", null))
+                                _multimesh(mpath, trs, member.get("mat", null), true, "tree")
                                 if zid == "Zone_DawnFields":
                                         _add_tree_collisions(trs)
 
@@ -321,12 +390,12 @@ func _dress_all_zones() -> void:
                         for p in _scatter(rng, grass_count, zone, 0.5):
                                 var s := rng.randf_range(1.15, 2.3)
                                 gtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
-                        _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false)
+                        _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false, "grass")
                         if dressing.get("muck", false):
                                 var ftrs := []
                                 for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
                                         ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
-                                _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs)
+                                _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs, null, true, "grass")
 
                 # zone specials
                 _dress_special(rng, zone)

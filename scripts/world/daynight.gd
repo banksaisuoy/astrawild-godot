@@ -26,17 +26,21 @@ func setup() -> void:
         sun.rotation_degrees = Vector3(-80, 30, 0)
         sun.shadow_enabled = true
         sun.shadow_bias = 0.03
-        sun.shadow_blur = 1.0
+        # v1.6 Radiant Dawn: blur 1.0 -> 2.2 — soft penumbra contact shadows
+        # instead of razor-stamped silhouettes; reads "lit by a real sun".
+        sun.shadow_blur = 2.2
         sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
         sun.directional_shadow_max_distance = 240.0
         add_child(sun)
 
         sky_mat = ProceduralSkyMaterial.new()
-        sky_mat.sky_top_color = Color(0.35, 0.5, 0.8)
-        sky_mat.sky_horizon_color = Color(0.75, 0.8, 0.85)
+        # v1.6 Radiant Dawn: richer, more saturated sky ramp — the old washed
+        # pastel ramp was a top-3 VLM critique ("depressing desaturated grey-blue")
+        sky_mat.sky_top_color = Color(0.30, 0.48, 0.78)
+        sky_mat.sky_horizon_color = Color(0.78, 0.82, 0.85)
         sky_mat.ground_bottom_color = Color(0.15, 0.13, 0.12)
         sky_mat.ground_horizon_color = Color(0.55, 0.52, 0.5)
-        sky_mat.sun_angle_max = 9.0
+        sky_mat.sun_angle_max = 13.0
 
         var env_res := Environment.new()
         env_res.background_mode = Environment.BG_SKY
@@ -50,6 +54,22 @@ func setup() -> void:
         env_res.fog_light_color = NOON_FOG
         env_res.fog_density = 0.0007
         env_res.fog_sky_affect = 0.28
+        # v1.6 Radiant Dawn — color grade pass (VLM critique: "flat, washed out,
+        # lifeless; pure default RGB primaries"). Saturation + contrast push
+        # the whole frame off the MS Paint read while ACES keeps highlights.
+        env_res.adjustment_enabled = true
+        env_res.adjustment_saturation = 1.24
+        env_res.adjustment_contrast = 1.06
+        env_res.adjustment_brightness = 1.0
+        # v1.6 Radiant Dawn — glow pass: emissive eyes / astraite nodes / glow
+        # reeds / campfires finally bloom. Threshold 1.05 keeps only true
+        # emissives hot; SOFTLIGHT blend stays stylized-soft, never HDR soup.
+        env_res.glow_enabled = true
+        env_res.glow_intensity = 0.5
+        env_res.glow_strength = 1.03
+        env_res.glow_bloom = 0.04
+        env_res.glow_hdr_threshold = 1.12
+        env_res.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
 
         env = WorldEnvironment.new()
         env.environment = env_res
@@ -103,9 +123,10 @@ func _apply_atmosphere() -> void:
                 # 1.3→2.2 / 1.05→0.8) — the old stack blew green terrain out to
                 # pure white under the tonemap; now the ground keeps its hue and
                 # hills keep their shaded relief
-                ambient = lerpf(0.45, 0.3, horizonness)
-                sun.light_energy = lerpf(0.9, 0.6, horizonness)
-                sky_top = Color(0.25, 0.42, 0.75).lerp(Color(0.4, 0.6, 0.9), sin(arc * PI))
+                # v1.6: +0.04 ambient offsets the saturation/contrast darkening
+                ambient = lerpf(0.49, 0.34, horizonness)
+                sun.light_energy = lerpf(0.94, 0.62, horizonness)
+                sky_top = Color(0.20, 0.44, 0.82).lerp(Color(0.36, 0.60, 0.92), sin(arc * PI))
                 sky_horizon = fog_col
 
         # weather coupling

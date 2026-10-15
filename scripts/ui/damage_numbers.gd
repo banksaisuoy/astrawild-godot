@@ -34,6 +34,7 @@ static func spawn(parent: Node, pos: Vector3, amount: float, kind: String = "nor
         label.shaded = false
         label.pixel_size = 0.012
         label.fixed_size = false
+        label.add_to_group("damage_numbers")
         # lateral jitter so stacked hits on the same target don't perfectly overlap
         var jitter := Vector3(rng.randf_range(-0.45, 0.45), 0.0, rng.randf_range(-0.2, 0.2))
         label.position = pos + jitter

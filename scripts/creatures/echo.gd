@@ -289,6 +289,12 @@ func _apply_model_tint(root: Node) -> void:
                         base_mat = (mesh_res as ArrayMesh).surface_get_material(0)
                 if base_mat is StandardMaterial3D:
                         var bm := (base_mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+                        # v1.6 Radiant Dawn: rim light on every tinted rig — the
+                        # VLM critique ("full-bright, no depth") applies to the
+                        # GLB rigs too; a fresnel edge kick grounds them cheaply.
+                        bm.rim_enabled = true
+                        bm.rim = 0.32
+                        bm.rim_tint = 0.2
                         if bm.albedo_texture != null:
                                 # v1.2 V11-c: soft blend only — atlas faces/eyes stay
                                 # visible. v1.5.2: named variants REPLACE the atlas tint
@@ -337,6 +343,12 @@ func _mat(color: Color, glow: Color = Color.BLACK, energy: float = 0.0) -> Stand
         var mat := StandardMaterial3D.new()
         mat.albedo_color = color
         mat.roughness = 0.85
+        # v1.6 Radiant Dawn: rim light — the #1 stylized-3D trick the VLM said
+        # was missing ("no depth, no bounce, full-bright"). Cheap fresnel edge
+        # kick that works in gl_compatibility and grounds every creature.
+        mat.rim_enabled = true
+        mat.rim = 0.38
+        mat.rim_tint = 0.2
         if energy > 0.0:
                 mat.emission_enabled = true
                 mat.emission = glow
@@ -356,14 +368,53 @@ func _box(part: String, size: Vector3, pos: Vector3, mat: Material) -> MeshInsta
         return mi
 
 
-func _sphere(part: String, radius: float, pos: Vector3, mat: Material, segments: int = 12) -> MeshInstance3D:
+func _sphere(part: String, radius: float, pos: Vector3, mat: Material, segments: int = 16) -> MeshInstance3D:
         var mi := MeshInstance3D.new()
         var sph := SphereMesh.new()
         sph.radius = radius
         sph.height = radius * 2.0
         sph.radial_segments = segments
-        sph.rings = 8
+        sph.rings = maxi(10, int(segments * 0.75))
         mi.mesh = sph
+        mi.position = pos
+        mi.material_override = mat
+        _body_root.add_child(mi)
+        _parts[part] = mi
+        return mi
+
+
+func _capsule(part: String, radius: float, length: float, pos: Vector3, mat: Material, axis := Vector3.UP) -> MeshInstance3D:
+        ## v1.6 Radiant Dawn: smooth organic capsule (torso/neck/tail) — replaces
+        ## the box-stack "wooden mannequin" read with rounded stylized masses.
+        var mi := MeshInstance3D.new()
+        var cap := CapsuleMesh.new()
+        cap.radius = radius
+        cap.height = length + radius * 2.0
+        cap.radial_segments = 16
+        cap.rings = 12
+        mi.mesh = cap
+        if axis == Vector3.RIGHT:
+                mi.rotation.z = PI / 2.0
+        elif axis == Vector3.FORWARD:
+                mi.rotation.x = PI / 2.0
+        mi.position = pos
+        mi.material_override = mat
+        _body_root.add_child(mi)
+        _parts[part] = mi
+        return mi
+
+
+func _limb(part: String, top_r: float, bot_r: float, length: float, pos: Vector3, mat: Material) -> MeshInstance3D:
+        ## v1.6 Radiant Dawn: tapered cylinder limb (thick at the joint, narrow
+        ## at the ground) — the VLM critique asked for taper + gesture, and the
+        ## flat-radius cylinders read as "robot".
+        var mi := MeshInstance3D.new()
+        var cyl := CylinderMesh.new()
+        cyl.top_radius = top_r
+        cyl.bottom_radius = bot_r
+        cyl.height = length
+        cyl.radial_segments = 14
+        mi.mesh = cyl
         mi.position = pos
         mi.material_override = mat
         _body_root.add_child(mi)
@@ -401,70 +452,75 @@ func _build_procedural_body() -> void:
                         var torso_l: float = sr.randf_range(0.92, 1.38)
                         var torso_h: float = sr.randf_range(0.50, 0.80)
                         var leg_h: float = sr.randf_range(0.34, 0.64)
-                        var head_s: float = sr.randf_range(0.36, 0.52)
+                        var head_s: float = sr.randf_range(0.40, 0.56)
                         var neck: float = sr.randf_range(0.0, 0.34)
-                        _box("torso", Vector3(1.1, torso_h, 0.55) * Vector3(torso_l, 1, 1), Vector3(0, 0.75, 0), body_mat)
-                        _box("belly", Vector3(0.7 * torso_l, torso_h * 0.4, 0.58), Vector3(-0.1, 0.55, 0), belly_mat)
-                        _box("head", Vector3(head_s, head_s * 0.9, head_s), Vector3(0.62 + neck, 0.95 + neck * 0.7, 0), body_mat)
-                        _sphere("eye_l", 0.06, Vector3(0.8 + neck, 1.0 + neck * 0.7, 0.13), glow, 6)
-                        _sphere("eye_r", 0.06, Vector3(0.8 + neck, 1.0 + neck * 0.7, -0.13), glow, 6)
+                        # v1.6: capsule torso + tapered limbs + planted feet —
+                        # kills the "wooden mannequin / floating T-Rex" VLM read
+                        _capsule("torso", torso_h * 0.5, torso_l, Vector3(0, 0.72 + torso_h * 0.18, 0), body_mat, Vector3.RIGHT)
+                        var belly := _sphere("belly", torso_h * 0.34, Vector3(0.16, 0.56, 0), belly_mat, 14)
+                        belly.scale = Vector3(1.5, 0.85, 1.0)
+                        _capsule("neck", head_s * 0.42, maxf(neck * 0.9, 0.05), Vector3(0.5 + neck * 0.55, 0.84 + neck * 0.62, 0), body_mat, Vector3.RIGHT)
+                        _sphere("head", head_s, Vector3(0.62 + neck, 0.98 + neck * 0.7, 0), body_mat, 16)
+                        _sphere("eye_l", 0.075, Vector3(0.72 + neck + head_s * 0.55, 1.02 + neck * 0.7 + head_s * 0.22, head_s * 0.42), glow, 10)
+                        _sphere("eye_r", 0.075, Vector3(0.72 + neck + head_s * 0.55, 1.02 + neck * 0.7 + head_s * 0.22, -head_s * 0.42), glow, 10)
                         var ear_h: float = sr.randf_range(0.14, 0.30)
                         _box("ear_l", Vector3(0.1, ear_h, 0.08), Vector3(0.66 + neck, 1.2 + neck * 0.7, 0.14), accent_mat)
                         _box("ear_r", Vector3(0.1, ear_h, 0.08), Vector3(0.66 + neck, 1.2 + neck * 0.7, -0.14), accent_mat)
                         for i in 4:
                                 var lx := 0.4 if i < 2 else -0.38
                                 var lz := 0.22 if i % 2 == 0 else -0.22
-                                _box("leg%d" % i, Vector3(0.16, leg_h, 0.16), Vector3(lx, leg_h * 0.55, lz), accent_mat)
+                                _limb("leg%d" % i, 0.11, 0.055, leg_h + 0.08, Vector3(lx, (leg_h + 0.08) * 0.5, lz), accent_mat)
                         # tail variety: thin whip / thick club / fan
                         var tail_k := sr.randi() % 3
                         if tail_k == 0:
-                                _box("tail", Vector3(0.62, 0.10, 0.09), Vector3(-0.75, 0.9, 0), accent_mat)
+                                _capsule("tail", 0.05, 0.55, Vector3(-0.78, 0.88, 0), accent_mat, Vector3.RIGHT)
                         elif tail_k == 1:
-                                _box("tail", Vector3(0.5, 0.2, 0.16), Vector3(-0.72, 0.85, 0), accent_mat)
+                                _capsule("tail", 0.09, 0.42, Vector3(-0.72, 0.86, 0), accent_mat, Vector3.RIGHT)
                         else:
-                                _box("tail", Vector3(0.4, 0.34, 0.06), Vector3(-0.68, 0.9, 0), accent_mat)
+                                _capsule("tail", 0.05, 0.34, Vector3(-0.68, 0.9, 0), accent_mat, Vector3.RIGHT)
                         _box("spine", Vector3(0.7 * torso_l, 0.12, 0.2), Vector3(-0.05, 1.06, 0), glow)
                 "Biped":
                         var b_torso_h: float = sr.randf_range(0.56, 0.86)
-                        var b_head_r: float = sr.randf_range(0.20, 0.32)
+                        var b_head_r: float = sr.randf_range(0.24, 0.34)
                         var arm_l: float = sr.randf_range(0.42, 0.66)
-                        _box("torso", Vector3(0.5, b_torso_h, 0.4), Vector3(0, 1.0, 0), body_mat)
-                        _box("belly", Vector3(0.36, b_torso_h * 0.5, 0.42), Vector3(0, 0.85, 0), belly_mat)
-                        _sphere("head", b_head_r, Vector3(0, 1.55, 0), body_mat)
-                        _sphere("eye_l", 0.06, Vector3(0.12, 1.6, 0.18), glow, 6)
-                        _sphere("eye_r", 0.06, Vector3(-0.12, 1.6, 0.18), glow, 6)
-                        _box("arm_l", Vector3(0.14, arm_l, 0.14), Vector3(0.34, 1.05, 0), accent_mat)
-                        _box("arm_r", Vector3(0.14, arm_l, 0.14), Vector3(-0.34, 1.05, 0), accent_mat)
-                        _box("leg_l", Vector3(0.17, 0.6, 0.17), Vector3(0.14, 0.32, 0), accent_mat)
-                        _box("leg_r", Vector3(0.17, 0.6, 0.17), Vector3(-0.14, 0.32, 0), accent_mat)
+                        _capsule("torso", 0.26, b_torso_h, Vector3(0, 1.02, 0), body_mat)
+                        var chest := _sphere("belly", 0.17, Vector3(0, 0.86, 0.17), belly_mat, 12)
+                        chest.scale = Vector3(1.35, 1.5, 0.62)
+                        _sphere("head", b_head_r, Vector3(0, 1.58 + b_head_r * 0.2, 0), body_mat, 16)
+                        _sphere("eye_l", 0.075, Vector3(0.13, 1.64 + b_head_r * 0.2, b_head_r * 0.72), glow, 10)
+                        _sphere("eye_r", 0.075, Vector3(-0.13, 1.64 + b_head_r * 0.2, b_head_r * 0.72), glow, 10)
+                        _limb("arm_l", 0.08, 0.045, arm_l + 0.06, Vector3(0.34, 1.06, 0), accent_mat)
+                        _limb("arm_r", 0.08, 0.045, arm_l + 0.06, Vector3(-0.34, 1.06, 0), accent_mat)
+                        _limb("leg_l", 0.105, 0.055, 0.66, Vector3(0.14, 0.33, 0), accent_mat)
+                        _limb("leg_r", 0.105, 0.055, 0.66, Vector3(-0.14, 0.33, 0), accent_mat)
                         var crest_h: float = sr.randf_range(0.18, 0.4)
-                        _box("crest", Vector3(0.2, crest_h, 0.1), Vector3(0, 1.85, 0), glow)
+                        _box("crest", Vector3(0.2, crest_h, 0.1), Vector3(0, 1.88, 0), glow)
                 "Serpent":
                         var seg_n: int = 4 + (sr.randi() % 4)
                         var seg_r0: float = sr.randf_range(0.24, 0.36)
                         for i in seg_n:
                                 var r := seg_r0 - i * 0.03
                                 var m := body_mat if i % 2 == 0 else belly_mat
-                                _sphere("seg%d" % i, r, Vector3(-i * 0.42, 0.42, sin(i * 0.8) * 0.15), m, 10)
-                        _sphere("head", seg_r0, Vector3(0.55, 0.55, 0), body_mat)
-                        _sphere("eye_l", 0.06, Vector3(0.72, 0.62, 0.14), glow, 6)
-                        _sphere("eye_r", 0.06, Vector3(0.72, 0.62, -0.14), glow, 6)
+                                _sphere("seg%d" % i, r, Vector3(-i * 0.42, 0.42, sin(i * 0.8) * 0.15), m, 12)
+                        _sphere("head", seg_r0, Vector3(0.55, 0.55, 0), body_mat, 14)
+                        _sphere("eye_l", 0.07, Vector3(0.72, 0.62, 0.14), glow, 10)
+                        _sphere("eye_r", 0.07, Vector3(0.72, 0.62, -0.14), glow, 10)
                         var fin_k := sr.randi() % 2
                         if fin_k == 0:
                                 _box("fin", Vector3(0.34, 0.22, 0.06), Vector3(-1.8, 0.55, 0), glow)
                         else:
                                 _box("fin", Vector3(0.3, 0.4, 0.06), Vector3(-1.7, 0.62, 0), glow)
                 "Avian":
-                        var a_body_r: float = sr.randf_range(0.28, 0.42)
-                        _sphere("torso", a_body_r, Vector3(0, 0.9, 0), body_mat)
-                        _sphere("head", a_body_r * 0.6, Vector3(0.3, 1.2, 0), body_mat)
-                        _box("beak", Vector3(0.22, 0.08, 0.08), Vector3(0.5, 1.2, 0), accent_mat)
+                        var a_body_r: float = sr.randf_range(0.30, 0.44)
+                        _sphere("torso", a_body_r, Vector3(0, 0.9, 0), body_mat, 16)
+                        _sphere("head", a_body_r * 0.62, Vector3(0.3, 1.22, 0), body_mat, 14)
+                        _box("beak", Vector3(0.22, 0.08, 0.08), Vector3(0.5, 1.22, 0), accent_mat)
                         var wing_w: float = sr.randf_range(0.42, 0.68)
                         _box("wing_l", Vector3(wing_w, 0.06, 0.55), Vector3(0, 0.95, 0.4), accent_mat)
                         _box("wing_r", Vector3(wing_w, 0.06, 0.55), Vector3(0, 0.95, -0.4), accent_mat)
                         _box("tail_f", Vector3(0.35, 0.05, 0.2), Vector3(-0.4, 0.9, 0), glow)
-                        _box("leg_l", Vector3(0.06, 0.4, 0.06), Vector3(0.05, 0.45, 0.08), accent_mat)
-                        _box("leg_r", Vector3(0.06, 0.4, 0.06), Vector3(-0.05, 0.45, -0.08), accent_mat)
+                        _limb("leg_l", 0.045, 0.028, 0.42, Vector3(0.05, 0.21, 0.08), accent_mat)
+                        _limb("leg_r", 0.045, 0.028, 0.42, Vector3(-0.05, 0.21, -0.08), accent_mat)
                 "Floating":
                         _body_root.position.y = 0.9
                         var core_r: float = sr.randf_range(0.32, 0.5)
@@ -476,12 +532,12 @@ func _build_procedural_body() -> void:
                                 _box("shard%d" % i, Vector3(0.1, 0.4, 0.1), Vector3(cos(ang) * 0.6, 0.9, sin(ang) * 0.6), accent_mat)
                 "Amorphous":
                         var blob_r: float = sr.randf_range(0.42, 0.58)
-                        _sphere("core", blob_r, Vector3(0, 0.6, 0), body_mat, 14)
-                        _sphere("blob1", blob_r * 0.56, Vector3(0.35, 0.4, 0.2), accent_mat, 10)
-                        _sphere("blob2", blob_r * 0.44, Vector3(-0.3, 0.75, -0.15), accent_mat, 10)
-                        _sphere("blob3", blob_r * 0.36, Vector3(0.1, 0.95, -0.25), glow, 8)
-                        _sphere("eye_l", 0.07, Vector3(0.15, 0.7, 0.42), glow, 6)
-                        _sphere("eye_r", 0.07, Vector3(-0.15, 0.7, 0.42), glow, 6)
+                        _sphere("core", blob_r, Vector3(0, 0.6, 0), body_mat, 16)
+                        _sphere("blob1", blob_r * 0.56, Vector3(0.35, 0.4, 0.2), accent_mat, 12)
+                        _sphere("blob2", blob_r * 0.44, Vector3(-0.3, 0.75, -0.15), accent_mat, 12)
+                        _sphere("blob3", blob_r * 0.36, Vector3(0.1, 0.95, -0.25), glow, 10)
+                        _sphere("eye_l", 0.08, Vector3(0.15, 0.7, 0.42), glow, 10)
+                        _sphere("eye_r", 0.08, Vector3(-0.15, 0.7, 0.42), glow, 10)
                 "Crystalline":
                         _body_root.position.y = 0.2
                         var crystal_mat := _mat(Color(prim[0] * 0.8 + 0.2, prim[1] * 0.8 + 0.2, prim[2] * 0.8 + 0.2), el, 1.6)
@@ -493,22 +549,22 @@ func _build_procedural_body() -> void:
                         _box("shard3", Vector3(0.28, 0.7, 0.28), Vector3(0.1, 0.35, 0.45), crystal_mat2).rotation.x = 0.4
                 "Insectoid":
                         var abd_r: float = sr.randf_range(0.24, 0.36)
-                        _box("thorax", Vector3(0.55, 0.4, 0.45), Vector3(0, 0.7, 0), body_mat)
+                        _capsule("thorax", 0.22, 0.5, Vector3(0, 0.7, 0), body_mat, Vector3.RIGHT)
                         _sphere("abdomen", abd_r, Vector3(-0.45, 0.65, 0), accent_mat, 12)
-                        _sphere("head", 0.22, Vector3(0.4, 0.8, 0), body_mat)
+                        _sphere("head", 0.22, Vector3(0.4, 0.8, 0), body_mat, 12)
                         _box("ant_l", Vector3(0.35, 0.04, 0.04), Vector3(0.6, 1.0, 0.12), glow)
                         _box("ant_r", Vector3(0.35, 0.04, 0.04), Vector3(0.6, 1.0, -0.12), glow)
-                        _sphere("eye_l", 0.08, Vector3(0.52, 0.85, 0.14), glow, 8)
-                        _sphere("eye_r", 0.08, Vector3(0.52, 0.85, -0.14), glow, 8)
+                        _sphere("eye_l", 0.08, Vector3(0.52, 0.85, 0.14), glow, 10)
+                        _sphere("eye_r", 0.08, Vector3(0.52, 0.85, -0.14), glow, 10)
                         for i in 6:
                                 var side := 1 if i % 2 == 0 else -1
                                 var fx := 0.25 if i < 2 else (0.0 if i < 4 else -0.3)
                                 var leg := _box("leg%d" % i, Vector3(0.5, 0.06, 0.06), Vector3(fx, 0.5, side * 0.32), accent_mat)
                                 leg.rotation.y = side * 0.7
                 _:
-                        _box("torso", Vector3(1.0, 0.6, 0.55), Vector3(0, 0.75, 0), body_mat)
-                        _sphere("eye_l", 0.06, Vector3(0.5, 0.9, 0.13), glow, 6)
-                        _sphere("eye_r", 0.06, Vector3(0.5, 0.9, -0.13), glow, 6)
+                        _capsule("torso", 0.3, 1.0, Vector3(0, 0.75, 0), body_mat, Vector3.RIGHT)
+                        _sphere("eye_l", 0.07, Vector3(0.5, 0.9, 0.13), glow, 10)
+                        _sphere("eye_r", 0.07, Vector3(0.5, 0.9, -0.13), glow, 10)
 
         _add_family_feature(family, sr, glow, accent_mat, body_mat)
         _add_surface_detail(sr, belly_mat, glow)

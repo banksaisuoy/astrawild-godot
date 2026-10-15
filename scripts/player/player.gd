@@ -76,6 +76,10 @@ func _setup_model() -> void:
         if scene:
                 var visual := scene.instantiate()
                 model_root.add_child(visual)
+                # v1.6 Radiant Dawn: rim-light the survivor — the VLM said the
+                # player read as a "default mannequin" while the freshly graded
+                # creatures popped. Duplicated materials keep shared imports safe.
+                _apply_rim_to_rig(visual)
                 anim = _find_anim(visual)
                 if anim and anim.has_animation("AM_Survivor_Idle"):
                         anim.play("AM_Survivor_Idle")
@@ -86,6 +90,33 @@ func _setup_model() -> void:
                         hand.add_child(weapon_holder)
                         weapon_holder.position = Vector3(0, 0.1, 0.05)
         _refresh_weapon_visual()
+
+
+func _apply_rim_to_rig(root: Node) -> void:
+        for node in _find_all_meshes(root):
+                var mi := node as MeshInstance3D
+                if mi.mesh == null:
+                        continue
+                var am := mi.mesh as ArrayMesh
+                if am == null:
+                        continue
+                for s in am.get_surface_count():
+                        var m: Material = am.surface_get_material(s)
+                        if m is StandardMaterial3D:
+                                var dup := (m as StandardMaterial3D).duplicate() as StandardMaterial3D
+                                dup.rim_enabled = true
+                                dup.rim = 0.3
+                                dup.rim_tint = 0.2
+                                mi.set_surface_override_material(s, dup)
+
+
+func _find_all_meshes(node: Node) -> Array:
+        var out := []
+        if node is MeshInstance3D:
+                out.append(node)
+        for c in node.get_children():
+                out.append_array(_find_all_meshes(c))
+        return out
 
 
 func _find_anim(node: Node) -> AnimationPlayer:
@@ -187,15 +218,23 @@ func _find_mesh(node: Node) -> MeshInstance3D:
 
 func _setup_camera() -> void:
         camera_pivot = Node3D.new()
-        camera_pivot.position = Vector3(0, 1.55, 0)
+        camera_pivot.position = Vector3(0, 1.7, 0)
         add_child(camera_pivot)
         spring = SpringArm3D.new()
-        spring.spring_length = 4.2
+        # v1.6 Radiant Dawn: 4.2 -> 4.7 — pulls the camera back so the player
+        # sees more of the world per frame ("wider view" user feedback).
+        spring.spring_length = 4.7
         spring.collision_mask = 1
         spring.margin = 0.35
         camera_pivot.add_child(spring)
         camera = Camera3D.new()
-        camera.fov = 72.0
+        # v1.6 Radiant Dawn: 72 -> 76 — wider gameplay framing; saved FOV wins.
+        camera.fov = 76.0
+        var sf := FileAccess.open("user://settings.json", FileAccess.READ)
+        if sf:
+                var parsed: Variant = JSON.parse_string(sf.get_as_text())
+                if parsed is Dictionary and (parsed as Dictionary).get("gfx", {}).has("fov"):
+                        camera.fov = clampf(float((parsed as Dictionary)["gfx"]["fov"]), 60.0, 90.0)
         spring.add_child(camera)
         camera.make_current()
 

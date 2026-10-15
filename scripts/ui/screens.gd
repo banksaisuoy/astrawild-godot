@@ -1711,11 +1711,11 @@ func _refresh_settings() -> void:
         var data := _read_settings_file()
         var gfx: Dictionary = data.get("gfx", {})
         _gfx_vsync.selected = clampi(int(gfx.get("vsync", 1)), 0, 1)
-        _gfx_msaa.selected = clampi(int(gfx.get("msaa", 0)), 0, 3)
+        _gfx_msaa.selected = clampi(int(gfx.get("msaa", 2)), 0, 3)
         var sc := clampf(float(gfx.get("scale", 1.0)), 0.6, 1.0)
         _gfx_scale.set_value_no_signal(sc)
         _gfx_scale_lbl.text = "%d%%" % int(round(sc * 100.0))
-        var fov := clampf(float(gfx.get("fov", 75.0)), 60.0, 90.0)
+        var fov := clampf(float(gfx.get("fov", 76.0)), 60.0, 90.0)
         _gfx_fov.set_value_no_signal(fov)
         _gfx_fov_lbl.text = "%d°" % int(fov)
         _refresh_bind_buttons()
@@ -1755,12 +1755,17 @@ func _apply_gfx() -> void:
         var data := _read_settings_file()
         data["gfx"] = {"vsync": _gfx_vsync.selected, "msaa": _gfx_msaa.selected, "scale": _gfx_scale.value, "fov": _gfx_fov.value}
         _write_settings_file(data)
-        if OS.get_name() == "Web" or DisplayServer.get_name() == "headless":
+        # v1.6 Radiant Dawn: MSAA/scale/fov now apply on Web too — the old
+        # blanket Web early-return shipped razor-sharp jaggies to the browser
+        # build (the exact "not smooth / blocky" user report). Only vsync is
+        # desktop-only; headless smoke stays untouched.
+        if DisplayServer.get_name() == "headless":
                 return
         var win := get_window()
         if win == null:
                 return
-        win.vsync_mode = DisplayServer.VSYNC_DISABLED if _gfx_vsync.selected == 1 else DisplayServer.VSYNC_ENABLED
+        if OS.get_name() != "Web":
+                win.vsync_mode = DisplayServer.VSYNC_DISABLED if _gfx_vsync.selected == 1 else DisplayServer.VSYNC_ENABLED
         win.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_4X, Viewport.MSAA_8X][_gfx_msaa.selected]
         win.scaling_3d_scale = clampf(_gfx_scale.value, 0.5, 1.0)
         var player := get_tree().get_first_node_in_group("player")
@@ -1779,6 +1784,22 @@ func _reset_settings() -> void:
         Game._setup_input_actions()
         _refresh_settings()
         Game.toast.emit("Controls and graphics reset to defaults.", Color(0.8, 1.0, 0.85))
+
+
+func _apply_boot_gfx() -> void:
+        ## v1.6 Radiant Dawn: apply saved graphics settings at BOOT (not only
+        ## when the player opens the settings screen) and INCLUDE Web — fresh
+        ## installs default to MSAA 4x so the very first frame is smooth.
+        if DisplayServer.get_name() == "headless":
+                return
+        var gfx: Dictionary = _read_settings_file().get("gfx", {})
+        var win := get_window()
+        if win == null:
+                return
+        win.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_4X, Viewport.MSAA_8X][clampi(int(gfx.get("msaa", 2)), 0, 3)]
+        win.scaling_3d_scale = clampf(float(gfx.get("scale", 1.0)), 0.6, 1.0)
+        if OS.get_name() != "Web":
+                win.vsync_mode = DisplayServer.VSYNC_DISABLED if int(gfx.get("vsync", 1)) == 1 else DisplayServer.VSYNC_ENABLED
 
 
 func _read_settings_file() -> Dictionary:

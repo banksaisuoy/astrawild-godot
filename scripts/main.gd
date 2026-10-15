@@ -1,7 +1,7 @@
 extends Node
 ## Main entry: title screen → world build (loading) → gameplay.
 
-const GAME_VERSION := "v1.5.2"
+const GAME_VERSION := "v1.6"
 
 var title_layer: CanvasLayer
 var loading_layer: CanvasLayer
@@ -31,6 +31,8 @@ func _ready() -> void:
                 screens.closed.connect(func _sc():
                         if title_layer and is_instance_valid(title_layer) and not _started:
                                 title_layer.visible = true)
+        # v1.6 Radiant Dawn: saved/default AA + scale applied at boot, Web included
+        screens._apply_boot_gfx()
         # F9 quick-load (v1.0.4): reload_current_scene() restarts main.tscn —
         # the pending flag routes straight into the save, skipping the title.
         if Game.quick_load_pending:
@@ -1125,6 +1127,45 @@ func _run_smoke_checks() -> void:
         # (c) mixed-species forests: distinct prop meshes actually instanced
         # (was ~25 cloned prop meshes world-wide; pools push it far higher)
         print("SMOKE: distinct dressing meshes=", world.prop_mesh_paths.size(), " pool_broadleaf=", world._tree_pool("broadleaf").size(), " pool_conifer=", world._tree_pool("conifer").size(), " pool_dead=", world._tree_pool("dead").size(), " pool_spore=", world._tree_pool("spore").size())
+        # v1.6 Radiant Dawn — visual overhaul assertions:
+        # (a) environment grade: adjustments + glow + soft shadows live
+        var env_ok := false
+        var grade := {}
+        if world.daynight and world.daynight.env and world.daynight.env.environment:
+                var e: Environment = world.daynight.env.environment
+                grade = {"glow": e.glow_enabled, "sat": e.adjustment_saturation, "contrast": e.adjustment_contrast, "shadow_blur": world.daynight.sun.shadow_blur}
+                env_ok = e.glow_enabled and e.adjustment_enabled and e.adjustment_saturation > 1.0 and world.daynight.sun.shadow_blur > 1.5
+        print("SMOKE: visual grade env=", env_ok, " ", grade)
+        # (b) wind-sway foliage: multimeshes with custom tint data + windified meshes cached
+        var wind_meshes: int = world._wind_mesh_cache.size()
+        var wind_batches := 0
+        var tinted := 0
+        for child in world.props_root.get_children():
+                if child is MultiMeshInstance3D and (child as MultiMeshInstance3D).multimesh != null and (child as MultiMeshInstance3D).multimesh.is_using_custom_data():
+                        wind_batches += 1
+                        tinted += (child as MultiMeshInstance3D).multimesh.instance_count
+        print("SMOKE: wind foliage meshes=", wind_meshes, " batches=", wind_batches, " tinted_instances=", tinted)
+        # (c) organic bodies: capsule/limb parts present on a fresh Tier-B build + rim light
+        var organic_ok := false
+        var organic_parts := 0
+        var rim_ok := false
+        var probe_def: Dictionary = Data.species_def("Echo_Mosspaw").duplicate(true)
+        probe_def["id"] = "Echo_VisualProbeV16"  # no rig map + no model -> procedural body path
+        var probe = load("res://scripts/creatures/echo.gd").new(probe_def, RandomNumberGenerator.new())
+        add_child(probe)
+        var probe_parts: Dictionary = probe.get("_parts")
+        if probe.get("_body_root"):
+                for p in probe_parts.values():
+                        if p is MeshInstance3D and (p as MeshInstance3D).mesh is CapsuleMesh or (p is MeshInstance3D and (p as MeshInstance3D).mesh is CylinderMesh):
+                                organic_parts += 1
+                        if p is MeshInstance3D and (p as MeshInstance3D).material_override is StandardMaterial3D and ((p as MeshInstance3D).material_override as StandardMaterial3D).rim_enabled:
+                                rim_ok = true
+        organic_ok = organic_parts >= 4 and rim_ok
+        print("SMOKE: organic body parts=", organic_parts, " rim=", rim_ok, " ok=", organic_ok)
+        probe.queue_free()
+        # (d) camera widening + default AA
+        var cam_ok := player.camera.fov > 74.0 and player.spring.spring_length > 4.4
+        print("SMOKE: wide camera fov=", player.camera.fov, " spring=", player.spring.spring_length, " ok=", cam_ok)
         # PS-4: fast travel plumbing exists on the map screen
         print("SMOKE: fast travel=", screens.has_method("_fast_travel_go") and screens.has_method("_map_click"))
         # PS-6: settings screen + rebind round-trip
@@ -1467,6 +1508,11 @@ func _screenshot_routine() -> void:
                                 screens._nest_toggle(cands_shot[1])
                 await get_tree().create_timer(1.0).timeout
         await get_tree().create_timer(0.5).timeout
+        # v1.6: --clean also hides world-space damage numbers — showcase shots
+        # were reading ambient-combat "29" clusters as a UI bug (VLM critique)
+        if args.find("--clean") >= 0:
+                for dn in get_tree().get_nodes_in_group("damage_numbers"):
+                        (dn as Label3D).visible = false
         var img: Image = get_viewport().get_texture().get_image()
         var err := img.save_png("res://shot_%s.png" % shot_name)
         print("SCREENSHOT saved=", err == OK, " path=res://shot_%s.png" % shot_name, " size=", img.get_size())
