@@ -30,6 +30,7 @@ func setup() -> void:
         # instead of razor-stamped silhouettes; reads "lit by a real sun".
         sun.shadow_blur = 2.2
         sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+        sun.directional_shadow_blend_splits = true
         sun.directional_shadow_max_distance = 240.0
         add_child(sun)
 
@@ -50,10 +51,19 @@ func setup() -> void:
         env_res.ambient_light_energy = 0.68
         env_res.tonemap_mode = Environment.TONE_MAPPER_ACES
         env_res.tonemap_exposure = 0.95
+        # v1.7 Phase 1: ACES white point — warmer highlights roll off to white
+        # instead of clipping pink, completes the stylized colour grade.
+        env_res.tonemap_white = 6.0
         env_res.fog_enabled = true
         env_res.fog_light_color = NOON_FOG
         env_res.fog_density = 0.0007
         env_res.fog_sky_affect = 0.28
+        # v1.7 Phase 1: HEIGHT FOG — the missing vertical half of the atmosphere.
+        # Fog plane sits just above the valley floor so morning mist pools in
+        # low ground and peaks rise out of it; density is driven per world-hour
+        # in _apply_atmosphere (dawn mist thickest, noon thinnest).
+        env_res.fog_height = 6.0
+        env_res.fog_height_density = 0.04
         # v1.6 Radiant Dawn — color grade pass (VLM critique: "flat, washed out,
         # lifeless; pure default RGB primaries"). Saturation + contrast push
         # the whole frame off the MS Paint read while ACES keeps highlights.
@@ -94,6 +104,7 @@ func _apply_atmosphere() -> void:
         var sun_col: Color
         var fog_col: Color
         var fog_density: float
+        var fog_height_density: float
         var ambient: float
         var sky_top: Color
         var sky_horizon: Color
@@ -102,6 +113,7 @@ func _apply_atmosphere() -> void:
                 sun_col = NIGHT_SUN
                 fog_col = NIGHT_FOG
                 fog_density = NIGHT_FOG_DENSITY
+                fog_height_density = 0.06
                 ambient = 0.16
                 sky_top = Color(0.03, 0.045, 0.10)
                 sky_horizon = Color(0.07, 0.09, 0.16)
@@ -112,10 +124,13 @@ func _apply_atmosphere() -> void:
                         var t: float = clampf((h - 6.0) / 6.5, 0.0, 1.0)
                         sun_col = DAWN_SUN.lerp(NOON_SUN, t)
                         fog_col = DAWN_FOG.lerp(NOON_FOG, t)
+                        # morning mist pools in the valleys then burns off
+                        fog_height_density = lerpf(0.10, 0.022, t)
                 else:
                         var t: float = clampf((h - 12.5) / 6.5, 0.0, 1.0)
                         sun_col = NOON_SUN.lerp(DUSK_SUN, t)
                         fog_col = NOON_FOG.lerp(DUSK_FOG, t)
+                        fog_height_density = lerpf(0.022, 0.06, t)
                 var arc: float = clampf((h - 6.0) / 13.0, 0.0, 1.0)
                 var horizonness: float = 1.0 - sin(arc * PI)  # 1 at horizon, 0 at noon
                 fog_density = lerpf(0.0006, 0.0011, horizonness)
@@ -133,6 +148,7 @@ func _apply_atmosphere() -> void:
         var vis: float = Game.visibility()
         var vis_loss: float = 1.0 - vis
         fog_density *= (1.0 + 1.8 * vis_loss)
+        fog_height_density *= (1.0 + 1.1 * vis_loss)
         sun.light_energy *= (0.45 + 0.55 * vis)
         fog_col = Color(fog_col.r * 0.55 + 0.05, fog_col.g * 0.55 + 0.05, fog_col.b * 0.55 + 0.06) if vis < 0.9 else fog_col
 
@@ -170,4 +186,14 @@ func _apply_atmosphere() -> void:
         sky_mat.sky_horizon_color = sky_horizon
         env.environment.fog_light_color = fog_col
         env.environment.fog_density = fog_density
+        env.environment.fog_height_density = fog_height_density
         env.environment.ambient_light_energy = ambient
+        # v1.7 Phase 1: let the sky fog eat more of the horizon band at dawn /
+        # dusk so the Distant Vista Ring melts into the sky instead of pasting
+        # a hard silhouette line against it (noon stays crisper).
+        if night:
+                env.environment.fog_sky_affect = 0.34
+        else:
+                var arc2: float = clampf((h - 6.0) / 13.0, 0.0, 1.0)
+                env.environment.fog_sky_affect = lerpf(0.40, 0.24, sin(arc2 * PI))
+                env.environment.fog_sky_affect *= (1.0 + 0.5 * vis_loss)

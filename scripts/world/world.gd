@@ -50,6 +50,8 @@ func build() -> void:
         _bp("Carving the terrain…", 0.04)
         _build_terrain()
         await _breathe()
+        _bp("Raising the far ridges…", 0.06)
+        _build_vista_ring()
         _bp("Filling the waters…", 0.08)
         _build_water()
         _bp("Raising sky and weather…", 0.12)
@@ -111,6 +113,84 @@ func build() -> void:
         _bp("The Vale is ready.", 1.0)
         Game.party_changed.connect(_sync_party)
         Game.party_changed.emit()
+        # v1.7 Phase 1: weather-coupled foliage wind — materials were created
+        # with the boot weather's strength already; re-assert it now that all
+        # batches exist, and follow every weather transition from here on.
+        apply_weather_wind(Game.weather_id)
+        Game.weather_changed.connect(apply_weather_wind)
+
+
+func _build_vista_ring() -> void:
+        ## v1.7 Phase 1: Distant Vista Ring — two low-poly mountain-ridge rings
+        ## (no collision, no shadows) around the 3.2×2.4 km playfield so the
+        ## straight cut horizon reads as layered peaks instead. Depth fog does
+        ## the aerial-perspective blending; height fog sinks the bases into
+        ## morning mist. Deterministic from the world seed.
+        var rng := RandomNumberGenerator.new()
+        rng.seed = hash("vista-%d" % Game.world_seed)
+        vista_peak_count = 0
+        var root := Node3D.new()
+        root.name = "VistaRing"
+        root.add_to_group("vista")
+        add_child(root)
+        # far ring: tall, cooler, carries the snow caps; near ring: lower,
+        # greener — sits between the far ring and the playfield edge
+        _vista_ring_mesh(root, rng, 44, 2050.0, 1620.0, 150.0, 380.0,
+                Color(0.36, 0.40, 0.50), Color(0.62, 0.66, 0.74), Color(0.92, 0.94, 0.98))
+        _vista_ring_mesh(root, rng, 32, 1840.0, 1430.0, 60.0, 170.0,
+                Color(0.22, 0.28, 0.22), Color(0.34, 0.38, 0.34), Color(0.55, 0.60, 0.62))
+
+
+func _vista_ring_mesh(root: Node3D, rng: RandomNumberGenerator, count: int, rx: float, rz: float,
+                h_min: float, h_max: float, base_col: Color, mid_col: Color, cap_col: Color) -> void:
+        ## One ArrayMesh of `count` faceted peaks on an ellipse (rx, rz) around
+        ## the map centre. Each peak = a shallow pyramid of 6 base corners →
+        ## ~12 triangles, flat shaded, vertex-coloured base→cap gradient.
+        var st := SurfaceTool.new()
+        st.begin(Mesh.PRIMITIVE_TRIANGLES)
+        for i in count:
+                var ang: float = TAU * float(i) / float(count) + rng.randf_range(-0.04, 0.04)
+                var px: float = cos(ang) * rx * rng.randf_range(0.97, 1.06)
+                var pz: float = sin(ang) * rz * rng.randf_range(0.97, 1.06)
+                var peak_h: float = rng.randf_range(h_min, h_max)
+                var base_r: float = peak_h * rng.randf_range(0.75, 1.15)
+                var apex := Vector3(px, peak_h, pz)
+                var prev := Vector3.ZERO
+                var corners := 6
+                for c in corners + 1:
+                        var ca: float = ang + TAU * float(c) / float(corners)
+                        var corner := Vector3(px + cos(ca) * base_r, -12.0, pz + sin(ca) * base_r)
+                        if c > 0:
+                                # two triangles per ring segment: base→apex fan
+                                # (flat, stylized) + a thin skirt wall so the
+                                # ridge reads solid from inside the valley too
+                                var b0 := base_col.lerp(mid_col, 0.45 + 0.2 * sin(ca))
+                                var b1 := base_col.lerp(mid_col, 0.45 + 0.2 * sin(ca - TAU / float(corners)))
+                                var cap := cap_col
+                                _vista_tri(st, prev, corner, apex, b0, b1, cap)
+                                _vista_tri(st, corner, prev, Vector3(prev.x, -14.0, prev.z), b0, b1, base_col.darkened(0.35))
+                        prev = corner
+                vista_peak_count += 1
+        st.generate_normals()
+        var mesh := st.commit()
+        var mat := StandardMaterial3D.new()
+        mat.vertex_colors_use_as_albedo = true
+        mat.roughness = 1.0
+        mat.specular = 0.1
+        var mmi := MeshInstance3D.new()
+        mmi.mesh = mesh
+        mmi.material_override = mat
+        mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+        root.add_child(mmi)
+
+
+func _vista_tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, ca: Color, cb: Color, cc: Color) -> void:
+        st.set_color(ca)
+        st.add_vertex(a)
+        st.set_color(cb)
+        st.add_vertex(b)
+        st.set_color(cc)
+        st.add_vertex(c)
 
 
 func _bp(stage_text: String, fraction: float) -> void:
@@ -252,6 +332,62 @@ func _multimesh(mesh_path: String, transforms: Array, mat: Material = null, shad
 
 var _wind_shader: Shader
 var _wind_mesh_cache := {}
+var _wind_materials: Array[ShaderMaterial] = []      # v1.7: every cached sway material — weather wind updates them all in one pass
+var _grove_noise: FastNoiseLite                       # v1.7: macro grove-density field (clustered scatter)
+var vista_peak_count := 0                             # v1.7: smoke telemetry for the distant vista ring
+
+
+const WEATHER_WIND := {                               # v1.7 Phase 1: wind strength per weather state
+        "Clear": 0.55, "Cloudy": 0.72, "Rain": 1.05, "HeavyRain": 1.35,
+        "Storm": 1.9, "Fog": 0.38, "Heatwave": 0.22, "ColdSnap": 0.68,
+}
+
+
+func apply_weather_wind(state: String) -> void:
+        ## Push the weather's wind strength onto every cached foliage wind
+        ## material (called at build time and on Game.weather_changed).
+        var strength: float = float(WEATHER_WIND.get(state, 0.6))
+        for m in _wind_materials:
+                m.set_shader_parameter("wind_strength", strength)
+
+
+func _grove_density_at(x: float, z: float) -> float:
+        ## v1.7 Phase 1: macro grove-density noise (wavelength ~170 m). Forests
+        ## cluster into groves with natural clearings between them — kills the
+        ## "uniform random pattern" read VLM has flagged since v1.5.2.
+        if _grove_noise == null:
+                _grove_noise = FastNoiseLite.new()
+                _grove_noise.seed = hash("groves-%d" % Game.world_seed)
+                _grove_noise.frequency = 1.0 / 170.0
+                _grove_noise.fractal_octaves = 2
+        return _grove_noise.get_noise_2d(x, z)
+
+
+func _scatter_clustered(rng: RandomNumberGenerator, count: int, zone: Dictionary, max_slope: float = 0.55, above_water: bool = true) -> Array:
+        ## v1.7 Phase 1: FastNoiseLite 2-layer scatter — macro grove density
+        ## decides WHICH areas carry trees (dense groves covering ~45% of the
+        ## zone + genuine open clearings), micro jitter (±12 m) makes grove
+        ## boundaries organic. 10% sprinkle keeps lone trees standing in the
+        ## clearings (nature is never pure).
+        var out := []
+        var cx: float = zone["center"][0]
+        var cz: float = zone["center"][1]
+        var tries := 0
+        while out.size() < count and tries < count * 16:
+                tries += 1
+                var x: float = cx + rng.randf_range(-390.0, 390.0)
+                var z: float = cz + rng.randf_range(-390.0, 390.0)
+                if _grove_density_at(x, z) < 0.05 and rng.randf() > 0.10:
+                        continue
+                x += rng.randf_range(-12.0, 12.0)
+                z += rng.randf_range(-12.0, 12.0)
+                var h: float = tile_height(x, z)
+                if above_water and h < -3.8:
+                        continue
+                if slope_at(x, z) > max_slope:
+                        continue
+                out.append(Vector3(x, h, z))
+        return out
 
 
 func _windified_mesh(mesh_path: String, mode: String) -> Mesh:
@@ -259,7 +395,7 @@ func _windified_mesh(mesh_path: String, mode: String) -> Mesh:
         ## ShaderMaterial per surface, copying each surface's original albedo
         ## texture + color so textured trees keep their look while swaying.
         if _wind_shader == null:
-                _wind_shader = load("res://shaders/wind_sway.gdshader")
+                _wind_shader = load("res://shaders/foliage_wind.gdshader")
         var key := "%s|%s" % [mesh_path, mode]
         if _wind_mesh_cache.has(key):
                 return _wind_mesh_cache[key]
@@ -292,6 +428,8 @@ func _windified_mesh(mesh_path: String, mode: String) -> Mesh:
                 smat.set_shader_parameter("sway_speed", speed)
                 smat.set_shader_parameter("h_lo", h_lo)
                 smat.set_shader_parameter("h_hi", h_hi)
+                smat.set_shader_parameter("wind_strength", float(WEATHER_WIND.get(Game.weather_id, 0.6)))
+                _wind_materials.append(smat)
                 mesh.surface_set_material(i, smat)
         _wind_mesh_cache[key] = mesh
         return mesh
@@ -352,7 +490,7 @@ func _dress_all_zones() -> void:
                                 var mpath: String = String(member["path"])
                                 var share := int(round(float(tree_count) * float(member["weight"])))
                                 var trs := []
-                                for p in _scatter(rng, share, zone, 0.55):
+                                for p in _scatter_clustered(rng, share, zone, 0.55):
                                         var s := rng.randf_range(float(member["s_lo"]), float(member["s_hi"]))
                                         # v1.5.2 VLM pass: random lean ±6° breaks the cloned-tree
                                         # grid read — forests get organic, non-repeating postures
@@ -387,13 +525,13 @@ func _dress_all_zones() -> void:
                 var grass_count := int(float(dressing.get("grass", 0.0)) * 2100.0)
                 if grass_count > 0:
                         var gtrs := []
-                        for p in _scatter(rng, grass_count, zone, 0.5):
+                        for p in _scatter_clustered(rng, grass_count, zone, 0.5):
                                 var s := rng.randf_range(1.15, 2.3)
                                 gtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
                         _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false, "grass")
                         if dressing.get("muck", false):
                                 var ftrs := []
-                                for p in _scatter(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
+                                for p in _scatter_clustered(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
                                         ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
                                 _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs, null, true, "grass")
 

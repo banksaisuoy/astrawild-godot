@@ -1180,6 +1180,46 @@ func _run_smoke_checks() -> void:
         print("SMOKE: settings rebind=", rebind_ok, " panel=", screens.panels.has("settings"))
         # PS-8: minimap built
         print("SMOKE: minimap=", hud.minimap != null and hud.minimap_zone != null)
+        # ---- v1.7 Phase 1: atmosphere + horizon + clustered forest guards ----
+        var worldp := get_tree().get_first_node_in_group("world")
+        var dn: DayNightCycle = worldp.daynight if worldp else null
+        var height_fog_ok: bool = dn != null and dn.env.environment.fog_height > 0.0 and dn.env.environment.fog_height_density > 0.005
+        var white_ok: bool = dn != null and dn.env.environment.tonemap_white > 1.0
+        var vista_ok: bool = worldp != null and worldp.vista_peak_count >= 70
+        var wind_mats: int = worldp._wind_materials.size() if worldp else 0
+        var storm_wind_ok := false
+        if wind_mats > 0:
+                var probe_wind: ShaderMaterial = worldp._wind_materials[0]
+                Game.weather_id = "Storm"
+                Game.weather_changed.emit("Storm")
+                storm_wind_ok = float(probe_wind.get_shader_parameter("wind_strength")) > 1.5
+                Game.weather_id = "Clear"
+                Game.weather_changed.emit("Clear")
+        # clustered scatter proof: accepted tree points concentrate in high
+        # grove-density cells far above the uniform-random baseline share
+        var cluster_zone: Dictionary = Data.zone("Zone_DawnFields")
+        var cluster_rng := RandomNumberGenerator.new()
+        cluster_rng.seed = 99
+        var cluster_pts: Array = worldp._scatter_clustered(cluster_rng, 220, cluster_zone, 0.9, false)
+        var hi := 0
+        for p in cluster_pts:
+                if worldp._grove_density_at(p.x, p.z) > 0.0:
+                        hi += 1
+        var cluster_share: float = float(hi) / float(maxi(1, cluster_pts.size()))
+        var base_hi := 0
+        var base_rng := RandomNumberGenerator.new()
+        base_rng.seed = 99
+        for i in 240:
+                var bx: float = float(cluster_zone["center"][0]) + base_rng.randf_range(-390.0, 390.0)
+                var bz: float = float(cluster_zone["center"][1]) + base_rng.randf_range(-390.0, 390.0)
+                if worldp._grove_density_at(bx, bz) > 0.0:
+                        base_hi += 1
+        var base_share: float = float(base_hi) / 240.0
+        print("SMOKE: phase1 atmosphere height_fog=", height_fog_ok, " white=", white_ok,
+                " vista_peaks=", worldp.vista_peak_count if worldp else 0, " ok=", height_fog_ok and white_ok and vista_ok)
+        print("SMOKE: phase1 wind mats=", wind_mats, " storm=", storm_wind_ok,
+                " cluster_share=", cluster_share, " baseline=", base_share,
+                " ok=", wind_mats > 0 and storm_wind_ok and cluster_share - base_share > 0.06)
         # v1.7 audit guards: the codebase once called two phantom APIs that only
         # surfaced as runtime errors in REAL gameplay (smoke never walked those
         # paths): Sfx.play_event (marker.gd chest open + hud onboarding finish)
