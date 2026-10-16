@@ -35,13 +35,44 @@ var _toast_timers := []
 var _dmg_vignette: ColorRect
 var _dmg_vignette_a := 0.0
 var _last_hp_seen := -1.0
-# v1.1 Phase V7: onboarding + compass
-var onboarding_box: VBoxContainer
+# v1.1 Phase V7: onboarding + compass (v1.7 Phase 3: the five-row FIRST
+# STEPS panel is now ONE contextual action pill; onboarding_items keeps the
+# full-text goal map for reference/hover)
+var onboarding_box: PanelContainer
 var onboarding_items := {}
-var onboarding_icons := {}
 var onboarding_done := false
 var compass: Control
 var compass_width := 340.0
+# v1.7 Phase 3: progressive HUD — compact vitals, stamina ring, action pill
+var vitals_panel: PanelContainer
+var pill_label: Label
+var pill_icon: Control
+var _pill_goal := ""
+var _bar_pct := {}
+var _vitals_idle := 0.0
+var _vitals_dimmed := false
+var _vitals_last := {}
+var _vitals_tween: Tween
+var _combat_recent := false
+var _combat_recent_t := 0.0
+var stamina_ring: MeshInstance3D
+var stamina_ring_mat: ShaderMaterial
+# progressive reveal state: "party" gated here; "boss" stays owned by
+# _update_boss() (boss_bar is default-hidden until a boss engages)
+var _progressive_state := {"party": false, "boss": false}
+var _progressive_tweens := {}
+const PILL_GOAL_TEXT := {
+        "gather": "Gather wood/stone ×5 [LMB]",
+        "observe": "Observe an Echo [aim]",
+        "capture": "Capture an Echo [F]",
+        "craft": "Craft anything [C]",
+        "village": "Reach Dawnstead [east]",
+        "": "First steps done ✔",
+}
+const PILL_GOAL_ICON := {
+        "gather": "backpack", "observe": "eye", "capture": "paw",
+        "craft": "gear", "village": "map", "": "check",
+}
 # PS-8: corner radar minimap (blips + landmarks + zone name)
 var minimap: Control
 var minimap_zone: Label
@@ -74,18 +105,18 @@ func _ready() -> void:
 
 
 func _build() -> void:
-        # --- vitals panel (top-left) ---
-        var vitals := _panel(Vector2(16, 16), Vector2(268, 128))
+        # --- vitals panel (top-left; v1.7 Phase 3 compact icon bars) ---
+        vitals_panel = _panel(Vector2(16, 16), Vector2(200, 110))
         var vb := VBoxContainer.new()
         vb.set_anchors_preset(Control.PRESET_FULL_RECT)
-        vb.offset_left = 12
-        vb.offset_top = 10
-        vb.add_theme_constant_override("separation", 6)
-        vitals.add_child(vb)
-        bars["hp"] = _bar_row(vb, "HP", Color(0.89, 0.37, 0.33), 100, "heart")
-        bars["stamina"] = _bar_row(vb, "Stamina", Color(0.55, 0.85, 0.5), 100, "bolt")
-        bars["hunger"] = _bar_row(vb, "Hunger", Color(0.95, 0.72, 0.35), 100, "meat")
-        bars["thirst"] = _bar_row(vb, "Thirst", Color(0.45, 0.75, 0.85), 100, "drop")
+        vb.offset_left = 10
+        vb.offset_top = 8
+        vb.add_theme_constant_override("separation", 5)
+        vitals_panel.add_child(vb)
+        bars["hp"] = _compact_bar_row(vb, Color(0.89, 0.37, 0.33), 100, "hp")
+        bars["stamina"] = _compact_bar_row(vb, Color(0.55, 0.85, 0.5), 100, "stamina")
+        bars["hunger"] = _compact_bar_row(vb, Color(0.95, 0.72, 0.35), 100, "hunger")
+        bars["thirst"] = _compact_bar_row(vb, Color(0.45, 0.75, 0.85), 100, "thirst")
 
         # --- clock panel (top-center) ---
         var clock_panel := _panel(Vector2(0, 16), Vector2(320, 74))
@@ -113,24 +144,27 @@ func _build() -> void:
         weather_label.modulate = Color(0.8, 0.85, 0.95)
         clock_row.add_child(weather_label)
 
-        # --- quest tracker (top-right) ---
-        var quest_panel := _panel(Vector2(-316, 16), Vector2(300, 150))
+        # --- quest tracker (top-right; v1.7 Phase 3 compacted) ---
+        var quest_panel := _panel(Vector2(-288, 16), Vector2(272, 132))
         quest_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-        quest_panel.offset_left = -316
+        quest_panel.offset_left = -288
         quest_panel.offset_right = -16
         quest_panel.offset_top = 16
         quest_box = VBoxContainer.new()
         quest_box.set_anchors_preset(Control.PRESET_FULL_RECT)
         quest_box.offset_left = 10
-        quest_box.offset_top = 8
-        quest_box.add_theme_constant_override("separation", 3)
+        quest_box.offset_top = 6
+        quest_box.add_theme_constant_override("separation", 2)
         quest_panel.add_child(quest_box)
 
-        # --- party cards (bottom-left) ---
+        # --- party cards (bottom-left; v1.7 Phase 3 progressive: born hidden,
+        # fades in with the first companion — see _progressive_reveal) ---
         party_box = HBoxContainer.new()
         party_box.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
         party_box.position = Vector2(16, -80)
         party_box.add_theme_constant_override("separation", 8)
+        party_box.modulate.a = 0.0
+        party_box.visible = false
         root.add_child(party_box)
 
         # --- prompt (bottom-center) ---
@@ -160,57 +194,54 @@ func _build() -> void:
         crosshair.custom_minimum_size = Vector2(8, 8)
         crosshair.draw.connect(func _draw(): crosshair.draw_circle(Vector2(4, 4), 2.5, Color(1, 1, 1, 0.75)))
 
-        # --- v1.1 Phase V7: FIRST STEPS onboarding (bottom-right) ---
-        var ob_panel := _panel(Vector2(0, 0), Vector2(238, 136))
-        ob_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-        ob_panel.offset_left = -248
-        ob_panel.offset_top = -196
-        ob_panel.offset_right = -10
-        ob_panel.offset_bottom = -60
-        onboarding_box = VBoxContainer.new()
-        onboarding_box.set_anchors_preset(Control.PRESET_FULL_RECT)
-        onboarding_box.offset_left = 8
-        onboarding_box.offset_top = 6
-        onboarding_box.offset_right = -8
-        onboarding_box.offset_bottom = -6
-        onboarding_box.add_theme_constant_override("separation", 2)
-        var ob_head := HBoxContainer.new()
-        ob_head.add_theme_constant_override("separation", 6)
-        ob_head.add_child(GameIcons.make("star", Color(1.0, 0.85, 0.5), 14))
-        var ob_title := Label.new()
-        ob_title.text = "FIRST STEPS"
-        ob_title.add_theme_font_size_override("font_size", 12)
-        ob_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
-        ob_head.add_child(ob_title)
-        onboarding_box.add_child(ob_head)
-        ob_panel.add_child(onboarding_box)
+        # --- v1.7 Phase 3: contextual ACTION PILL (bottom-centre, above the
+        # toast stack and a touch above the party strip) — one goal at a time
+        # instead of five rows. The old multi-line FIRST STEPS panel crowded
+        # the first 10 minutes.
+        var pill_host := HBoxContainer.new()
+        pill_host.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+        pill_host.offset_left = 0
+        pill_host.offset_right = 0
+        pill_host.offset_top = -198
+        pill_host.offset_bottom = -164
+        pill_host.alignment = BoxContainer.ALIGNMENT_CENTER
+        pill_host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        root.add_child(pill_host)
+        onboarding_box = PanelContainer.new()
+        onboarding_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        onboarding_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+        var pill_style := StyleBoxFlat.new()
+        pill_style.bg_color = Color(0.05, 0.07, 0.11, 0.72)
+        pill_style.set_border_width_all(1)
+        pill_style.set_border_color(Color(0.32, 0.4, 0.52, 0.85))
+        pill_style.set_corner_radius_all(15)
+        pill_style.content_margin_left = 14
+        pill_style.content_margin_right = 14
+        pill_style.content_margin_top = 6
+        pill_style.content_margin_bottom = 6
+        onboarding_box.add_theme_stylebox_override("panel", pill_style)
+        var pill_row := HBoxContainer.new()
+        pill_row.add_theme_constant_override("separation", 8)
+        onboarding_box.add_child(pill_row)
+        pill_icon = GameIcons.make("backpack", Color(1.0, 0.85, 0.5), 15)
+        pill_row.add_child(pill_icon)
+        pill_label = Label.new()
+        pill_label.add_theme_font_size_override("font_size", 13)
+        pill_label.add_theme_color_override("font_color", Color(0.93, 0.93, 0.88))
+        pill_label.add_theme_color_override("font_outline", Color(0, 0, 0, 0.75))
+        pill_label.add_theme_constant_override("outline_size", 4)
+        pill_label.text = "Gather wood/stone ×5 [LMB]"
+        pill_row.add_child(pill_label)
+        pill_host.add_child(onboarding_box)
+        # full-text goal map kept for reference/hover (short pill copy lives
+        # in PILL_GOAL_TEXT)
         onboarding_items = {
-                "gather": Label.new(), "observe": Label.new(), "capture": Label.new(),
-                "craft": Label.new(), "village": Label.new(),
-        }
-        var ob_icons := {
-                "gather": "backpack", "observe": "eye", "capture": "paw",
-                "craft": "gear", "village": "map",
-        }
-        var ob_texts := {
                 "gather": "Gather wood or stone (LMB a node)",
                 "observe": "Observe a wild Echo (aim at it)",
                 "capture": "Capture your first Echo (F)",
                 "craft": "Craft anything (C)",
                 "village": "Visit Dawnstead village (east)",
         }
-        for k in onboarding_items:
-                var row := HBoxContainer.new()
-                row.add_theme_constant_override("separation", 6)
-                var ic := GameIcons.make(ob_icons[k], Color(0.75, 0.8, 0.88), 13)
-                onboarding_icons[k] = ic
-                row.add_child(ic)
-                var l: Label = onboarding_items[k]
-                l.text = ob_texts[k]
-                l.add_theme_font_size_override("font_size", 11)
-                l.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
-                row.add_child(l)
-                onboarding_box.add_child(row)
 
         # --- v1.1 Phase V7: compass strip (top-center, under the clock) ---
         compass = Control.new()
@@ -313,25 +344,33 @@ func _panel(pos: Vector2, size: Vector2) -> PanelContainer:
         return p
 
 
-func _bar_row(parent: Control, label: String, color: Color, max_val: float, icon := "") -> ProgressBar:
+func _compact_bar_row(parent: Control, color: Color, max_val: float, key: String) -> ProgressBar:
+        ## v1.7 Phase 3: colour swatch + thin 8 px bar, no text label. The %
+        ## readout is a transient suffix that only surfaces below 35% (see
+        ## _refresh_bars). Registered into `bars` by the caller so the
+        ## existing _refresh_bars contract keeps working unchanged.
         var row := HBoxContainer.new()
-        row.add_theme_constant_override("separation", 6)
+        row.add_theme_constant_override("separation", 5)
         parent.add_child(row)
-        if icon != "":
-                row.add_child(GameIcons.make(icon, color, 16))
-        var l := Label.new()
-        l.text = label
-        l.custom_minimum_size = Vector2(56, 18)
-        l.add_theme_font_size_override("font_size", 12)
-        l.add_theme_color_override("font_color", color.lightened(0.25))
-        row.add_child(l)
+        var swatch := ColorRect.new()
+        swatch.custom_minimum_size = Vector2(12, 12)
+        swatch.color = color
+        row.add_child(swatch)
         var bar := ProgressBar.new()
-        bar.custom_minimum_size = Vector2(142, 14)
+        bar.custom_minimum_size = Vector2(120, 8)
         bar.min_value = 0
         bar.max_value = max_val
         bar.show_percentage = false
+        bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
         _style_progress(bar, color)
         row.add_child(bar)
+        var pct := Label.new()
+        pct.custom_minimum_size = Vector2(34, 12)
+        pct.add_theme_font_size_override("font_size", 11)
+        pct.add_theme_color_override("font_color", color.lightened(0.3))
+        pct.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+        row.add_child(pct)
+        _bar_pct[key] = pct
         return bar
 
 
@@ -356,6 +395,9 @@ func _refresh_bars() -> void:
                 _dmg_vignette_a = 0.4
                 if _dmg_vignette:
                         _dmg_vignette.color = Color(0.55, 0.04, 0.04, 0.4)
+                # v1.7 Phase 3: a fresh hit pins the vitals panel awake
+                _combat_recent = true
+                _combat_recent_t = 0.0
         elif _last_hp_seen >= 0.0 and Game.hp > _last_hp_seen + 2.0:
                 _dmg_vignette_a = 0.22
                 if _dmg_vignette:
@@ -365,6 +407,22 @@ func _refresh_bars() -> void:
         bars["stamina"].value = Game.stamina
         bars["hunger"].value = Game.hunger
         bars["thirst"].value = Game.thirst
+        # v1.7 Phase 3: compact readout — the % number only surfaces when a
+        # stat runs low (<35%); healthy bars stay wordless
+        for key in ["hp", "stamina", "hunger", "thirst"]:
+                var pct_l: Label = _bar_pct.get(key, null)
+                if pct_l == null:
+                        continue
+                var bar: ProgressBar = bars[key]
+                var frac: float = bar.value / maxf(bar.max_value, 1.0)
+                pct_l.text = ("%d%%" % int(round(frac * 100.0))) if frac < 0.35 else ""
+        # any meaningful stat movement (≥1.5) wakes the vitals panel out of
+        # its idle dim; slow hunger/thirst decay must NOT pin it awake
+        for key in ["hp", "stamina", "hunger", "thirst"]:
+                var v: float = float(Game.get(key))
+                if _vitals_last.has(key) and absf(v - float(_vitals_last[key])) >= 1.5:
+                        _vitals_idle = 0.0
+                _vitals_last[key] = v
 
 
 func _refresh_clock(_day: int, _min: int) -> void:
@@ -383,7 +441,7 @@ func _refresh_quest() -> void:
                 return
         var title := Label.new()
         title.text = "✦ %s" % q.get("title", "")
-        title.add_theme_font_size_override("font_size", 15)
+        title.add_theme_font_size_override("font_size", 14)
         title.add_theme_color_override("font_color", Color(1.0, 0.9, 0.6))
         quest_box.add_child(title)
         var state: Dictionary = Game.quest_states.get(Game.active_quest, {})
@@ -394,7 +452,7 @@ func _refresh_quest() -> void:
                 var l := Label.new()
                 var done := progress >= need
                 l.text = "%s %s %d/%d" % ["✔" if done else "•", objs[i]["text"], mini(progress, need), need]
-                l.add_theme_font_size_override("font_size", 12)
+                l.add_theme_font_size_override("font_size", 11)
                 l.add_theme_color_override("font_color", Color(0.75, 0.9, 0.8) if done else Color(0.85, 0.85, 0.9))
                 quest_box.add_child(l)
 
@@ -402,6 +460,11 @@ func _refresh_quest() -> void:
 func _refresh_party() -> void:
         for c in party_box.get_children():
                 c.queue_free()
+        # v1.7 Phase 3 progressive: the strip stays hidden while the party is
+        # empty — the first member triggers the 0.4 s fade-in
+        if Game.party.is_empty():
+                _progressive_hide("party")
+                return
         for entry in Game.party:
                 var card := PanelContainer.new()
                 var card_style := StyleBoxFlat.new()
@@ -444,12 +507,16 @@ func _refresh_party() -> void:
                 _style_progress(hp_bar, Color(0.6, 1.0, 0.7))
                 vb.add_child(hp_bar)
                 party_box.add_child(card)
+        _progressive_reveal("party")
 
 
 func _process(delta: float) -> void:
         _update_prompt()
         _update_boss(delta)
         _update_onboarding()
+        # v1.7 Phase 3: vitals auto-dim + stamina ring under the player
+        _update_vitals_autohide(delta)
+        _update_stamina_ring()
         # PS-1: damage vignette fade-out
         if _dmg_vignette_a > 0.001 and _dmg_vignette:
                 _dmg_vignette_a = maxf(0.0, _dmg_vignette_a - delta * 1.6)
@@ -468,6 +535,9 @@ func _process(delta: float) -> void:
 
 
 func _update_onboarding() -> void:
+        ## v1.7 Phase 3: the same FIRST STEPS completion logic, but the
+        ## presentation is one contextual action pill — the first unfinished
+        ## goal only, popping to the next as each completes.
         if onboarding_done:
                 return
         var player := get_tree().get_first_node_in_group("player")
@@ -480,28 +550,17 @@ func _update_onboarding() -> void:
                 "craft": Game.crafted_count > 0,
                 "village": player.global_position.distance_to(Vector3(-120, player.global_position.y, 0)) < 40.0,
         }
-        var labels := {
-                "gather": "Gather wood or stone (LMB a node)",
-                "observe": "Observe a wild Echo (aim at it)",
-                "capture": "Capture your first Echo (F)",
-                "craft": "Craft anything (C)",
-                "village": "Visit Dawnstead village (east)",
-        }
         var done_count := 0
+        var first_open := ""
         for k in goals:
-                var l: Label = onboarding_items.get(k, null)
-                if l == null:
-                        continue
-                var ic: Control = onboarding_icons.get(k, null)
                 if goals[k]:
                         done_count += 1
-                        l.text = labels[k]
-                        l.add_theme_color_override("font_color", Color(0.55, 0.9, 0.65))
-                        if ic:
-                                GameIcons.set_icon(ic, "check", Color(0.55, 0.9, 0.65))
-                else:
-                        l.text = labels[k]
-                        l.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
+                elif first_open == "":
+                        first_open = k
+        # the pill tracks the FIRST unfinished goal ("" once all are done)
+        if first_open != _pill_goal:
+                _pill_goal = first_open
+                _apply_pill_goal(first_open)
         if done_count == goals.size():
                 onboarding_done = true
                 if onboarding_box:
@@ -511,6 +570,129 @@ func _update_onboarding() -> void:
                 Game.add_research_points(10)
                 Game.toast.emit("THE VALE KNOWS YOU — expedition established (+10 RP)", Color(1.0, 0.85, 0.5))
                 Sfx.play("ui_confirm")
+
+
+func _apply_pill_goal(key: String) -> void:
+        ## Swap the action pill to the next unfinished goal with a small
+        ## scale pop (1.0 → 1.08 → 1.0).
+        if pill_label == null or pill_icon == null:
+                return
+        pill_label.text = String(PILL_GOAL_TEXT.get(key, ""))
+        GameIcons.set_icon(pill_icon, String(PILL_GOAL_ICON.get(key, "star")), Color(1.0, 0.85, 0.5))
+        if onboarding_box:
+                onboarding_box.pivot_offset = onboarding_box.size * 0.5
+                var tw := onboarding_box.create_tween()
+                tw.tween_property(onboarding_box, "scale", Vector2(1.08, 1.08), 0.12)
+                tw.tween_property(onboarding_box, "scale", Vector2(1.0, 1.0), 0.14)
+
+
+# ---------------------------------------------- v1.7 Phase 3 progressive HUD --
+func _progressive_reveal(panel_name: String) -> void:
+        ## One state machine gates start-of-game HUD density. "party": the
+        ## strip is born hidden and fades in (0.4 s) with its first member.
+        ## "boss": visibility stays owned by _update_boss() — boss_bar is
+        ## default-hidden until a boss actually engages.
+        var target: Control = null
+        if panel_name == "party":
+                target = party_box
+        if target == null:
+                return
+        if bool(_progressive_state.get(panel_name, false)) and target.modulate.a >= 0.999:
+                return
+        _progressive_state[panel_name] = true
+        _kill_progressive_tween(panel_name)
+        target.visible = true
+        var tw := target.create_tween()
+        tw.tween_property(target, "modulate:a", 1.0, 0.4)
+        _progressive_tweens[panel_name] = tw
+
+
+func _progressive_hide(panel_name: String) -> void:
+        var target: Control = null
+        if panel_name == "party":
+                target = party_box
+        if target == null:
+                return
+        _progressive_state[panel_name] = false
+        _kill_progressive_tween(panel_name)
+        target.modulate.a = 0.0
+        target.visible = false
+
+
+func _kill_progressive_tween(panel_name: String) -> void:
+        var old: Tween = _progressive_tweens.get(panel_name, null)
+        if old and old.is_valid():
+                old.kill()
+        _progressive_tweens.erase(panel_name)
+
+
+func _update_vitals_autohide(delta: float) -> void:
+        ## v1.7 Phase 3: when every stat is >95%, nothing is in combat and
+        ## nothing moved for 3 s, the whole vitals panel dims to a faint
+        ## 0.25 alpha (still readable); any change/combat snaps it back.
+        if vitals_panel == null or bars.is_empty():
+                return
+        if _combat_recent:
+                _combat_recent_t += delta
+                if _combat_recent_t > 6.0:
+                        _combat_recent = false
+        _vitals_idle += delta
+        var safe := Game.hp > 95.0 and Game.stamina > 95.0 \
+                        and Game.hunger > 95.0 and Game.thirst > 95.0
+        var should_dim := safe and not _combat_recent and _vitals_idle >= 3.0
+        if should_dim and not _vitals_dimmed:
+                _vitals_dimmed = true
+                _vitals_fade(0.25, 0.5)
+        elif not should_dim and _vitals_dimmed:
+                _vitals_dimmed = false
+                _vitals_fade(1.0, 0.15)
+
+
+func _vitals_fade(alpha: float, dur: float) -> void:
+        if _vitals_tween and _vitals_tween.is_valid():
+                _vitals_tween.kill()
+        _vitals_tween = vitals_panel.create_tween()
+        _vitals_tween.tween_property(vitals_panel, "modulate:a", alpha, dur)
+
+
+func _build_stamina_ring(player_node: Node) -> void:
+        ## v1.7 Phase 3: flat 1.6×1.6 quad under the player's feet carrying a
+        ## shader-drawn stamina arc (annulus r 0.55–0.75, soft edges,
+        ## green→yellow as it drains). Unshaded, no shadow, no billboard.
+        var quad := QuadMesh.new()
+        quad.size = Vector2(1.6, 1.6)
+        var mat := ShaderMaterial.new()
+        mat.shader = load("res://shaders/stamina_ring.gdshader")
+        mat.set_shader_parameter("fill_frac", 1.0)
+        quad.material = mat
+        stamina_ring = MeshInstance3D.new()
+        stamina_ring.name = "StaminaRing"
+        stamina_ring.add_to_group("stamina_ring")
+        stamina_ring.mesh = quad
+        stamina_ring.position = Vector3(0, 0.08, 0)
+        stamina_ring.rotation = Vector3(-PI / 2.0, 0, 0)
+        stamina_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+        stamina_ring.visible = false
+        player_node.add_child(stamina_ring)
+        stamina_ring_mat = mat
+
+
+func _update_stamina_ring() -> void:
+        ## Lazy-attach the ring the first time a player exists (hud builds
+        ## before the player node), then drive fill_frac every frame.
+        if stamina_ring == null or not is_instance_valid(stamina_ring):
+                var p := get_tree().get_first_node_in_group("player")
+                if p == null:
+                        return
+                _build_stamina_ring(p)
+                if stamina_ring == null:
+                        return
+        var sprinting := Input.is_action_pressed("sprint")
+        var frac: float = clampf(Game.stamina / 100.0, 0.0, 1.0)
+        # hidden while full and not sprinting — the ring speaks only in use
+        stamina_ring.visible = frac < 0.97 or sprinting
+        if stamina_ring_mat:
+                stamina_ring_mat.set_shader_parameter("fill_frac", frac)
 
 
 func _draw_compass() -> void:

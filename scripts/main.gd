@@ -1263,6 +1263,67 @@ func _run_smoke_checks() -> void:
                 " (active=", freeze_active, " released=", freeze_released, ")",
                 " shake=", shake_wired and shake_live)
         print("SMOKE: phase2 fx radiant=", radiant_fx, " dust=", dust_spawned, " hit_vfx=", hit_vfx_spawned)
+        # ---- v1.7 Phase 3: progressive HUD guards ----
+        # (a) vitals went compact: all 4 bars alive as ProgressBars and no
+        # "HP"/"Stamina"/... text labels left inside the vitals panel
+        var p3_bars_ok: bool = hud.bars.has("hp") and hud.bars.has("stamina") \
+                        and hud.bars.has("hunger") and hud.bars.has("thirst") \
+                        and hud.bars["hp"] is ProgressBar and hud.bars["stamina"] is ProgressBar \
+                        and hud.bars["hunger"] is ProgressBar and hud.bars["thirst"] is ProgressBar
+        var p3_text_leak := 0
+        for n in hud.vitals_panel.find_children("*", "Label", true, false):
+                if (n as Label).text in ["HP", "Stamina", "Hunger", "Thirst"]:
+                        p3_text_leak += 1
+        # (b) party progressive: hidden while empty, fade starts on first member
+        var p3_party_backup: Array = Game.party.duplicate()
+        Game.party.clear()
+        Game.party_changed.emit()
+        var p3_party_hidden: bool = (not hud.party_box.visible) or hud.party_box.modulate.a < 1.0
+        Game.party.append({"name": "SmokeProbe", "species_id": "Echo_Mosspaw",
+                        "level": 1, "trust": 10.0, "hp": 50.0})
+        Game.party_changed.emit()
+        await get_tree().create_timer(0.15).timeout
+        await get_tree().process_frame
+        await get_tree().process_frame
+        var p3_party_fading: bool = hud.party_box.visible and hud.party_box.modulate.a > 0.0
+        Game.party.clear()
+        Game.party.append_array(p3_party_backup)
+        Game.party_changed.emit()
+        # (c) stamina ring: real MeshInstance3D + live fill_frac uniform +
+        # auto-hide gate (hidden at full stamina, shown when drained)
+        var p3_ring: MeshInstance3D = hud.stamina_ring
+        var p3_ring_mesh: bool = p3_ring != null and p3_ring is MeshInstance3D
+        var p3_ring_param := false
+        var p3_ring_shader_ok: bool = hud.stamina_ring_mat != null and hud.stamina_ring_mat.shader != null
+        if hud.stamina_ring_mat:
+                hud.stamina_ring_mat.set_shader_parameter("fill_frac", 0.5)
+                p3_ring_param = is_equal_approx(float(hud.stamina_ring_mat.get_shader_parameter("fill_frac")), 0.5)
+        var p3_stamina_backup: float = Game.stamina
+        Game.stamina = 100.0
+        await get_tree().process_frame
+        await get_tree().process_frame
+        var p3_ring_hidden_full: bool = hud.stamina_ring != null and not hud.stamina_ring.visible
+        Game.stamina = 40.0
+        await get_tree().process_frame
+        await get_tree().process_frame
+        var p3_ring_shown_drained: bool = hud.stamina_ring != null and hud.stamina_ring.visible
+        Game.stamina = p3_stamina_backup
+        Game.stats_changed.emit()
+        # (d) action pill: exactly one live goal, text never empty while
+        # onboarding is still open
+        var p3_pill_labels := 0
+        if hud.onboarding_box:
+                p3_pill_labels = hud.onboarding_box.find_children("*", "Label", true, false).size()
+        var p3_pill_ok: bool = hud.pill_label != null and hud.pill_label.text != "" \
+                        and not hud.onboarding_done
+        print("SMOKE: phase3 vitals compact=", p3_bars_ok and p3_text_leak == 0,
+                " bars=", p3_bars_ok, " text_leak=", p3_text_leak)
+        print("SMOKE: phase3 party progressive hidden_empty=", p3_party_hidden,
+                " fade_started=", p3_party_fading)
+        print("SMOKE: phase3 stamina ring mesh=", p3_ring_mesh, " shader=", p3_ring_shader_ok, " param=", p3_ring_param,
+                " hidden_full=", p3_ring_hidden_full, " shown_drained=", p3_ring_shown_drained)
+        print("SMOKE: phase3 pill=", p3_pill_ok, " labels=", p3_pill_labels,
+                " text=", hud.pill_label.text if hud.pill_label else "")
         # v1.7 audit guards: the codebase once called two phantom APIs that only
         # surfaced as runtime errors in REAL gameplay (smoke never walked those
         # paths): Sfx.play_event (marker.gd chest open + hud onboarding finish)
