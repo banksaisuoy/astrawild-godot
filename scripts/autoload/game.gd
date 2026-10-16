@@ -21,6 +21,7 @@ signal crafting_done(recipe_id: String)
 signal game_saved
 signal game_loaded
 signal achievements_changed
+signal shake_requested(strength: float)   # v1.7 Phase 2: soft camera-shake request (player hurt / heavy landing)
 
 const MINUTES_PER_REAL_SECOND := 1.0
 const MAX_PARTY := 3
@@ -254,6 +255,11 @@ func _process(delta: float) -> void:
         _advance_weather(delta)
         _tick_survival(delta)
         _tick_status(delta)
+        # v1.7 Phase 2: hit-stop restore — unscaled wall-clock so the freeze
+        # itself can't extend its own timer (delta arrives pre-scaled).
+        if _hit_stop_end_msec > 0 and Time.get_ticks_msec() >= _hit_stop_end_msec:
+                _hit_stop_end_msec = 0
+                Engine.time_scale = 1.0
         _tick_crafting(delta)
         _tick_autosave(delta)
         if _capture_cooldown > 0.0:
@@ -739,6 +745,19 @@ func status_speed_mult() -> float:
         return mult
 
 
+var _hit_stop_end_msec := 0
+
+
+func hit_stop(duration_msec: int = 70, scale: float = 0.14) -> void:
+        ## v1.7 Phase 2: hit-stop — a ~70 ms time freeze when a weak point
+        ## shatters or a crit lands. The pause sells the weight of the hit;
+        ## never stacks (a second request during a freeze is dropped).
+        if Engine.time_scale != 1.0:
+                return
+        Engine.time_scale = scale
+        _hit_stop_end_msec = Time.get_ticks_msec() + duration_msec
+
+
 func take_damage(amount: float, element: String = "None", check_dodge: bool = true) -> float:
         if dead or god_mode:
                 return 0.0
@@ -770,6 +789,9 @@ func take_damage(amount: float, element: String = "None", check_dodge: bool = tr
         if hp <= 0.0:
                 die()
         stats_changed.emit()
+        # v1.7 Phase 2: soft camera shake scaled by the hit's weight
+        if applied > 0.5:
+                shake_requested.emit(clampf(applied / 60.0, 0.16, 0.9))
         return applied
 
 

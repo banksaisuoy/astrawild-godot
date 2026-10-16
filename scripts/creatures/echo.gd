@@ -68,6 +68,10 @@ var _phase := 1
 var variant_id := ""
 var _vj := {"scale": 1.0, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0}
 var _identity_applied := false
+var _body_h := 1.0                       # v1.7: local height span — drives the stylized gradient
+var _variant_fx: Node3D = null           # v1.7: Radiant/Dusk aura particles
+var _dust_tick := 0.0                    # v1.7: Colossal footstep-dust cadence
+var _echo_shader: Shader
 const VARIANT_TAGS := {"radiant": "✦", "dusk": "✧", "colossal": "◈"}
 
 func apply_identity(p_variant: String, p_vj: Dictionary) -> void:
@@ -215,8 +219,10 @@ func _build_body() -> void:
                         s *= float(rig.get("scale", 1.0))
                         s *= float(_vj["scale"])
                         _body_root.scale = Vector3(s, s, s)
+                        _body_h = 0.9 * s
                         if def.get("body_plan", "") in ["Floating", "Amorphous"]:
                                 _body_root.position.y = 1.0
+                        _attach_variant_fx()
                         return
         _build_procedural_body()
 
@@ -339,21 +345,174 @@ func _all_meshes(node: Node, acc: Array = []) -> Array:
         return acc
 
 
-func _mat(color: Color, glow: Color = Color.BLACK, energy: float = 0.0) -> StandardMaterial3D:
-        var mat := StandardMaterial3D.new()
-        mat.albedo_color = color
-        mat.roughness = 0.85
-        # v1.6 Radiant Dawn: rim light — the #1 stylized-3D trick the VLM said
-        # was missing ("no depth, no bounce, full-bright"). Cheap fresnel edge
-        # kick that works in gl_compatibility and grounds every creature.
-        mat.rim_enabled = true
-        mat.rim = 0.38
-        mat.rim_tint = 0.2
-        if energy > 0.0:
-                mat.emission_enabled = true
-                mat.emission = glow
-                mat.emission_energy_multiplier = energy
+func _mat(color: Color, glow: Color = Color.BLACK, energy: float = 0.0) -> Material:
+        return _stylized_mat(color, glow, energy)
+
+
+func _stylized_mat(color: Color, glow: Color = Color.BLACK, energy: float = 0.0) -> ShaderMaterial:
+        ## v1.7 Phase 2: stylized creature material (echo_stylized.gdshader) —
+        ## fresnel rim (emission-driven so it feeds the bloom pass), vertical
+        ## dark→light gradient (feet grounded, shoulders lifted), fake SSS on
+        ## thin facing surfaces. Procedural Tier-B bodies read sculpted at
+        ## range instead of flat lit boxes.
+        if _echo_shader == null:
+                _echo_shader = load("res://shaders/echo_stylized.gdshader")
+        var mat := ShaderMaterial.new()
+        mat.shader = _echo_shader
+        mat.set_shader_parameter("surface_col", color)
+        mat.set_shader_parameter("body_h", maxf(_body_h, 0.3))
+        mat.set_shader_parameter("emit_col", glow)
+        mat.set_shader_parameter("emit_energy", energy)
         return mat
+
+
+func _measure_body_h() -> void:
+        ## local (pre-scale) height span of the procedural body — feeds the
+        ## gradient uniform. Rig/GLB bodies keep their own materials.
+        var top := 0.0
+        for mi in _all_meshes(_body_root):
+                var m3d := mi as MeshInstance3D
+                if m3d.mesh == null:
+                        continue
+                top = maxf(top, m3d.position.y + m3d.mesh.get_aabb().size.y * 0.5)
+        _body_h = maxf(top, 0.3)
+
+
+func _attach_variant_fx() -> void:
+        ## v1.7 Phase 2: per-variant GPUParticles3D — ✦ Radiant sheds golden
+        ## starlight, ✧ Dusk wears a deep-blue aura, ◈ Colossal kicks up
+        ## ground dust with every step (burst system triggered in _process).
+        ## Attached under Body so death tumbles carry the sparkle honestly.
+        if _variant_fx != null and is_instance_valid(_variant_fx):
+                _variant_fx.queue_free()
+        _variant_fx = null
+        if (variant_id == "" or variant_id == "colossal") or _body_root == null or not is_inside_tree():
+                return
+        var fx := GPUParticles3D.new()
+        fx.name = "VariantFX"
+        var pm := ParticleProcessMaterial.new()
+        var quad := QuadMesh.new()
+        quad.size = Vector2(0.09, 0.09)
+        var qm := StandardMaterial3D.new()
+        qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+        qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+        if variant_id == "radiant":
+                pm.gravity = Vector3(0, 0.55, 0)
+                pm.direction = Vector3(0, 1, 0)
+                pm.spread = 30.0
+                pm.initial_velocity_min = 0.2
+                pm.initial_velocity_max = 0.7
+                pm.scale_min = 0.6
+                pm.scale_max = 1.4
+                fx.amount = 16
+                fx.lifetime = 1.7
+                qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+                qm.albedo_color = Color(1.0, 0.82, 0.38, 0.85)
+                qm.emission_enabled = true
+                qm.emission = Color(1.0, 0.72, 0.25)
+                qm.emission_energy_multiplier = 2.4
+        else:  # dusk
+                pm.gravity = Vector3.ZERO
+                pm.direction = Vector3(0, 1, 0)
+                pm.spread = 180.0
+                pm.initial_velocity_min = 0.1
+                pm.initial_velocity_max = 0.32
+                pm.scale_min = 1.2
+                pm.scale_max = 2.2
+                fx.amount = 12
+                fx.lifetime = 2.3
+                qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+                qm.albedo_color = Color(0.22, 0.30, 0.78, 0.5)
+                qm.emission_enabled = true
+                qm.emission = Color(0.25, 0.35, 0.85)
+                qm.emission_energy_multiplier = 0.7
+        pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+        var half_h: float = maxf(_body_h * 0.45, 0.3)
+        pm.emission_box_extents = Vector3(0.55 if variant_id == "radiant" else 0.85, half_h, 0.55 if variant_id == "radiant" else 0.85)
+        fx.process_material = pm
+        quad.material = qm
+        fx.draw_pass_1 = quad
+        fx.position = Vector3(0, half_h, 0)
+        _body_root.add_child(fx)
+        _variant_fx = fx
+
+
+func _footstep_dust() -> void:
+        ## v1.7 Phase 2: ◈ Colossal footfall — radial warm dust burst at the
+        ## feet, one-shot, self-freeing. Triggered from _process on a cadence
+        ## while actually moving so idle colossals never puff.
+        if not is_inside_tree():
+                return
+        var dust := GPUParticles3D.new()
+        dust.one_shot = true
+        dust.explosiveness = 1.0
+        dust.amount = 12
+        dust.lifetime = 0.7
+        dust.emitting = true
+        var pm := ParticleProcessMaterial.new()
+        pm.direction = Vector3(0, 0.6, 0)
+        pm.spread = 65.0
+        pm.initial_velocity_min = 1.2
+        pm.initial_velocity_max = 2.4
+        pm.gravity = Vector3(0, -2.6, 0)
+        pm.scale_min = 1.6
+        pm.scale_max = 3.2
+        dust.process_material = pm
+        var quad := QuadMesh.new()
+        quad.size = Vector2(0.22, 0.22)
+        var qm := StandardMaterial3D.new()
+        qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+        qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+        qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+        qm.albedo_color = Color(0.58, 0.53, 0.45, 0.5)
+        quad.material = qm
+        dust.draw_pass_1 = quad
+        add_child(dust)
+        dust.global_position = global_position + Vector3(0, 0.15, 0)
+        dust.finished.connect(dust.queue_free)
+        # safety free in case the finished signal never fires (headless)
+        get_tree().create_timer(1.4, true, false, true).timeout.connect(dust.queue_free)
+
+
+func _hit_vfx(pos: Vector3, element: String) -> void:
+        ## v1.7 Phase 2: six-element impact burst — colour-coded radial spark
+        ## (Light/Ash/Flora/Ember/Frost/Pulse), one-shot, self-freeing.
+        if not is_inside_tree() or get_parent() == null:
+                return
+        var col: Color = Data.element_color(element)
+        if element == "" or element == "None":
+                col = Color(0.85, 0.85, 0.8)
+        var burst := GPUParticles3D.new()
+        burst.one_shot = true
+        burst.explosiveness = 1.0
+        burst.amount = 14
+        burst.lifetime = 0.45
+        burst.emitting = true
+        var pm := ParticleProcessMaterial.new()
+        pm.direction = Vector3(0, 0.4, 0)
+        pm.spread = 100.0
+        pm.initial_velocity_min = 2.2
+        pm.initial_velocity_max = 4.6
+        pm.gravity = Vector3(0, -4.0, 0)
+        pm.scale_min = 0.7
+        pm.scale_max = 1.6
+        burst.process_material = pm
+        var quad := QuadMesh.new()
+        quad.size = Vector2(0.075, 0.075)
+        var qm := StandardMaterial3D.new()
+        qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+        qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+        qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+        qm.albedo_color = Color(col.r, col.g, col.b, 0.9)
+        qm.emission_enabled = true
+        qm.emission = col
+        qm.emission_energy_multiplier = 2.6
+        quad.material = qm
+        burst.draw_pass_1 = quad
+        get_parent().add_child(burst)
+        burst.global_position = pos
+        burst.finished.connect(burst.queue_free)
+        get_tree().create_timer(1.0, true, false, true).timeout.connect(burst.queue_free)
 
 
 func _box(part: String, size: Vector3, pos: Vector3, mat: Material) -> MeshInstance3D:
@@ -632,6 +791,25 @@ func _add_family_feature(family: String, sr: RandomNumberGenerator, glow: Materi
                         ring.rotation.y = 0.78
                         _sphere("eye_gem", 0.1, head_hi + Vector3(0.0, 0.22, 0.22), glow, 8)
 
+        # v1.7 Phase 2: close the body build — measure the real height span,
+        # retarget the stylized gradient onto the already-created materials,
+        # then hang the variant aura (radiant sparkle / dusk shimmer).
+        _measure_body_h()
+        _retarget_gradient()
+        _attach_variant_fx()
+
+
+func _retarget_gradient() -> void:
+        ## the stylized materials were created before any part existed (body_h
+        ## unknown at creation) — push the measured span into each distinct
+        ## material once the body is real.
+        var seen := {}
+        for mi in _all_meshes(_body_root):
+                var mat: Material = (mi as MeshInstance3D).material_override
+                if mat is ShaderMaterial and not seen.has(mat):
+                        seen[mat] = true
+                        (mat as ShaderMaterial).set_shader_parameter("body_h", _body_h)
+
 
 func _add_surface_detail(sr: RandomNumberGenerator, belly_mat: Material, glow: Material) -> void:
         ## element-driven surface detail: back spots + glow freckles.
@@ -814,6 +992,16 @@ func _process(delta: float) -> void:
 
         _move(delta)
         _animate_body(delta, velocity.length())
+        # v1.7 Phase 2: ◈ Colossal footfall dust — cadenced while genuinely
+        # moving (idle colossals never puff; the burst self-frees).
+        if variant_id == "colossal":
+                if velocity.length() > 0.6:
+                        _dust_tick -= delta
+                        if _dust_tick <= 0.0:
+                                _dust_tick = 0.55
+                                _footstep_dust()
+                else:
+                        _dust_tick = 0.2
         if boss_mode:
                 _boss_logic(delta)
         if captured and entry != null:
@@ -1076,6 +1264,12 @@ func take_hit(raw: float, element: String = "None") -> void:
         damage = maxf(0.0, damage - float(def["stats"]["def"]))
         hp -= damage
         _hit_flash = 1.0
+        # v1.7 Phase 2: impact juice — weak-point/crit hits freeze the frame
+        # for a heartbeat (hit-stop), every hit sparks a colour-coded element
+        # burst at the wound (six-element VFX).
+        if hit_kind == "weakness" or hit_kind == "crit":
+                Game.hit_stop()
+        _hit_vfx(global_position + Vector3(0.0, maxf(0.7, _body_h * 0.5), 0.0), element)
         _update_label()
         # PS-1: floating damage number at the hit point (world-space billboard)
         if damage > 0.5:

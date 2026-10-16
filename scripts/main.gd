@@ -1158,10 +1158,14 @@ func _run_smoke_checks() -> void:
                 for p in probe_parts.values():
                         if p is MeshInstance3D and (p as MeshInstance3D).mesh is CapsuleMesh or (p is MeshInstance3D and (p as MeshInstance3D).mesh is CylinderMesh):
                                 organic_parts += 1
-                        if p is MeshInstance3D and (p as MeshInstance3D).material_override is StandardMaterial3D and ((p as MeshInstance3D).material_override as StandardMaterial3D).rim_enabled:
+                        # v1.7 Phase 2: procedural bodies now carry the stylized
+                        # ShaderMaterial (fresnel rim + gradient + fake SSS) —
+                        # the v1.6 StandardMaterial3D rim check retired with it.
+                        if p is MeshInstance3D and (p as MeshInstance3D).material_override is ShaderMaterial \
+                                        and "echo_stylized" in str(((p as MeshInstance3D).material_override as ShaderMaterial).shader.resource_path):
                                 rim_ok = true
         organic_ok = organic_parts >= 4 and rim_ok
-        print("SMOKE: organic body parts=", organic_parts, " rim=", rim_ok, " ok=", organic_ok)
+        print("SMOKE: organic body parts=", organic_parts, " stylized_mat=", rim_ok, " ok=", organic_ok)
         probe.queue_free()
         # (d) camera widening + default AA
         var cam_ok := player.camera.fov > 74.0 and player.spring.spring_length > 4.4
@@ -1220,6 +1224,45 @@ func _run_smoke_checks() -> void:
         print("SMOKE: phase1 wind mats=", wind_mats, " storm=", storm_wind_ok,
                 " cluster_share=", cluster_share, " baseline=", base_share,
                 " ok=", wind_mats > 0 and storm_wind_ok and cluster_share - base_share > 0.06)
+        # ---- v1.7 Phase 2: combat juice guards ----
+        Game.hit_stop(60, 0.14)
+        var freeze_active: bool = is_equal_approx(Engine.time_scale, 0.14)
+        # headless runs frames hyper-fast (SceneTreeTimers fire early) — wait
+        # on the WALL CLOCK instead, because the restore is wall-clock based
+        # exactly like a rendered game at 60 fps would experience it.
+        var t_probe := Time.get_ticks_msec()
+        while Time.get_ticks_msec() - t_probe < 200:
+                await get_tree().process_frame
+        var freeze_released: bool = is_equal_approx(Engine.time_scale, 1.0)
+        var shake_wired: bool = Game.shake_requested.get_connections().size() > 0
+        Game.shake_requested.emit(0.5)
+        var shake_live: bool = float(player.get("_cam_shake")) > 0.0
+        # variant auras + dust + element burst all spawn real GPUParticles3D
+        var fx_def: Dictionary = Data.species_def("Echo_Mosspaw").duplicate(true)
+        fx_def["id"] = "Echo_FXProbeV17"
+        var aura_probe = load("res://scripts/creatures/echo.gd").new(fx_def, RandomNumberGenerator.new())
+        add_child(aura_probe)
+        aura_probe.apply_identity("radiant", {"scale": 1.0, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0})
+        aura_probe._attach_variant_fx()
+        var radiant_fx: bool = aura_probe._variant_fx is GPUParticles3D
+        var pre_children: int = aura_probe.get_child_count()
+        aura_probe._footstep_dust()
+        var dust_spawned: bool = aura_probe.get_child_count() > pre_children
+        var vfx_before := 0
+        for c in get_children():
+                if c is GPUParticles3D:
+                        vfx_before += 1
+        aura_probe._hit_vfx(aura_probe.global_position, "Ember")
+        var vfx_after := 0
+        for c in get_children():
+                if c is GPUParticles3D:
+                        vfx_after += 1
+        var hit_vfx_spawned: bool = vfx_after > vfx_before
+        aura_probe.queue_free()
+        print("SMOKE: phase2 juice hit_stop=", freeze_active and freeze_released,
+                " (active=", freeze_active, " released=", freeze_released, ")",
+                " shake=", shake_wired and shake_live)
+        print("SMOKE: phase2 fx radiant=", radiant_fx, " dust=", dust_spawned, " hit_vfx=", hit_vfx_spawned)
         # v1.7 audit guards: the codebase once called two phantom APIs that only
         # surfaced as runtime errors in REAL gameplay (smoke never walked those
         # paths): Sfx.play_event (marker.gd chest open + hud onboarding finish)

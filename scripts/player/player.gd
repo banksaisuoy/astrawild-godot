@@ -237,6 +237,29 @@ func _setup_camera() -> void:
                         camera.fov = clampf(float((parsed as Dictionary)["gfx"]["fov"]), 60.0, 90.0)
         spring.add_child(camera)
         camera.make_current()
+        # v1.7 Phase 2: soft camera shake — Game.shake_requested feeds a decaying
+        # random h/v offset on the camera itself (never the pivot, so aim stays
+        # honest). Player-hurt and heavy-landing hits scale the strength.
+        Game.shake_requested.connect(_on_shake_requested)
+
+
+func _on_shake_requested(strength: float) -> void:
+        _cam_shake = minf(_cam_shake + strength, 1.1)
+
+
+var _cam_shake := 0.0
+var _shake_rng := RandomNumberGenerator.new()
+
+
+func _update_cam_shake(delta: float) -> void:
+        ## decay + apply — smooth ramp-out (never a snap back to centre).
+        if _cam_shake > 0.004:
+                _cam_shake = maxf(0.0, _cam_shake - delta * 2.4)
+                camera.h_offset = _shake_rng.randf_range(-1.0, 1.0) * 0.02 * _cam_shake
+                camera.v_offset = _shake_rng.randf_range(-1.0, 1.0) * 0.016 * _cam_shake
+        elif camera.h_offset != 0.0 or camera.v_offset != 0.0:
+                camera.h_offset = 0.0
+                camera.v_offset = 0.0
 
 
 func _setup_sfx() -> void:
@@ -273,6 +296,7 @@ func _physics_process(delta: float) -> void:
                 # aboard the Dawn Skiff: the skiff owns movement, we keep camera + clock
                 _handle_mouse_motion()
                 _handle_camera_keys(delta)
+                _update_cam_shake(delta)
                 return
         _handle_mouse_motion()
         _handle_camera_keys(delta)
@@ -518,6 +542,10 @@ func _do_sweep(damage: float, radius: float) -> void:
                         echo.take_hit(damage, Game.weapon_element())
                         # v1.1 Phase V8: audible hit confirmation
                         Sfx.play("melee_hit" if damage > 20.0 else "melee_hit_light", -10.0)
+                        # v1.7 Phase 2: heavy swings kick the camera — the
+                        # landing weight travels up the arm to the shoulders.
+                        if damage > 20.0:
+                                _cam_shake = minf(_cam_shake + 0.22, 1.1)
                         break  # one confirmation per swing is enough
 
 

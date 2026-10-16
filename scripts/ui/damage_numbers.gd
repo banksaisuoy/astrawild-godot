@@ -40,14 +40,17 @@ static func spawn(parent: Node, pos: Vector3, amount: float, kind: String = "nor
         label.position = pos + jitter
         label.rotation = Vector3(0.0, 0.0, rng.randf_range(-0.06, 0.06))
         parent.add_child(label)
-        # rise + slight scale pop + fade, then free
+        # v1.7 Phase 2: bouncing-arc flight — every number LAUNCHES hard then
+        # decelerates (quintic ease-out reads as a ballistic arc), drifts
+        # sideways on a slower cubic, and pops in with a back-overshoot;
+        # crits/weaknesses overshoot harder than normals.
         var tw := label.create_tween()
         var dx := rng.randf_range(-0.5, 0.5)
         tw.set_parallel(true)
-        tw.tween_property(label, "position:y", pos.y + jitter.y + 1.4 + st["size"] * 0.006, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-        tw.tween_property(label, "position:x", pos.x + jitter.x + dx, 0.85)
+        tw.tween_property(label, "position:y", pos.y + jitter.y + 1.4 + st["size"] * 0.006, 0.85).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+        tw.tween_property(label, "position:x", pos.x + jitter.x + dx, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
         tw.tween_property(label, "modulate:a", 0.0, 0.35).set_delay(0.5)
-        if kind == "crit" or kind == "weakness":
-                label.scale = Vector3(0.4, 0.4, 0.4)
-                tw.tween_property(label, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+        var pop_to: float = 1.15 if (kind == "crit" or kind == "weakness") else 1.0
+        label.scale = Vector3(0.45, 0.45, 0.45)
+        tw.tween_property(label, "scale", Vector3(pop_to, pop_to, pop_to), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
         tw.chain().tween_callback(label.queue_free)
