@@ -1,6 +1,10 @@
 ; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
@@ -19,6 +23,11 @@ Mods="*res://scripts/autoload/mod_loader.gd"
 Game="*res://scripts/autoload/game.gd"
 Saves="*res://scripts/autoload/saves.gd"
 Sfx="*res://scripts/autoload/sfx.gd"
+MCPGameBridge="res://addons/godot_mcp/game_bridge/mcp_game_bridge.gd"
+
+[debug]
+
+gdscript/warnings/inference_on_variant=0
 
 [display]
 
@@ -27,9 +36,16 @@ window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
-[input_devices]
+[editor_plugins]
 
-pointing/emulate_touch_from_mouse=false
+enabled=PackedStringArray("godot_mcp")
+
+[godot_mcp]
+
+bind_mode=0
+custom_bind_ip=""
+port_override_enabled=false
+port_override=6550
 
 [physics]
 
@@ -44,14 +60,5 @@ pointing/emulate_touch_from_mouse=false
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
-environment/defaults/default_clear_color=Color(0.63, 0.77, 0.92, 1)
 anti_aliasing/quality/msaa_3d=2
-
-[debug]
-
-gdscript/warnings/inference_on_variant=0
-gdscript/warnings/untyped_declaration=0
-gdscript/warnings/unsafe_property_access=0
-gdscript/warnings/unsafe_method_access=0
-gdscript/warnings/unsafe_cast=0
-gdscript/warnings/unsafe_call_argument=0
+environment/defaults/default_clear_color=Color(0.63, 0.77, 0.92, 1)
