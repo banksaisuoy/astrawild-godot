@@ -4,6 +4,7 @@ extends Node3D
 ## PS-2 staged loading: (honest stage name, fraction 0..1) — the main scene
 ## turns these into the loading bar; worldgen yields frames between stages.
 signal build_progress(stage_text: String, fraction: float)
+signal stream_done                                       # v1.7 Phase 4: background zone streaming finished
 ## World bootstrapper: terrain, water, props, resource nodes, camp, NPCs,
 ## POIs, creature spawner, day/night + weather FX, party followers, buildings.
 
@@ -29,6 +30,19 @@ var followers := {}             # party index -> Echo creature node
 var _hostile_sweep := 0.0
 var _rng := RandomNumberGenerator.new()
 var _camp_pos := Vector3(-400, 0, 0)
+# ---- v1.7 Phase 4: streamed worldgen ----
+# Phase A (blocking): terrain + water + sky + systems + camp + spawn-zone
+# dressing/wildlife + all cross-zone structures — the player is IN the world
+# in seconds. The remaining 11 zones dress + spawn as background jobs
+# (one per 5th frame), each seeded per-zone so layout is identical to the
+# legacy full build regardless of completion order.
+var streaming_done := false
+var _stream_queue: Array = []          # [zone_id, stage] jobs
+var _stream_jobs_total := 0
+var _stream_jobs_done := 0
+var _stream_frame_mod := 0
+var _stream_label: Label = null
+var _stream_layer: CanvasLayer = null
 
 # mesh library (loaded lazily, shared)
 var _mesh_cache := {}
@@ -44,7 +58,9 @@ func seed_rng(world_seed: int) -> void:
 
 
 # ------------------------------------------------------------------ build --
-func build() -> void:
+func build(sync := false) -> void:
+        var t0 := Time.get_ticks_msec()
+        var spawn_zone := "Zone_DawnFields"
         if noise == null:
                 noise = WorldNoise.new(Game.world_seed)
         _bp("Carving the terrain…", 0.04)
@@ -89,9 +105,12 @@ func build() -> void:
 
         # PS-2: the two heavy loops report per-zone progress and yield frames
         # so even web builds keep rendering the loading screen (no 1-3 min freeze)
-        await _dress_all_zones()
+        # v1.7 Phase 4: streamed build dresses/spawns ONLY the spawn zone up
+        # front; the rest queue as background jobs. `sync` keeps the legacy
+        # full build (screenshots / captures — deterministic world).
+        await _dress_all_zones([] if sync else [spawn_zone])
         _bp("Seeding resources…", 0.64)
-        _spawn_resource_nodes()
+        _spawn_resource_nodes([] if sync else [spawn_zone])
         await _breathe()
         _bp("Raising the home camp…", 0.68)
         _build_camp()
@@ -109,7 +128,7 @@ func build() -> void:
         _build_dungeons()
         _build_work_sites()
         await _breathe()
-        await _spawn_all_creatures()
+        await _spawn_all_creatures([] if sync else [spawn_zone])
         _bp("The Vale is ready.", 1.0)
         Game.party_changed.connect(_sync_party)
         Game.party_changed.emit()
@@ -118,6 +137,94 @@ func build() -> void:
         # batches exist, and follow every weather transition from here on.
         apply_weather_wind(Game.weather_id)
         Game.weather_changed.connect(apply_weather_wind)
+        # ---- v1.7 Phase 4: queue the rest of the Vale (or finish sync) ----
+        if sync:
+                streaming_done = true
+                print("WORLDGEN: sync build ms=", Time.get_ticks_msec() - t0)
+        else:
+                _queue_stream_jobs(spawn_zone)
+                _build_stream_hud()
+                print("WORLDGEN: phase A playable ms=", Time.get_ticks_msec() - t0,
+                                " background_jobs=", _stream_queue.size())
+
+
+func _queue_stream_jobs(spawn_zone: String) -> void:
+        ## every non-spawn zone contributes 3 jobs (dress / resources /
+        ## creatures+apex) — one runs every 5th frame so first-minute gameplay
+        ## never stalls behind worldgen again.
+        _stream_queue.clear()
+        for zone in Data.zones:
+                var zid := String(zone["id"])
+                if zid == spawn_zone:
+                        continue
+                _stream_queue.append([zid, "dress"])
+                _stream_queue.append([zid, "resources"])
+                _stream_queue.append([zid, "creatures"])
+        _stream_jobs_total = _stream_queue.size()
+        _stream_jobs_done = 0
+        streaming_done = false
+
+
+func _build_stream_hud() -> void:
+        ## tiny honest indicator (bottom-right) while the rest of the Vale
+        ## shapes itself in the background — fades out at 100%.
+        _stream_layer = CanvasLayer.new()
+        _stream_layer.layer = 12
+        add_child(_stream_layer)
+        _stream_label = Label.new()
+        _stream_label.text = "Shaping the Vale… 0%"
+        _stream_label.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+        _stream_label.offset_left = -190
+        _stream_label.offset_top = -34
+        _stream_label.offset_right = -14
+        _stream_label.offset_bottom = -14
+        _stream_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+        _stream_label.add_theme_font_size_override("font_size", 12)
+        _stream_label.add_theme_color_override("font_color", Color(0.85, 0.88, 0.95, 0.75))
+        _stream_layer.add_child(_stream_label)
+
+
+func _update_stream_hud() -> void:
+        if _stream_label == null or not is_instance_valid(_stream_label):
+                return
+        var pct := 0
+        if _stream_jobs_total > 0:
+                pct = int(round(100.0 * float(_stream_jobs_done) / float(_stream_jobs_total)))
+        _stream_label.text = "Shaping the Vale… %d%%" % pct
+
+
+func _finish_streaming() -> void:
+        streaming_done = true
+        Game.set_meta("world_streaming_done", true)
+        stream_done.emit()
+        if _stream_layer and is_instance_valid(_stream_layer):
+                if _stream_label and is_instance_valid(_stream_label):
+                        _stream_label.text = "The Vale is whole."
+                        var tw := _stream_label.create_tween()
+                        tw.tween_interval(1.2)
+                        tw.tween_property(_stream_label, "modulate:a", 0.0, 0.8)
+                        tw.tween_callback(_stream_layer.queue_free)
+
+
+func _await_streaming() -> void:
+        ## coroutine helper — smoke/tests await this after a streamed build.
+        while not streaming_done:
+                await get_tree().process_frame
+
+
+func _run_stream_job(job: Array) -> void:
+        var zid := String(job[0])
+        var zone: Dictionary = {}
+        for z in Data.zones:
+                if String(z["id"]) == zid:
+                        zone = z
+                        break
+        if zone.is_empty():
+                return
+        match String(job[1]):
+                "dress": _dress_one_zone(zone)
+                "resources": _spawn_zone_resources(zone)
+                "creatures": _spawn_zone_creatures(zone)
 
 
 func _build_vista_ring() -> void:
@@ -463,86 +570,98 @@ func _scatter(rng: RandomNumberGenerator, count: int, zone: Dictionary, max_slop
         return out
 
 
-func _dress_all_zones() -> void:
+func _dress_all_zones(only_zones: Array = []) -> void:
+        ## v1.7 Phase 4: `only_zones` empty = all (legacy sync build). Streamed
+        ## builds pass just the spawn zone here — the rest ride the queue.
         var zones_total: int = Data.zones.size()
         var zi := 0
         for zone in Data.zones:
+                if not only_zones.is_empty() and not only_zones.has(String(zone["id"])):
+                        zi += 1
+                        continue
                 _bp("Dressing %s…" % zone.get("name", zone["id"]), 0.16 + 0.44 * float(zi) / float(maxi(1, zones_total)))
                 await _breathe()
                 zi += 1
-                var zid: String = zone["id"]
-                var rng := RandomNumberGenerator.new()
-                rng.seed = hash("dress-%s-%d" % [zid, Game.world_seed])
-                var dressing: Dictionary = zone.get("dressing", {})
+                _dress_one_zone(zone)
 
-                # trees
-                # v1.5.2 Wild Diversity: mixed-species forests. Each zone used to
-                # clone ONE tree model ×820 — every forest in the world read as
-                # a mirror of the same tree. Zones now draw from a weighted pool
-                # (SM originals + Kenney CC0 species, understory + canopy mix).
-                var tree_pool: Array = _tree_pool(String(dressing.get("trees", "none")))
-                # v1.4 world-dress pass: density × ~2.3 (perf guard allows 22k instances,
-                # v1.3 used only ~6.7k — the world read as empty at this scale)
-                var tree_count := int(float(dressing.get("tree_density", 0.0)) * 820.0)
-                if tree_pool.size() > 0 and tree_count > 0:
-                        var stretch := 0.85 if String(dressing.get("trees", "")) == "dead" else 1.15
-                        for member in tree_pool:
-                                var mpath: String = String(member["path"])
-                                var share := int(round(float(tree_count) * float(member["weight"])))
-                                var trs := []
-                                for p in _scatter_clustered(rng, share, zone, 0.55):
-                                        var s := rng.randf_range(float(member["s_lo"]), float(member["s_hi"]))
-                                        # v1.5.2 VLM pass: random lean ±6° breaks the cloned-tree
-                                        # grid read — forests get organic, non-repeating postures
-                                        var rot := Quaternion(Vector3.UP, rng.randf() * TAU)
-                                        var tilt := Quaternion(Vector3(rng.randf_range(-1.0, 1.0), 0.0, rng.randf_range(-1.0, 1.0)).normalized(), rng.randf_range(-0.15, 0.15))
-                                        var basis := Basis(rot * tilt).scaled(Vector3(s, s * stretch, s))
-                                        trs.append(Transform3D(basis, p))
-                                _multimesh(mpath, trs, member.get("mat", null), true, "tree")
-                                if zid == "Zone_DawnFields":
-                                        _add_tree_collisions(trs)
 
-                # rocks
-                var rock_count := int(float(dressing.get("rocks", 0.0)) * 420.0)
-                if rock_count > 0:
-                        var rock_mat: Material = null
-                        if dressing.get("char", false):
-                                rock_mat = StandardMaterial3D.new()
-                                rock_mat.albedo_color = Color(0.2, 0.17, 0.17)
-                                rock_mat.roughness = 1.0
-                        var rock_path := "res://assets/meshes/environment/SM_Rock_Granite_M.glb"
-                        if dressing.get("snow", false):
-                                rock_path = "res://assets/meshes/environment/SM_Rock_Boulder_Moss.glb"
-                                rock_mat = StandardMaterial3D.new()
-                                rock_mat.albedo_color = Color(0.82, 0.88, 0.95)
-                        var rtrs := []
-                        for p in _scatter(rng, rock_count, zone, 0.9):
-                                var s := rng.randf_range(0.6, 2.2)
-                                rtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p + Vector3(0, 0.2, 0)))
-                        _multimesh(rock_path, rtrs, rock_mat)
+func _dress_one_zone(zone: Dictionary) -> void:
+        ## per-zone dressing (trees/rocks/grass/specials/kits) — seeded by
+        ## zone id + world seed, so sync builds and streamed jobs produce an
+        ## IDENTICAL world no matter the completion order.
+        var zid: String = zone["id"]
+        var rng := RandomNumberGenerator.new()
+        rng.seed = hash("dress-%s-%d" % [zid, Game.world_seed])
+        var dressing: Dictionary = zone.get("dressing", {})
 
-                # grass
-                var grass_count := int(float(dressing.get("grass", 0.0)) * 2100.0)
-                if grass_count > 0:
-                        var gtrs := []
-                        for p in _scatter_clustered(rng, grass_count, zone, 0.5):
-                                var s := rng.randf_range(1.15, 2.3)
-                                gtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
-                        _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false, "grass")
-                        if dressing.get("muck", false):
-                                var ftrs := []
-                                for p in _scatter_clustered(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
-                                        ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
-                                _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs, null, true, "grass")
+        # trees
+        # v1.5.2 Wild Diversity: mixed-species forests. Each zone used to
+        # clone ONE tree model ×820 — every forest in the world read as
+        # a mirror of the same tree. Zones now draw from a weighted pool
+        # (SM originals + Kenney CC0 species, understory + canopy mix).
+        var tree_pool: Array = _tree_pool(String(dressing.get("trees", "none")))
+        # v1.4 world-dress pass: density × ~2.3 (perf guard allows 22k instances,
+        # v1.3 used only ~6.7k — the world read as empty at this scale)
+        var tree_count := int(float(dressing.get("tree_density", 0.0)) * 820.0)
+        if tree_pool.size() > 0 and tree_count > 0:
+                var stretch := 0.85 if String(dressing.get("trees", "")) == "dead" else 1.15
+                for member in tree_pool:
+                        var mpath: String = String(member["path"])
+                        var share := int(round(float(tree_count) * float(member["weight"])))
+                        var trs := []
+                        for p in _scatter_clustered(rng, share, zone, 0.55):
+                                var s := rng.randf_range(float(member["s_lo"]), float(member["s_hi"]))
+                                # v1.5.2 VLM pass: random lean ±6° breaks the cloned-tree
+                                # grid read — forests get organic, non-repeating postures
+                                var rot := Quaternion(Vector3.UP, rng.randf() * TAU)
+                                var tilt := Quaternion(Vector3(rng.randf_range(-1.0, 1.0), 0.0, rng.randf_range(-1.0, 1.0)).normalized(), rng.randf_range(-0.15, 0.15))
+                                var basis := Basis(rot * tilt).scaled(Vector3(s, s * stretch, s))
+                                trs.append(Transform3D(basis, p))
+                        _multimesh(mpath, trs, member.get("mat", null), true, "tree")
+                        if zid == "Zone_DawnFields":
+                                _add_tree_collisions(trs)
 
-                # zone specials
-                _dress_special(rng, zone)
-                # v1.1 Phase V6: CC0 prop kits (Kenney nature + zone signatures)
-                _dress_prop_kits(rng, zone)
-                # v1.4: the home meadow — dense ring around the spawn camp so the
-                # first frame a new player sees reads as alive, not empty
-                if dressing.get("camp", false):
-                        _dress_camp_richness(rng)
+        # rocks
+        var rock_count := int(float(dressing.get("rocks", 0.0)) * 420.0)
+        if rock_count > 0:
+                var rock_mat: Material = null
+                if dressing.get("char", false):
+                        rock_mat = StandardMaterial3D.new()
+                        rock_mat.albedo_color = Color(0.2, 0.17, 0.17)
+                        rock_mat.roughness = 1.0
+                var rock_path := "res://assets/meshes/environment/SM_Rock_Granite_M.glb"
+                if dressing.get("snow", false):
+                        rock_path = "res://assets/meshes/environment/SM_Rock_Boulder_Moss.glb"
+                        rock_mat = StandardMaterial3D.new()
+                        rock_mat.albedo_color = Color(0.82, 0.88, 0.95)
+                var rtrs := []
+                for p in _scatter(rng, rock_count, zone, 0.9):
+                        var s := rng.randf_range(0.6, 2.2)
+                        rtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p + Vector3(0, 0.2, 0)))
+                _multimesh(rock_path, rtrs, rock_mat)
+
+        # grass
+        var grass_count := int(float(dressing.get("grass", 0.0)) * 2100.0)
+        if grass_count > 0:
+                var gtrs := []
+                for p in _scatter_clustered(rng, grass_count, zone, 0.5):
+                        var s := rng.randf_range(1.15, 2.3)
+                        gtrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * s), p))
+                _multimesh("res://assets/meshes/environment/SM_Grass_Tuft.glb", gtrs, null, false, "grass")
+                if dressing.get("muck", false):
+                        var ftrs := []
+                        for p in _scatter_clustered(rng, int(float(dressing.get("grass", 0.0)) * 1150.0), zone, 0.4):
+                                ftrs.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.8)), p))
+                        _multimesh("res://assets/meshes/environment/SM_Fern.glb", ftrs, null, true, "grass")
+
+        # zone specials
+        _dress_special(rng, zone)
+        # v1.1 Phase V6: CC0 prop kits (Kenney nature + zone signatures)
+        _dress_prop_kits(rng, zone)
+        # v1.4: the home meadow — dense ring around the spawn camp so the
+        # first frame a new player sees reads as alive, not empty
+        if dressing.get("camp", false):
+                _dress_camp_richness(rng)
 
 
 func _tree_pool(kind: String) -> Array:
@@ -992,22 +1111,31 @@ func _mesh_instance(path: String, pos: Vector3, scale: Vector3 = Vector3.ONE) ->
 
 
 # -------------------------------------------------------- resource nodes ---
-func _spawn_resource_nodes() -> void:
+func _spawn_resource_nodes(only_zones: Array = []) -> void:
+        ## v1.7 Phase 4: zone-filtered (empty = all zones, legacy sync path).
         for zone in Data.zones:
-                var zid: String = zone["id"]
-                var rng := RandomNumberGenerator.new()
-                rng.seed = hash("nodes-%s-%d" % [zid, Game.world_seed])
-                for entry in zone.get("resources", []):
-                        var node_id: String = entry[0]
-                        var count: int = int(entry[1])
-                        var def: Dictionary = Data.resource_nodes.get(node_id, {})
-                        if def.is_empty():
-                                continue
-                        for p in _scatter(rng, count, zone, 0.75, not def.get("hidden", false)):
-                                var node := ResourceNode.new(def)
-                                node.position = p + Vector3(0, 0.1, 0)
-                                node.rotation.y = rng.randf() * TAU
-                                nodes_root.add_child(node)
+                if not only_zones.is_empty() and not only_zones.has(String(zone["id"])):
+                        continue
+                _spawn_zone_resources(zone)
+
+
+func _spawn_zone_resources(zone: Dictionary) -> void:
+        ## per-zone resource nodes — seeded by zone id + world seed, so a
+        ## streamed job lands identical nodes to the sync build.
+        var zid: String = zone["id"]
+        var rng := RandomNumberGenerator.new()
+        rng.seed = hash("nodes-%s-%d" % [zid, Game.world_seed])
+        for entry in zone.get("resources", []):
+                var node_id: String = entry[0]
+                var count: int = int(entry[1])
+                var def: Dictionary = Data.resource_nodes.get(node_id, {})
+                if def.is_empty():
+                        continue
+                for p in _scatter(rng, count, zone, 0.75, not def.get("hidden", false)):
+                        var node := ResourceNode.new(def)
+                        node.position = p + Vector3(0, 0.1, 0)
+                        node.rotation.y = rng.randf() * TAU
+                        nodes_root.add_child(node)
 
 
 # ------------------------------------------------------------------- camp --
@@ -1284,39 +1412,50 @@ func _spawn_boss(species_id: String, pos: Vector3) -> void:
 
 
 # -------------------------------------------------------------- creatures --
-func _spawn_all_creatures() -> void:
+func _spawn_all_creatures(only_zones: Array = []) -> void:
+        ## v1.7 Phase 4: zone-filtered (empty = all zones, legacy sync path).
         var zones_total: int = Data.zones.size()
         var zi := 0
         for zone in Data.zones:
+                if not only_zones.is_empty() and not only_zones.has(String(zone["id"])):
+                        zi += 1
+                        continue
                 _bp("Waking echoes — %s…" % zone.get("name", zone["id"]), 0.90 + 0.09 * float(zi) / float(maxi(1, zones_total)))
                 if zi % 3 == 2:
                         await _breathe()
                 zi += 1
-                var zid: String = zone["id"]
-                var rng := RandomNumberGenerator.new()
-                rng.seed = hash("wild-%s-%d" % [zid, Game.world_seed])
-                for entry in zone.get("wildlife", []):
-                        var species_id: String = entry[0]
-                        var count: int = int(entry[1])
-                        var def: Dictionary = Data.species_def(species_id)
-                        if def.is_empty():
-                                continue
-                        # v1.3 gallery pass: passive species ×2.2 so the world
-                        # visibly teems with life; hostiles keep their balance
-                        if not def.get("hostile", false):
-                                count = int(round(count * 2.2))
-                        for p in _scatter(rng, count, zone, 0.5):
-                                _spawn_creature(def, p, rng)
-                # v1.5.2 Wild Diversity: the zone Apex — ONE boss-mode individual
-                # planted deep in the zone (furthest scatter point), full boss
-                # kit: boss bar + phases + weak orb + telegraphs. 8 zones now
-                # carry a roaming Apex on top of the 2 dungeon bosses.
-                var apex_def: Dictionary = Data.apex_for_zone(zid)
-                if not apex_def.is_empty():
-                        var apex_pts := _scatter(rng, 12, zone, 0.8)
-                        if apex_pts.size() > 0:
-                                var apex: Node = _spawn_creature(apex_def, apex_pts[apex_pts.size() - 1], rng, true)
-                                apexes.append(apex)
+                _spawn_zone_creatures(zone)
+
+
+func _spawn_zone_creatures(zone: Dictionary) -> void:
+        ## per-zone wildlife + Apex — seeded by zone id + world seed, so a
+        ## streamed job lands identical spawns (and the same Apex) to the
+        ## sync build regardless of when it runs.
+        var zid: String = zone["id"]
+        var rng := RandomNumberGenerator.new()
+        rng.seed = hash("wild-%s-%d" % [zid, Game.world_seed])
+        for entry in zone.get("wildlife", []):
+                var species_id: String = entry[0]
+                var count: int = int(entry[1])
+                var def: Dictionary = Data.species_def(species_id)
+                if def.is_empty():
+                        continue
+                # v1.3 gallery pass: passive species ×2.2 so the world
+                # visibly teems with life; hostiles keep their balance
+                if not def.get("hostile", false):
+                        count = int(round(count * 2.2))
+                for p in _scatter(rng, count, zone, 0.5):
+                        _spawn_creature(def, p, rng)
+        # v1.5.2 Wild Diversity: the zone Apex — ONE boss-mode individual
+        # planted deep in the zone (furthest scatter point), full boss
+        # kit: boss bar + phases + weak orb + telegraphs. 8 zones now
+        # carry a roaming Apex on top of the 2 dungeon bosses.
+        var apex_def: Dictionary = Data.apex_for_zone(zid)
+        if not apex_def.is_empty():
+                var apex_pts := _scatter(rng, 12, zone, 0.8)
+                if apex_pts.size() > 0:
+                        var apex: Node = _spawn_creature(apex_def, apex_pts[apex_pts.size() - 1], rng, true)
+                        apexes.append(apex)
         # Auroraling: exactly one, deep in Glimmerwood
         var aura_def: Dictionary = Data.species_def("Echo_Auroraling")
         if not aura_def.is_empty():
@@ -1340,6 +1479,18 @@ func _process(delta: float) -> void:
         # PS-2: staged build is async — the world enters the tree before its
         # roots exist; skip sweeping until the Vale is fully built
         if creatures_root == null:
+                return
+        # v1.7 Phase 4: drain the background zone stream (one job every 5th
+        # frame) and hold the hostile respawn sweep until every zone's
+        # wildlife actually exists (keeps populations 1:1 with the sync build).
+        if not _stream_queue.is_empty():
+                _stream_frame_mod = (_stream_frame_mod + 1) % 5
+                if _stream_frame_mod == 0:
+                        _run_stream_job(_stream_queue.pop_front())
+                        _stream_jobs_done += 1
+                        _update_stream_hud()
+                        if _stream_queue.is_empty():
+                                _finish_streaming()
                 return
         _hostile_sweep -= delta
         if _hostile_sweep <= 0.0:

@@ -11,7 +11,7 @@ run_shot() {
   local outname="$1"; shift
   echo "=== CAPTURE $outname ==="
   timeout 180 env DISPLAY=:99 \
-    "$GODOT" --path "$PROJ" --resolution 1600x900 -- \
+    "$GODOT" --path "$PROJ" --resolution 1920x1080 -- \
     --screenshot "$@" 2>&1 | grep -E "SCREENSHOT saved|SCRIPT ERROR|ERROR:" | head -4
   if [ -f "$PROJ/shot_"*.png ]; then :; fi
   local found=""

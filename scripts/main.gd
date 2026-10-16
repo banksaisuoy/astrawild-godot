@@ -445,7 +445,11 @@ func _start_game(continue_save: bool) -> void:
                         stage_label.text = stage_text
                 if is_instance_valid(lbar):
                         lbar.value = clampf(fraction, 0.0, 1.0))
-        await world.build()
+        # v1.7 Phase 4: streamed worldgen — screenshot/capture boots need the
+        # deterministic FULL build; normal gameplay (and smoke, which then
+        # awaits the background drain) enters in seconds and streams the rest.
+        var sync_build := OS.get_cmdline_user_args().find("--screenshot") >= 0
+        await world.build(sync_build)
 
         hud = Hud.new()
         hud.add_to_group("hud")
@@ -485,6 +489,11 @@ func _start_game(continue_save: bool) -> void:
                 Game.toast.emit("Aim at creatures to observe them. Weaken, then [F] to capture.", Color(0.8, 0.9, 1.0))
                 Game.toast.emit("A Dawn Skiff is parked 150 m east — board it [E] to fly. Press ` for cheats.", Color(0.9, 0.85, 0.7))
         if OS.get_cmdline_user_args().find("--smoke") >= 0:
+                # v1.7 Phase 4: the smoke build is STREAMED — let the background
+                # queue drain so every assertion runs against the finished Vale
+                # (exercises both the fast Phase A path AND the stream drain).
+                if world and not world.streaming_done:
+                        await world._await_streaming()
                 _run_smoke_checks()
         if OS.get_name() == "Web":
                 _web_debug_capture()
@@ -1263,6 +1272,18 @@ func _run_smoke_checks() -> void:
                 " (active=", freeze_active, " released=", freeze_released, ")",
                 " shake=", shake_wired and shake_live)
         print("SMOKE: phase2 fx radiant=", radiant_fx, " dust=", dust_spawned, " hit_vfx=", hit_vfx_spawned)
+        # ---- v1.7 Phase 4: streamed worldgen guards ----
+        # the smoke build itself ran the STREAMED path: Phase A (spawn zone +
+        # structures) blocking, then 33 background jobs drained via _process.
+        var stream_ok: bool = worldp != null and worldp.streaming_done \
+                        and worldp._stream_jobs_total == 33 \
+                        and worldp._stream_jobs_done == worldp._stream_jobs_total \
+                        and worldp._stream_queue.is_empty()
+        # hostile sweep must be gated OFF while streaming — populations stay
+        # 1:1 with the sync build once every zone's wildlife has landed.
+        print("SMOKE: phase4 streamed jobs=", worldp._stream_jobs_done if worldp else -1, "/",
+                worldp._stream_jobs_total if worldp else -1, " done=", worldp.streaming_done if worldp else false,
+                " ok=", stream_ok)
         # ---- v1.7 Phase 3: progressive HUD guards ----
         # (a) vitals went compact: all 4 bars alive as ProgressBars and no
         # "HP"/"Stamina"/... text labels left inside the vitals panel
@@ -1397,6 +1418,21 @@ func _screenshot_routine() -> void:
                 print("SCREENSHOT saved=", err0 == OK, " path=res://shot_%s.png" % shot_name, " size=", img0.get_size())
                 get_tree().quit(0)
                 return
+        if shot_name == "vista":
+                # v1.7 Phase 4: hero landscape framing — low eye-height camera,
+                # FOV 62 (cinematic, not the gameplay 76), pitched gently up so
+                # the Distant Vista Ring, height fog and sky carry the frame.
+                # MSAA 4x is the project default since v1.6.
+                player.global_position = Vector3(-370.0, world.tile_height(-370.0, 14.0) + 1.5, 14.0)
+                await get_tree().create_timer(1.2).timeout
+                var vcam: Camera3D = Camera3D.new()
+                world.add_child(vcam)
+                var vpx: float = -368.0
+                var vpz: float = 12.0
+                vcam.global_position = Vector3(vpx, world.tile_height(vpx, vpz) + 2.0, vpz)
+                vcam.fov = 62.0
+                vcam.look_at(Vector3(vpx + 90.0, world.tile_height(vpx, vpz) + 20.0, vpz - 46.0), Vector3.UP)
+                vcam.make_current()
         if shot_name == "village":
                 # teleport near Dawnstead and frame the village from above
                 var vx: float = -120.0
@@ -1673,6 +1709,15 @@ func _screenshot_routine() -> void:
                                 screens._nest_toggle(cands_shot[1])
                 await get_tree().create_timer(1.0).timeout
         await get_tree().create_timer(0.5).timeout
+        # v1.7 Phase 4: showcase FOV — world captures frame at 62 (the gameplay
+        # camera stays 76; this is capture-only). Title/UI shots keep their own.
+        if shot_name not in ["title", "help", "credits", "inv", "map", "nest", "loading"] and is_instance_valid(player) and player.camera:
+                if get_viewport().get_camera_3d() == player.camera:
+                        player.camera.fov = 62.0
+                else:
+                        var live_cam := get_viewport().get_camera_3d()
+                        if live_cam:
+                                live_cam.fov = 62.0
         # v1.6: --clean also hides world-space damage numbers — showcase shots
         # were reading ambient-combat "29" clusters as a UI bug (VLM critique)
         if args.find("--clean") >= 0:

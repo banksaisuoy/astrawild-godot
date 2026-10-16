@@ -11,10 +11,10 @@ TMO="$1"; shift
 for attempt in 1 2 3 4 5 6; do
   echo "=== $OUT attempt $attempt ==="
   rm -f "$PROJ"/shot_*.png /tmp/.X11-unix/X99
-  nohup setsid Xvfb :99 -screen 0 800x450x24 > /tmp/xvfb.log 2>&1 < /dev/null &
+  nohup setsid Xvfb :99 -screen 0 1920x1080x24 > /tmp/xvfb.log 2>&1 < /dev/null &
   disown
   sleep 2
-  DISPLAY=:99 timeout "$TMO" "$GODOT" --path "$PROJ" --resolution 800x450 \
+  DISPLAY=:99 timeout "$TMO" "$GODOT" --path "$PROJ" --resolution 1920x1080 \
     -- --screenshot "$@" > "/tmp/cap_$OUT.log" 2>&1
   rc=$?
   for f in "$PROJ"/shot_*.png; do
