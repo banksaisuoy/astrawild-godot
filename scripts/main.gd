@@ -1180,6 +1180,27 @@ func _run_smoke_checks() -> void:
         print("SMOKE: settings rebind=", rebind_ok, " panel=", screens.panels.has("settings"))
         # PS-8: minimap built
         print("SMOKE: minimap=", hud.minimap != null and hud.minimap_zone != null)
+        # v1.7 audit guards: the codebase once called two phantom APIs that only
+        # surfaced as runtime errors in REAL gameplay (smoke never walked those
+        # paths): Sfx.play_event (marker.gd chest open + hud onboarding finish)
+        # and screens.open_research (ResearchDesk interact). Guard the shape AND
+        # walk the now-correct paths end-to-end.
+        var sfx_api_ok: bool = Sfx.has_method("play") and not Sfx.has_method("play_event")
+        Game.screen_requested.emit("research")
+        var research_opens: bool = screens.panels.has("research") and screens.panels["research"].visible
+        screens.close()
+        # close() hides the shared root (panel visibility stays for instant
+        # reopen) — the real "closed" state is is_open() == false.
+        var research_closes: bool = not screens.is_open() and not screens.root.visible
+        # ach_alloy fix: the sweep must key the REAL item id or the achievement
+        # is unobtainable forever.
+        Game.add_item("Item_AncientAlloy", 1)
+        Game._check_achievements()
+        var alloy_unlocked: bool = Game.achievements.get("ach_alloy", false)
+        Game.inventory.erase("Item_AncientAlloy")
+        Game.achievements.erase("ach_alloy")
+        print("SMOKE: audit guards sfx_api=", sfx_api_ok, " research_open=", research_opens,
+                " research_close=", research_closes, " ach_alloy=", alloy_unlocked)
         print("SMOKE COMPLETE")
 
 func _smoke_find_anim(n: Node) -> AnimationPlayer:

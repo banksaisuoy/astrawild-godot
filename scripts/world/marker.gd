@@ -73,7 +73,7 @@ func interact() -> bool:
                                         Game.toast.emit("+%d %s" % [qty, idef.get("name", item_id)], Color(0.95, 0.85, 0.5))
                         Game.add_research_points(3)
                         Game.toast.emit("%s plundered (+3 RP)" % marker_label, Color(0.95, 0.8, 0.4))
-                        Sfx.play_event("ui_confirm")
+                        Sfx.play("ui_confirm")
                         _apply_opened_look()
                         return true
         return false

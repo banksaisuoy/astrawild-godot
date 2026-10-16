@@ -201,9 +201,7 @@ func interact() -> bool:
                         screens.open_crafting("Station_Campfire")
                 return true
         if def.get("id", "") == "Building_ResearchDesk":
-                var screens := get_tree().get_first_node_in_group("screens")
-                if screens:
-                        screens.open_research()
+                Game.screen_requested.emit("research")
                 return true
         if def.get("id", "") == "Building_FeedTrough":
                 Game.feed_party()

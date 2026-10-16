@@ -510,7 +510,7 @@ func _update_onboarding() -> void:
                         tw.tween_property(onboarding_box, "modulate:a", 0.0, 1.2)
                 Game.add_research_points(10)
                 Game.toast.emit("THE VALE KNOWS YOU — expedition established (+10 RP)", Color(1.0, 0.85, 0.5))
-                Sfx.play_event("ui_confirm")
+                Sfx.play("ui_confirm")
 
 
 func _draw_compass() -> void:

@@ -505,7 +505,7 @@ func _check_achievements() -> void:
                         _unlock_achievement("ach_day10_veteran")
         if completed_quests.size() >= 11:
                 _unlock_achievement("ach_quests_all")
-        if inventory.get("AncientAlloy", 0) > 0 or equipment.values().has("AncientAlloy"):
+        if inventory.get("Item_AncientAlloy", 0) > 0 or equipment.values().has("Item_AncientAlloy"):
                 _unlock_achievement("ach_alloy")
 
 
