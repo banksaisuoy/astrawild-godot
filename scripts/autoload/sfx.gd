@@ -9,7 +9,8 @@ extends Node
 
 const BUSES := ["SFX", "Music", "Ambience", "UI"]
 
-# event id -> wav file (stem, res://assets/audio/<stem>.wav)
+# event id -> audio file (stem, res://assets/audio/<stem>.wav, or .ogg for
+# the long ambience loops below)
 const EVENTS := {
         # UI
         "ui_hover": "A_UI_Hover",
@@ -89,7 +90,17 @@ const SPECIES_VOCALS := {
         "Voltpylon": "A_Echo_Voltpylon_Hum",
 }
 
-# zone key -> looping ambience wav
+# long (30 s) ambience loops shipped as Ogg Vorbis q5 instead of wav —
+# ~11.3 MB smaller in the repo/export and every packed build
+const AMBIENCE_OGG_STEMS := {
+        "A_Amb_Forest_Dawn": true,
+        "A_Amb_Marsh_Dusk": true,
+        "A_Amb_Night_Crystal": true,
+        "A_Amb_Water_Lake": true,
+        "A_Amb_Wind_Gentle": true,
+}
+
+# zone key -> looping ambience file (ogg stems above)
 const ZONE_AMBIENCE := {
         "DawnFields": "A_Amb_Forest_Dawn",
         "Glimmerwood": "A_Amb_Forest_Dawn",
@@ -320,6 +331,9 @@ func _stem_path(stem: String) -> String:
                 # Kenney/OGA subfolders — .ogg unless the entry carries its own
                 if stem.get_extension() != "":
                         return "res://assets/audio/%s" % stem
+                return "res://assets/audio/%s.ogg" % stem
+        if AMBIENCE_OGG_STEMS.has(stem):
+                # 30 s ambience loops live as Ogg Vorbis (wav->ogg conversion)
                 return "res://assets/audio/%s.ogg" % stem
         return "res://assets/audio/%s.wav" % stem
 
