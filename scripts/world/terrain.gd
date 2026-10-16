@@ -228,10 +228,11 @@ func _build_mesh() -> void:
         # v1.3 gallery pass: hills now CAST shadows — the terrain reads as
         # sculpted 3D relief instead of a flat pasted color field
         mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-        var mat := StandardMaterial3D.new()
-        mat.vertex_color_use_as_albedo = true
-        mat.roughness = 1.0
-        mat.metallic = 0.0
+        var mat := ShaderMaterial.new()
+        # v1.7 Atmosphere: manual distance+height fog (compat renders no engine
+        # fog) — the terrain edge must melt into the sky or the world reads as
+        # a floating diorama. Vertex-colour albedo + roughness 1 preserved.
+        mat.shader = load("res://shaders/terrain_fog.gdshader")
         mi.material_override = mat
         add_child(mi)
 

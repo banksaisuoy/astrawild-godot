@@ -28,7 +28,7 @@ func setup() -> void:
         sun.shadow_bias = 0.03
         # v1.6 Radiant Dawn: blur 1.0 -> 2.2 — soft penumbra contact shadows
         # instead of razor-stamped silhouettes; reads "lit by a real sun".
-        sun.shadow_blur = 2.2
+        sun.shadow_blur = 1.7
         sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
         sun.directional_shadow_blend_splits = true
         sun.directional_shadow_max_distance = 240.0
@@ -63,13 +63,13 @@ func setup() -> void:
         # low ground and peaks rise out of it; density is driven per world-hour
         # in _apply_atmosphere (dawn mist thickest, noon thinnest).
         env_res.fog_height = 6.0
-        env_res.fog_height_density = 0.04
+        env_res.fog_height_density = 0.15
         # v1.6 Radiant Dawn — color grade pass (VLM critique: "flat, washed out,
         # lifeless; pure default RGB primaries"). Saturation + contrast push
         # the whole frame off the MS Paint read while ACES keeps highlights.
         env_res.adjustment_enabled = true
-        env_res.adjustment_saturation = 1.24
-        env_res.adjustment_contrast = 1.06
+        env_res.adjustment_saturation = 1.34
+        env_res.adjustment_contrast = 1.11
         env_res.adjustment_brightness = 1.0
         # v1.6 Radiant Dawn — glow pass: emissive eyes / astraite nodes / glow
         # reeds / campfires finally bloom. Threshold 1.05 keeps only true
@@ -84,6 +84,20 @@ func setup() -> void:
         env = WorldEnvironment.new()
         env.environment = env_res
         add_child(env)
+        # v1.7 Atmosphere: the compat renderer draws NO engine fog — every
+        # fogged shader (terrain / vista / water / foliage / creatures) reads
+        # these GLOBALS instead; _apply_atmosphere retunes them per hour,
+        # weather and zone identity. Registration is programmatic (the
+        # project.godot [shader_globals] section is editor-serialised).
+        if RenderingServer.global_shader_parameter_get("aw_fog_density") == null:
+                RenderingServer.global_shader_parameter_add("aw_fog_color", RenderingServer.GLOBAL_VAR_TYPE_COLOR, NOON_FOG)
+                RenderingServer.global_shader_parameter_add("aw_fog_density", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.0007)
+                RenderingServer.global_shader_parameter_add("aw_fog_height", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 6.0)
+                RenderingServer.global_shader_parameter_add("aw_fog_height_density", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.15)
+        RenderingServer.global_shader_parameter_set("aw_fog_color", NOON_FOG)
+        RenderingServer.global_shader_parameter_set("aw_fog_density", 0.0007)
+        RenderingServer.global_shader_parameter_set("aw_fog_height", 6.0)
+        RenderingServer.global_shader_parameter_set("aw_fog_height_density", 0.15)
 
 
 func _process(delta: float) -> void:
@@ -113,7 +127,7 @@ func _apply_atmosphere() -> void:
                 sun_col = NIGHT_SUN
                 fog_col = NIGHT_FOG
                 fog_density = NIGHT_FOG_DENSITY
-                fog_height_density = 0.06
+                fog_height_density = 0.30
                 ambient = 0.16
                 sky_top = Color(0.03, 0.045, 0.10)
                 sky_horizon = Color(0.07, 0.09, 0.16)
@@ -125,12 +139,12 @@ func _apply_atmosphere() -> void:
                         sun_col = DAWN_SUN.lerp(NOON_SUN, t)
                         fog_col = DAWN_FOG.lerp(NOON_FOG, t)
                         # morning mist pools in the valleys then burns off
-                        fog_height_density = lerpf(0.10, 0.022, t)
+                        fog_height_density = lerpf(0.42, 0.08, t)
                 else:
                         var t: float = clampf((h - 12.5) / 6.5, 0.0, 1.0)
                         sun_col = NOON_SUN.lerp(DUSK_SUN, t)
                         fog_col = NOON_FOG.lerp(DUSK_FOG, t)
-                        fog_height_density = lerpf(0.022, 0.06, t)
+                        fog_height_density = lerpf(0.08, 0.25, t)
                 var arc: float = clampf((h - 6.0) / 13.0, 0.0, 1.0)
                 var horizonness: float = 1.0 - sin(arc * PI)  # 1 at horizon, 0 at noon
                 fog_density = lerpf(0.0006, 0.0011, horizonness)
@@ -188,6 +202,12 @@ func _apply_atmosphere() -> void:
         env.environment.fog_density = fog_density
         env.environment.fog_height_density = fog_height_density
         env.environment.ambient_light_energy = ambient
+        # v1.7 Atmosphere: push the real fog into the global uniforms the
+        # custom shaders read (compat renderer ignores the env values above).
+        RenderingServer.global_shader_parameter_set("aw_fog_color", fog_col)
+        RenderingServer.global_shader_parameter_set("aw_fog_density", fog_density)
+        RenderingServer.global_shader_parameter_set("aw_fog_height", env.environment.fog_height)
+        RenderingServer.global_shader_parameter_set("aw_fog_height_density", fog_height_density)
         # v1.7 Phase 1: let the sky fog eat more of the horizon band at dawn /
         # dusk so the Distant Vista Ring melts into the sky instead of pasting
         # a hard silhouette line against it (noon stays crisper).

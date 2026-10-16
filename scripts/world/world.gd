@@ -242,48 +242,83 @@ func _build_vista_ring() -> void:
         add_child(root)
         # far ring: tall, cooler, carries the snow caps; near ring: lower,
         # greener — sits between the far ring and the playfield edge
-        _vista_ring_mesh(root, rng, 44, 2050.0, 1620.0, 150.0, 380.0,
+        # v2 heights: the far ring must CLEARLY tower over the terrain edge
+        # (terrain hills reach ~60 m; ring peaks at 2.4 km need 260 m+ to read
+        # as a layered ridge above the playfield silhouette, not hide behind it)
+        _vista_ring_mesh(root, rng, 44, 2050.0, 1620.0, 260.0, 520.0,
                 Color(0.36, 0.40, 0.50), Color(0.62, 0.66, 0.74), Color(0.92, 0.94, 0.98))
-        _vista_ring_mesh(root, rng, 32, 1840.0, 1430.0, 60.0, 170.0,
+        _vista_ring_mesh(root, rng, 32, 1840.0, 1430.0, 120.0, 280.0,
                 Color(0.22, 0.28, 0.22), Color(0.34, 0.38, 0.34), Color(0.55, 0.60, 0.62))
 
 
 func _vista_ring_mesh(root: Node3D, rng: RandomNumberGenerator, count: int, rx: float, rz: float,
                 h_min: float, h_max: float, base_col: Color, mid_col: Color, cap_col: Color) -> void:
-        ## One ArrayMesh of `count` faceted peaks on an ellipse (rx, rz) around
-        ## the map centre. Each peak = a shallow pyramid of 6 base corners →
-        ## ~12 triangles, flat shaded, vertex-coloured base→cap gradient.
+        ## v1.7 Atmosphere (v2 after VLM): one ArrayMesh of `count` MOUNTAINS on
+        ## an ellipse — not identical pyramids. Each mountain = a main apex +
+        ## 1-2 shoulder sub-peaks at 45-70% height, a base width chosen
+        ## INDEPENDENTLY of height (wide mesas vs sharp spires), an apex that
+        ## leans along the ring so ridges read as tilted strata, and per-peak
+        ## colour jitter. Flat-shaded, vertex-coloured, skirt walls included.
         var st := SurfaceTool.new()
         st.begin(Mesh.PRIMITIVE_TRIANGLES)
+        # v2 spacing: cumulative RANDOM steps around the ring (0.55-1.55x the
+        # nominal step) — mountains cluster into massifs with open gaps
+        # between them, killing the even "sawtooth cadence" read.
+        var nominal: float = TAU / float(count)
+        var ang_walk := rng.randf() * TAU
         for i in count:
-                var ang: float = TAU * float(i) / float(count) + rng.randf_range(-0.04, 0.04)
+                var ang: float = ang_walk
+                ang_walk += nominal * rng.randf_range(0.55, 1.55)
                 var px: float = cos(ang) * rx * rng.randf_range(0.97, 1.06)
                 var pz: float = sin(ang) * rz * rng.randf_range(0.97, 1.06)
                 var peak_h: float = rng.randf_range(h_min, h_max)
-                var base_r: float = peak_h * rng.randf_range(0.75, 1.15)
-                var apex := Vector3(px, peak_h, pz)
+                # base width independent of height — silhouettes vary wildly
+                var base_r: float = rng.randf_range(120.0, 340.0)
+                # lean along the ring (apex offset) — ridges read tilted, not plumb
+                var lean: float = rng.randf_range(-0.28, 0.28) * base_r
+                var tint := rng.randf_range(-0.08, 0.08)
+                var p_base := base_col.lerp(mid_col, 0.25 + tint)
+                var p_mid := mid_col.lightened(tint * 0.5)
+                var p_cap := cap_col if peak_h > (h_min + h_max) * 0.45 else p_mid
+                var apex := Vector3(px + lean, peak_h, pz)
                 var prev := Vector3.ZERO
-                var corners := 6
+                var corners := 7
                 for c in corners + 1:
                         var ca: float = ang + TAU * float(c) / float(corners)
-                        var corner := Vector3(px + cos(ca) * base_r, -12.0, pz + sin(ca) * base_r)
+                        # wobble the ring radius per corner — craggy footprint
+                        var cr: float = base_r * rng.randf_range(0.86, 1.14)
+                        var corner := Vector3(px + cos(ca) * cr, -12.0, pz + sin(ca) * cr)
                         if c > 0:
-                                # two triangles per ring segment: base→apex fan
-                                # (flat, stylized) + a thin skirt wall so the
-                                # ridge reads solid from inside the valley too
-                                var b0 := base_col.lerp(mid_col, 0.45 + 0.2 * sin(ca))
-                                var b1 := base_col.lerp(mid_col, 0.45 + 0.2 * sin(ca - TAU / float(corners)))
-                                var cap := cap_col
-                                _vista_tri(st, prev, corner, apex, b0, b1, cap)
-                                _vista_tri(st, corner, prev, Vector3(prev.x, -14.0, prev.z), b0, b1, base_col.darkened(0.35))
+                                var b0 := p_base.lerp(p_mid, 0.55 + 0.18 * sin(ca))
+                                var b1 := p_base.lerp(p_mid, 0.55 + 0.18 * sin(ca - TAU / float(corners)))
+                                _vista_tri(st, prev, corner, apex, b0, b1, p_cap)
+                                _vista_tri(st, corner, prev, Vector3(prev.x, -14.0, prev.z), b0, b1, p_base.darkened(0.35))
                         prev = corner
+                # shoulder sub-peaks — the single-pyramid read died here
+                var shoulders: int = 1 + (rng.randi() % 2)
+                for s in shoulders:
+                        var sa: float = ang + rng.randf_range(0.35, 0.75) * (TAU / float(count)) * (1.0 if s == 0 else -1.0)
+                        var sh_h: float = peak_h * rng.randf_range(0.45, 0.7)
+                        var sh_r: float = base_r * rng.randf_range(0.45, 0.7)
+                        var shx: float = px + cos(sa) * base_r * 0.9
+                        var shz: float = pz + sin(sa) * base_r * 0.9
+                        var sh_apex := Vector3(shx + lean * 0.5, sh_h, shz)
+                        var sprev := Vector3.ZERO
+                        for c2 in 6:
+                                var c2a: float = sa + TAU * float(c2) / 5.0
+                                var sc := Vector3(shx + cos(c2a) * sh_r, -12.0, shz + sin(c2a) * sh_r)
+                                if c2 > 0:
+                                        var sb0 := p_base.lerp(p_mid, 0.5)
+                                        _vista_tri(st, sprev, sc, sh_apex, sb0, sb0, p_mid)
+                                sprev = sc
                 vista_peak_count += 1
         st.generate_normals()
         var mesh := st.commit()
-        var mat := StandardMaterial3D.new()
-        mat.vertex_colors_use_as_albedo = true
-        mat.roughness = 1.0
-        mat.specular = 0.1
+        # v1.7 Atmosphere: fogged vista material — the ring peaks melt into the
+        # sky at 1.8 km+ exactly like the terrain edge does (terrain_fog shader
+        # is shared: vertex-colour albedo + manual distance/height fog).
+        var mat := ShaderMaterial.new()
+        mat.shader = load("res://shaders/terrain_fog.gdshader")
         var mmi := MeshInstance3D.new()
         mmi.mesh = mesh
         mmi.material_override = mat
@@ -328,11 +363,11 @@ func _build_water() -> void:
         pm.subdivide_depth = 18
         water.mesh = pm
         water.position = Vector3(0, -4.5, 0)
-        var mat := StandardMaterial3D.new()
-        mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-        mat.albedo_color = Color(0.16, 0.38, 0.52, 0.72)
-        mat.roughness = 0.3
-        mat.metallic = 0.0
+        # v1.7 Atmosphere: fogged water — the sea used to paint a hard bright
+        # cyan band between the terrain cut and the vista ring (unfogged
+        # StandardMaterial3D at 1.7 km+ read as raw default blue).
+        var mat := ShaderMaterial.new()
+        mat.shader = load("res://shaders/water_fog.gdshader")
         water.material_override = mat
         add_child(water)
 

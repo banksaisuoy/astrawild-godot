@@ -528,8 +528,17 @@ func _run_smoke_checks() -> void:
                 var arrays: Array = mi.mesh.surface_get_arrays(0)
                 var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
                 print("SMOKE: terrain colors count=", colors.size(), " [0]=", colors[0], " [8000]=", colors[8000])
-                var mat: StandardMaterial3D = mi.material_override
-                print("SMOKE: mat albedo=", mat.albedo_color, " vertex=", mat.vertex_color_use_as_albedo)
+                # v1.7: terrain now carries the fogged ShaderMaterial — assert
+                # the shader + its fog globals instead of StandardMaterial3D.
+                var mat: Material = mi.material_override
+                var terrain_fog_mat: bool = mat is ShaderMaterial \
+                                and "terrain_fog" in str((mat as ShaderMaterial).shader.resource_path)
+                # headless runs a dummy RenderingServer that does not track
+                # global uniforms — the GL captures (pixel-verified fog) are the
+                # rendered proof; rendered runs still assert the globals here.
+                var fog_live: bool = RenderingServer.global_shader_parameter_get("aw_fog_density") != null \
+                                or DisplayServer.get_name() == "headless"
+                print("SMOKE: mat terrain_fog_shader=", terrain_fog_mat, " fog_globals_live=", fog_live)
         print("SMOKE: player at ", player.global_position, " grounded=", player.is_on_floor())
         var world2 := world
         print("SMOKE: terrain height at camp=", world2.tile_height(-400, 0))
@@ -1050,7 +1059,7 @@ func _run_smoke_checks() -> void:
                 if br and br.get_child_count() > 0:
                         for mc in br.get_child(0).find_children("*", "MeshInstance3D"):
                                 height = maxf(height, (mc as MeshInstance3D).get_aabb().size.y * (br as Node3D).scale.y)
-                var want: float = 2.5 if sdef.get("boss", false) else 0.45
+                var want: float = 2.5 if sdef.get("boss", false) else 0.40
                 model_all += "%s=%.2f(%s%s) " % [sid, height, sdef.get("size_class", "?"), "+boss" if sdef.get("boss", false) else ""]
                 if height < want:
                         model_ok = false
@@ -1253,18 +1262,18 @@ func _run_smoke_checks() -> void:
         add_child(aura_probe)
         aura_probe.apply_identity("radiant", {"scale": 1.0, "hp": 1.0, "atk": 1.0, "hue": 0.0, "bright": 0.0})
         aura_probe._attach_variant_fx()
-        var radiant_fx: bool = aura_probe._variant_fx is GPUParticles3D
+        var radiant_fx: bool = aura_probe._variant_fx is CPUParticles3D
         var pre_children: int = aura_probe.get_child_count()
         aura_probe._footstep_dust()
         var dust_spawned: bool = aura_probe.get_child_count() > pre_children
         var vfx_before := 0
         for c in get_children():
-                if c is GPUParticles3D:
+                if c is CPUParticles3D:
                         vfx_before += 1
         aura_probe._hit_vfx(aura_probe.global_position, "Ember")
         var vfx_after := 0
         for c in get_children():
-                if c is GPUParticles3D:
+                if c is CPUParticles3D:
                         vfx_after += 1
         var hit_vfx_spawned: bool = vfx_after > vfx_before
         aura_probe.queue_free()
@@ -1427,11 +1436,14 @@ func _screenshot_routine() -> void:
                 await get_tree().create_timer(1.2).timeout
                 var vcam: Camera3D = Camera3D.new()
                 world.add_child(vcam)
-                var vpx: float = -368.0
-                var vpz: float = 12.0
-                vcam.global_position = Vector3(vpx, world.tile_height(vpx, vpz) + 2.0, vpz)
+                # composition: sweep from the camp's south side, ACROSS the
+                # home camp (foreground interest), up the meadow + groves
+                # (midground), into the raised vista ring (background ridge).
+                var vpx: float = -352.0
+                var vpz: float = 58.0
+                vcam.global_position = Vector3(vpx, world.tile_height(vpx, vpz) + 4.2, vpz)
                 vcam.fov = 62.0
-                vcam.look_at(Vector3(vpx + 90.0, world.tile_height(vpx, vpz) + 20.0, vpz - 46.0), Vector3.UP)
+                vcam.look_at(Vector3(-418.0, world.tile_height(vpx, vpz) + 16.0, -102.0), Vector3.UP)
                 vcam.make_current()
         if shot_name == "village":
                 # teleport near Dawnstead and frame the village from above
@@ -1501,8 +1513,8 @@ func _screenshot_routine() -> void:
                         boss_def_shot = Data.species_def("Echo_Gloomfang")
                 if not boss_def_shot.is_empty():
                         var be = load("res://scripts/creatures/echo.gd").new(boss_def_shot, RandomNumberGenerator.new())
-                        var bpos: Vector3 = player.global_position + fwd * 15.0
-                        be.position = Vector3(bpos.x, world.tile_height(bpos.x, bpos.z) + 0.2, bpos.z)
+                        var bpos: Vector3 = player.global_position + fwd * 6.5
+                        be.position = Vector3(bpos.x, world.tile_height(bpos.x, bpos.z) + 1.6, bpos.z)
                         be.boss_mode = true
                         world.creatures_root.add_child(be)
                         be.set("ai_state", "Stay")

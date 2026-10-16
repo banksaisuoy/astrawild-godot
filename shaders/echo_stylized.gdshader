@@ -7,6 +7,28 @@
 // Silhouettes stay readable at range even before textures resolve.
 shader_type spatial;
 
+
+// ---- v1.7 Atmosphere: manual distance+height fog (compat renderer draws no
+// ---- engine fog; the day/night cycle drives these globals per hour/weather)
+global uniform vec4 aw_fog_color : source_color;
+global uniform float aw_fog_density;
+global uniform float aw_fog_height;
+global uniform float aw_fog_height_density;
+
+vec3 aw_apply_fog(vec3 albedo, vec3 world_pos, float eye_depth) {
+        // aerial perspective: pure distance fog — mountains at 2 km melt into
+        // the sky regardless of their height.
+        float d = aw_fog_density * eye_depth;
+        float fog_amt = 1.0 - exp(-d * d);
+        // valley mist: EXTRA fog below the mist plane, ramping to zero AT the
+        // plane (35 m band) — morning mist pools in low ground, never strips
+        // fog off distant peaks like an exp-decay height term would.
+        float band = clamp((aw_fog_height - world_pos.y) / 35.0, 0.0, 1.0);
+        fog_amt = fog_amt + aw_fog_height_density * band * (1.0 - fog_amt);
+        return mix(albedo, aw_fog_color.rgb, clamp(fog_amt, 0.0, 1.0));
+}
+
+
 uniform vec4 surface_col : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform sampler2D base_tex : source_color, filter_linear_mipmap, hint_default_white;
 // rim (fresnel edge kick, emission so Radiant variants bloom)
@@ -26,10 +48,12 @@ uniform float emit_energy : hint_range(0.0, 3.0) = 0.0;
 
 varying float v_grad;
 varying vec3 v_nrm;
+varying vec3 world_pos;
 
 void vertex() {
         v_grad = clamp(VERTEX.y / max(body_h, 0.05), 0.0, 1.0);
         v_nrm = NORMAL;
+        world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
@@ -42,7 +66,7 @@ void fragment() {
         vec3 v = normalize(VIEW);
         float facing = clamp(dot(n, v), 0.0, 1.0);
         base += sss_col.rgb * pow(facing, 3.0) * sss_strength;
-        ALBEDO = base;
+        ALBEDO = aw_apply_fog(base, world_pos, length(VERTEX));
         // fresnel rim as EMISSION: edge light that feeds the glow pass
         float fres = pow(1.0 - facing, rim_pow);
         EMISSION = emit_col.rgb * emit_energy + rim_col.rgb * rim_strength * fres;

@@ -328,7 +328,7 @@ func _apply_model_tint(root: Node) -> void:
                 if variant_id == "radiant":
                         mat.emission_enabled = true
                         mat.emission = Color(1.0, 0.72, 0.28)
-                        mat.emission_energy_multiplier = 1.4
+                        mat.emission_energy_multiplier = 2.0
                 elif variant_id == "dusk":
                         mat.emission_enabled = true
                         mat.emission = Color(0.25, 0.35, 0.85)
@@ -388,51 +388,53 @@ func _attach_variant_fx() -> void:
         _variant_fx = null
         if (variant_id == "" or variant_id == "colossal") or _body_root == null or not is_inside_tree():
                 return
-        var fx := GPUParticles3D.new()
+        # v1.7 Phase 2 (fix): CPUParticles3D, NOT GPUParticles3D — the compat
+        # renderer (web + llvmpipe) draws CPU particles reliably; the GPU variant
+        # compiled but never rasterised (VLM: "zero visible particle systems").
+        var fx := CPUParticles3D.new()
         fx.name = "VariantFX"
-        var pm := ParticleProcessMaterial.new()
         var quad := QuadMesh.new()
-        quad.size = Vector2(0.09, 0.09)
+        quad.size = Vector2(0.14, 0.14)
         var qm := StandardMaterial3D.new()
         qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
         qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
         if variant_id == "radiant":
-                pm.gravity = Vector3(0, 0.55, 0)
-                pm.direction = Vector3(0, 1, 0)
-                pm.spread = 30.0
-                pm.initial_velocity_min = 0.2
-                pm.initial_velocity_max = 0.7
-                pm.scale_min = 0.6
-                pm.scale_max = 1.4
-                fx.amount = 16
+                fx.gravity = Vector3(0, 0.55, 0)
+                fx.direction = Vector3(0, 1, 0)
+                fx.spread = 30.0
+                fx.initial_velocity_min = 0.2
+                fx.initial_velocity_max = 0.7
+                fx.scale_amount_min = 0.6
+                fx.scale_amount_max = 1.5
+                fx.amount = 26
                 fx.lifetime = 1.7
                 qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-                qm.albedo_color = Color(1.0, 0.82, 0.38, 0.85)
+                qm.albedo_color = Color(1.0, 0.85, 0.42, 0.9)
                 qm.emission_enabled = true
-                qm.emission = Color(1.0, 0.72, 0.25)
-                qm.emission_energy_multiplier = 2.4
+                qm.emission = Color(1.0, 0.74, 0.26)
+                qm.emission_energy_multiplier = 3.2
         else:  # dusk
-                pm.gravity = Vector3.ZERO
-                pm.direction = Vector3(0, 1, 0)
-                pm.spread = 180.0
-                pm.initial_velocity_min = 0.1
-                pm.initial_velocity_max = 0.32
-                pm.scale_min = 1.2
-                pm.scale_max = 2.2
-                fx.amount = 12
+                fx.gravity = Vector3.ZERO
+                fx.direction = Vector3(0, 1, 0)
+                fx.spread = 180.0
+                fx.initial_velocity_min = 0.1
+                fx.initial_velocity_max = 0.32
+                fx.scale_amount_min = 1.4
+                fx.scale_amount_max = 2.6
+                fx.amount = 16
                 fx.lifetime = 2.3
                 qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-                qm.albedo_color = Color(0.22, 0.30, 0.78, 0.5)
+                qm.albedo_color = Color(0.22, 0.30, 0.78, 0.55)
                 qm.emission_enabled = true
                 qm.emission = Color(0.25, 0.35, 0.85)
-                qm.emission_energy_multiplier = 0.7
-        pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+                qm.emission_energy_multiplier = 1.1
+        fx.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
         var half_h: float = maxf(_body_h * 0.45, 0.3)
-        pm.emission_box_extents = Vector3(0.55 if variant_id == "radiant" else 0.85, half_h, 0.55 if variant_id == "radiant" else 0.85)
-        fx.process_material = pm
+        fx.emission_box_extents = Vector3(0.7, half_h, 0.7)
         quad.material = qm
-        fx.draw_pass_1 = quad
+        fx.mesh = quad
         fx.position = Vector3(0, half_h, 0)
+        fx.emitting = true
         _body_root.add_child(fx)
         _variant_fx = fx
 
@@ -443,30 +445,28 @@ func _footstep_dust() -> void:
         ## while actually moving so idle colossals never puff.
         if not is_inside_tree():
                 return
-        var dust := GPUParticles3D.new()
+        var dust := CPUParticles3D.new()
         dust.one_shot = true
         dust.explosiveness = 1.0
-        dust.amount = 12
+        dust.amount = 14
         dust.lifetime = 0.7
         dust.emitting = true
-        var pm := ParticleProcessMaterial.new()
-        pm.direction = Vector3(0, 0.6, 0)
-        pm.spread = 65.0
-        pm.initial_velocity_min = 1.2
-        pm.initial_velocity_max = 2.4
-        pm.gravity = Vector3(0, -2.6, 0)
-        pm.scale_min = 1.6
-        pm.scale_max = 3.2
-        dust.process_material = pm
+        dust.direction = Vector3(0, 0.6, 0)
+        dust.spread = 65.0
+        dust.initial_velocity_min = 1.2
+        dust.initial_velocity_max = 2.4
+        dust.gravity = Vector3(0, -2.6, 0)
+        dust.scale_amount_min = 2.2
+        dust.scale_amount_max = 4.0
         var quad := QuadMesh.new()
-        quad.size = Vector2(0.22, 0.22)
+        quad.size = Vector2(0.26, 0.26)
         var qm := StandardMaterial3D.new()
         qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
         qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
         qm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-        qm.albedo_color = Color(0.58, 0.53, 0.45, 0.5)
+        qm.albedo_color = Color(0.62, 0.56, 0.47, 0.55)
         quad.material = qm
-        dust.draw_pass_1 = quad
+        dust.mesh = quad
         add_child(dust)
         dust.global_position = global_position + Vector3(0, 0.15, 0)
         dust.finished.connect(dust.queue_free)
@@ -482,23 +482,21 @@ func _hit_vfx(pos: Vector3, element: String) -> void:
         var col: Color = Data.element_color(element)
         if element == "" or element == "None":
                 col = Color(0.85, 0.85, 0.8)
-        var burst := GPUParticles3D.new()
+        var burst := CPUParticles3D.new()
         burst.one_shot = true
         burst.explosiveness = 1.0
-        burst.amount = 14
-        burst.lifetime = 0.45
+        burst.amount = 16
+        burst.lifetime = 0.5
         burst.emitting = true
-        var pm := ParticleProcessMaterial.new()
-        pm.direction = Vector3(0, 0.4, 0)
-        pm.spread = 100.0
-        pm.initial_velocity_min = 2.2
-        pm.initial_velocity_max = 4.6
-        pm.gravity = Vector3(0, -4.0, 0)
-        pm.scale_min = 0.7
-        pm.scale_max = 1.6
-        burst.process_material = pm
+        burst.direction = Vector3(0, 0.4, 0)
+        burst.spread = 100.0
+        burst.initial_velocity_min = 2.2
+        burst.initial_velocity_max = 4.6
+        burst.gravity = Vector3(0, -4.0, 0)
+        burst.scale_amount_min = 1.0
+        burst.scale_amount_max = 2.0
         var quad := QuadMesh.new()
-        quad.size = Vector2(0.075, 0.075)
+        quad.size = Vector2(0.11, 0.11)
         var qm := StandardMaterial3D.new()
         qm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
         qm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
@@ -506,13 +504,13 @@ func _hit_vfx(pos: Vector3, element: String) -> void:
         qm.albedo_color = Color(col.r, col.g, col.b, 0.9)
         qm.emission_enabled = true
         qm.emission = col
-        qm.emission_energy_multiplier = 2.6
+        qm.emission_energy_multiplier = 3.0
         quad.material = qm
-        burst.draw_pass_1 = quad
+        burst.mesh = quad
         get_parent().add_child(burst)
         burst.global_position = pos
         burst.finished.connect(burst.queue_free)
-        get_tree().create_timer(1.0, true, false, true).timeout.connect(burst.queue_free)
+        get_tree().create_timer(1.1, true, false, true).timeout.connect(burst.queue_free)
 
 
 func _box(part: String, size: Vector3, pos: Vector3, mat: Material) -> MeshInstance3D:
@@ -1368,7 +1366,7 @@ func _start_telegraph() -> void:
                 mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
                 mat.emission_enabled = true
                 mat.emission = Color(1.0, 0.15, 0.1)
-                mat.emission_energy_multiplier = 1.4
+                mat.emission_energy_multiplier = 2.0
                 mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
                 _telegraph_mesh.material_override = mat
                 add_child(_telegraph_mesh)
